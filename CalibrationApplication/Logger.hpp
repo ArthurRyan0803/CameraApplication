@@ -8,11 +8,14 @@
 #include <log4cpp/PatternLayout.hh>
 #include <log4cpp/OstreamAppender.hh>
 #include <log4cpp/RollingFileAppender.hh>
+
 #include <boost/noncopyable.hpp>
 #include <boost/filesystem.hpp>
 #include <QDebug>
 
 #include "Def.hpp"
+
+#define GET_LOGGER() Logger::instance(__FILE__)
 
 class Logger: boost::noncopyable
 {

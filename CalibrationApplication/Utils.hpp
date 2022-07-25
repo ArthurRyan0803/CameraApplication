@@ -75,4 +75,27 @@ public:
 		auto size = src_image.rows * src_image.step;
 		memcpy(dst_image.bits(), src_image.data, size);
 	}
+
+	template<typename Type>
+	static void flat_mat_to_vector(const cv::Mat_<Type>& mat, std::vector<Type>& vector)
+	{
+		cv::Mat flat = mat.reshape(1, mat.total() * mat.channels());
+		vector = mat.isContinuous()? flat : flat.clone();
+	}
+
+	static void createDirectory(const std::string& path)
+	{
+		namespace  fs = boost::filesystem;
+		if(fs::exists(path))
+			return;
+		fs::create_directory(path);
+	}
+
+	static void createDirectory(const boost::filesystem::path& path)
+	{
+		namespace fs = boost::filesystem;
+		if(fs::exists(path))
+			return;
+		fs::create_directory(path);
+	}
 };

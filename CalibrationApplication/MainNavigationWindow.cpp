@@ -34,11 +34,11 @@ void MainNavigationWindow::showEvent(QShowEvent* e)
 		{
 			cameras_ids_[camera_category] = ids;
 			auto message = boost::format("Find camera ids {%1%} of %2%") % boost::join(ids, ",") % camera_category;
-			Logger::instance(__FILE__).debug(message.str());
+			GET_LOGGER().debug(message.str());
 		}
 		else
 		{
-			Logger::instance(__FILE__).debug("Cannot find any camera of " + camera_category);
+			GET_LOGGER().debug("Cannot find any camera of " + camera_category);
 		}
 	}
 

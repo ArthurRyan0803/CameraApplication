@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 
 #include <boost/filesystem.hpp>
@@ -37,22 +38,18 @@ public:
 
 		if(is_directory(app_dir))
 			return sys_app_dir;
-		else
-		{
-			if(exists(app_dir))
-			{
-				auto message = (boost::format("%s is not existing directory!") % app_dir).str();
-				throw std::runtime_error(message);
-			}
-			else
-			{
-				if(create_directory(app_dir))
-					return sys_app_dir;
 
-				auto message = (boost::format("Create directory %s failed!") % app_dir).str();
-				throw std::runtime_error(message);
-			}
+		if(exists(app_dir))
+		{
+			auto message = (boost::format("%s is not existing directory!") % app_dir).str();
+			throw std::runtime_error(message);
 		}
+
+		if(create_directory(app_dir))
+			return sys_app_dir;
+
+		auto message = (boost::format("Create directory %s failed!") % app_dir).str();
+		throw std::runtime_error(message);
 	}
 };
 

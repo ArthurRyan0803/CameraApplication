@@ -57,7 +57,7 @@ sensor_mode_(mode), camera_info_(info), cam_handle_(0), is_opened_(false), isp_b
 PDNCamera::~PDNCamera()
 {
 	this->close();
-	Logger::instance(__FILE__).debug("PDN Camera release!");
+	GET_LOGGER().debug("PDN Camera release!");
 }
 
 
@@ -229,11 +229,13 @@ void PDNCamera::showParameterDialog()
 
 void PDNCamera::setCapturingStartCallback(std::function<void()>&& callback)
 {
+
 }
 
 
 void PDNCamera::setCapturingStopCallback(std::function<void()>&& callback)
 {
+
 }
 
 

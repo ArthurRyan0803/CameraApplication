@@ -92,7 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Calibration.cpp" />
+    <ClCompile Include="CalibrationMethods.cpp" />
     <ClCompile Include="PDNCamera.cpp" />
     <ClCompile Include="PDNCamerasFactory.cpp" />
     <ClCompile Include="SingleCameraCalibrationDialog.cpp" />
@@ -115,7 +115,7 @@
     <ClInclude Include="PDNCamera.h" />
     <ClInclude Include="PDNCamerasFactory.h" />
     <QtMoc Include="SingleCameraCalibrationDialog.h" />
-    <ClInclude Include="SingleViewCalibrationParameters.h" />
+    <ClInclude Include="SingleViewCalibrationParams.hpp" />
     <ClInclude Include="Utils.hpp" />
     <ClInclude Include="WebCamera.h" />
     <ClInclude Include="WebCamerasFactory.h" />

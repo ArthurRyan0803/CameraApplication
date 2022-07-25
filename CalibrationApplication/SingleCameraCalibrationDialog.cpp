@@ -1,24 +1,16 @@
-#include <opencv2/calib3d.hpp>
-#include <QPainter>
-#include <mutex>
-#include <QFileDialog>
-#include <QDialog>
-#include <boost/filesystem.hpp>
-
 #include "SingleCameraCalibrationDialog.h"
-#include "AbstractCamerasFactory.h"
-#include "MainNavigationWindow.h"
-#include "Logger.hpp"
-#include "Utils.hpp"
+
+#include "SingleViewCalibrationParams.hpp"
 
 
-//namespace fs=boost::filesystem;
+namespace fs=boost::filesystem;
 
 constexpr int KEY_POINTS_PHY_INTERVAL = 50;		// The physical interval of key points. (Unit: mm)
 constexpr int KEY_POINTS_HORIZONTAL_COUNT = 7;
 constexpr int KEY_POINTS_VERTICAL_COUNT = 5;
 constexpr int MAX_CALIB_IMAGES_COUNT = 8;
 constexpr float PATTERN_PHY_WIDTH = KEY_POINTS_PHY_INTERVAL * KEY_POINTS_HORIZONTAL_COUNT;
+const cv::Size KEY_POINTS_COUNT(KEY_POINTS_HORIZONTAL_COUNT, KEY_POINTS_VERTICAL_COUNT);
 
 constexpr int SUB_PIXEL_SEARCH_WINDOW = 11;
 const cv::TermCriteria SUB_PIXEL_SEARCH_CRITERIA(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.0001);
@@ -28,11 +20,11 @@ std::map<QString, Pattern> SingleCameraCalibrationDialog::patters_map_ {
 	{ "Chessboard", Chessboard }
 };
 
+
 SingleCameraCalibrationDialog::SingleCameraCalibrationDialog(
 	std::shared_ptr<Camera> camera, QWidget* parent
-):
-QDialog(parent), q_image_buffer_(nullptr), cam_resolution_({}), check_calib_board_(false), is_calibrating(false),
-camera_(std::move(camera)), logger_(Logger::instance(__FILE__))
+):	QDialog(parent), q_image_buffer_(nullptr), cam_resolution_({}), calib_pattern_(Invalid), check_calib_board_(false),
+    is_calibrating(false), logger_(GET_LOGGER()), camera_(std::move(camera))
 {
 	ui_.setupUi(this);
 
@@ -93,7 +85,7 @@ void SingleCameraCalibrationDialog::findingCalibBoardPattern()
 {
 	try
 	{
-		logger_.debug("Start finding runCalibration board pattern!");
+		logger_.debug("Start finding planarCalibration board pattern!");
 
 		cv::Mat image_to_detect;
 		auto flag = cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_ADAPTIVE_THRESH;
@@ -121,17 +113,11 @@ void SingleCameraCalibrationDialog::findingCalibBoardPattern()
 					throw std::logic_error("Why frame_buffer_ is empty?");
 
 				if(frame_buffer_->elemSize() == 3)
-				{
 					cvtColor(*frame_buffer_, image_to_detect, cv::COLOR_RGB2GRAY);
-				}
 				else if(frame_buffer_->elemSize() == 1)
-				{
 					frame_buffer_->copyTo(image_to_detect);
-				}
 				else
-				{
-					throw std::runtime_error("Unrecognized element size type: " + frame_buffer_->elemSize());
-				}
+					throw std::runtime_error("Unrecognized element size!");
 			}
 
 			std::vector<cv::Point2f> points;
@@ -143,7 +129,7 @@ void SingleCameraCalibrationDialog::findingCalibBoardPattern()
 				found = findChessboardCorners(image_to_detect, chessboard_size, points, flag);
 				break;
 			default:
-				throw std::runtime_error((boost::format("Unrecognized runCalibration board type: %1%") % calib_pattern_).str());
+				throw std::runtime_error((boost::format("Unrecognized planarCalibration board type: %1%") % calib_pattern_).str());
 			}
 			
 			{
@@ -153,10 +139,10 @@ void SingleCameraCalibrationDialog::findingCalibBoardPattern()
 			}
 
 			std::string str = found ? "success" : "fails";
-			logger_.debug("Find chessboard " + str);
+			//logger_.debug("Find chessboard " + str);
 		}
 
-		logger_.debug("Stop finding runCalibration board pattern!");
+		logger_.debug("Stop finding planarCalibration board pattern!");
 	}
 	catch(const std::exception& e)
 	{
@@ -169,7 +155,7 @@ void SingleCameraCalibrationDialog::findingCalibBoardPattern()
 void SingleCameraCalibrationDialog::startCalibBoardDetectThread()
 {
 	if(board_detect_thread_)
-		throw std::logic_error("Why the runCalibration board detection thread is still alive?");
+		throw std::logic_error("Why the planarCalibration board detection thread is still alive?");
 
 	check_calib_board_ = true;
 	board_detect_thread_ = 
@@ -229,7 +215,7 @@ bool SingleCameraCalibrationDialog::eventFilter(QObject* obj, QEvent* e)
 			}
 		}
 
-		// Paint runCalibration board points.
+		// Paint planarCalibration board points.
 		if(check_calib_board_)
 		{
 			pattern_points_mutex_.lock();
@@ -342,7 +328,7 @@ void SingleCameraCalibrationDialog::calibrationButtonClicked()
 {
 	if(!is_calibrating)
 	{
-		auto folder = QFileDialog::getExistingDirectory(this, "Please select a folder to store the runCalibration files!");
+		auto folder = QFileDialog::getExistingDirectory(this, "Please select a folder to store the planarCalibration files!");
 		if(folder.isEmpty())
 			return;
 
@@ -350,11 +336,11 @@ void SingleCameraCalibrationDialog::calibrationButtonClicked()
 		is_calibrating = true;
 
 		// Change controls' status
-		ui_.btnCalibration->setText("Stop runCalibration");
+		ui_.btnCalibration->setText("Stop planarCalibration");
 		ui_.gbOptions->setEnabled(false);
 		ui_.gbCamOperations->setEnabled(false);
 		ui_.btnGrabCalibImage->setEnabled(true);
-		ui_.btnGrabCalibImage->setText("Grab runCalibration image (0)");
+		ui_.btnGrabCalibImage->setText("Grab planarCalibration image (0)");
 
 		// Enable real-time preview
 		camera_->startCapture();
@@ -365,11 +351,11 @@ void SingleCameraCalibrationDialog::calibrationButtonClicked()
 		calib_files_folder_ = "";
 		is_calibrating = false;
 
-		ui_.btnCalibration->setText("Start runCalibration");
+		ui_.btnCalibration->setText("Start planarCalibration");
 		ui_.gbOptions->setEnabled(true);
 		ui_.gbCamOperations->setEnabled(true);
 		ui_.btnGrabCalibImage->setEnabled(false);
-		ui_.btnGrabCalibImage->setText("Grab runCalibration image");
+		ui_.btnGrabCalibImage->setText("Grab planarCalibration image");
 
 		// Disable real-time preview
 		camera_->stopCapture();
@@ -380,58 +366,104 @@ void SingleCameraCalibrationDialog::calibrationButtonClicked()
 
 void SingleCameraCalibrationDialog::grabCalibImageButtonClicked()
 {
-	if(calib_files_folder_.empty())
+	try
+	{
+		if(calib_files_folder_.empty())
 		throw std::logic_error("Why the calib_files_folder_ is empty?");
 
-	std::shared_ptr<cv::Mat> image = std::make_shared<cv::Mat>();
-	{
-		std::lock_guard lock(frame_buffer_mutex_);
-		frame_buffer_->copyTo(*image);
-	}
-	
-	calib_images_.push_back(image);
-	ui_.btnGrabCalibImage->setText(
-		QString::fromStdString(
-			(boost::format("Grab runCalibration image (%1%/%2%)") % calib_images_.size() % MAX_CALIB_IMAGES_COUNT).str()
-		)
-	);
-	
-	if(calib_images_.size() == 8)
-	{
-		ui_.btnGrabCalibImage->setEnabled(false);
-		cv::Mat cameraIntrinsicMatrix, distortionCoefficient, rotationMatrix, translationVector;
+		// 1. take shot
 
-		float rms;
-		bool success = runCalibration(
-			calib_images_, cameraIntrinsicMatrix, distortionCoefficient, rotationMatrix, translationVector,
-			PATTERN_PHY_WIDTH, cv::Size(KEY_POINTS_HORIZONTAL_COUNT, KEY_POINTS_VERTICAL_COUNT), 
-			cv::Size(SUB_PIXEL_SEARCH_WINDOW, SUB_PIXEL_SEARCH_WINDOW),
-			Chessboard, rms
-		);
-
-		logger_.info((boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
-		logger_.info((boost::format("Calibration RMS: %1%.") % rms).str());
-
-		ui_.btnGrabCalibImage->setEnabled(true);
-
+		std::shared_ptr<cv::Mat> image = std::make_shared<cv::Mat>();
+		{
+			std::lock_guard lock(frame_buffer_mutex_);
+			frame_buffer_->copyTo(*image);
+		}
+		
+		calib_images_.push_back(image);
 		ui_.btnGrabCalibImage->setText(
 			QString::fromStdString(
-				(boost::format("Grab runCalibration image (0/%1%)") % MAX_CALIB_IMAGES_COUNT).str()
+				(boost::format("Grab planarCalibration image (%1%/%2%)") % calib_images_.size() % MAX_CALIB_IMAGES_COUNT).str()
 			)
 		);
+
+		// 2. calibration
+
+		if(calib_images_.size() == 8)
+		{
+			ui_.btnGrabCalibImage->setEnabled(false);
+			cv::Mat cameraIntrinsicMatrix, distortionCoefficient, rotationMatrix, translationVector;
+			std::vector<std::vector<cv::Point2f>> key_points;
+			std::vector<bool> key_points_found_flags;
+
+			double rms;
+			bool success = planarCalibration(
+				calib_images_, cameraIntrinsicMatrix, 
+				distortionCoefficient, 
+				rotationMatrix, translationVector,
+				key_points, key_points_found_flags, PATTERN_PHY_WIDTH, KEY_POINTS_COUNT, 
+				cv::Size(SUB_PIXEL_SEARCH_WINDOW, SUB_PIXEL_SEARCH_WINDOW),
+				Chessboard, rms
+			);
+
+			logger_.info((boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
+			logger_.info((boost::format("Calibration RMS: %1%.") % rms).str());
+
+			ui_.btnGrabCalibImage->setEnabled(true);
+			ui_.btnGrabCalibImage->setText(
+				QString::fromStdString(
+					(boost::format("Grab planarCalibration image (0/%1%)") % MAX_CALIB_IMAGES_COUNT).str()
+				)
+			);
+
+			if(!success)
+				return;
+
+			// 3. save
+			// 3.1 save calibration params
+			fs::path folder(calib_files_folder_);
+			fs::path file_path = folder / "params.json";
+
+			SingleViewCalibrationParams params;
+			Utils::flat_mat_to_vector<double>(cameraIntrinsicMatrix, params.intrinsic_parameters);
+			Utils::flat_mat_to_vector<double>(rotationMatrix, params.rotation);
+			Utils::flat_mat_to_vector<double>(translationVector, params.translation);
+			Utils::flat_mat_to_vector<double>(distortionCoefficient, params.distortions);
+			params.RMS = rms;
+			params.save(file_path.string());
+
+			// 3.2 save original images
+			for(size_t i=0; i<calib_images_.size(); i++)
+			{
+				auto original_image = calib_images_[i];
+				auto sub_folder = folder / "OriginalImages";
+				Utils::createDirectory(sub_folder);
+				file_path = sub_folder / (std::to_string(i) + ".png");
+				if(!imwrite(file_path.string(), *original_image))
+				{
+					throw std::runtime_error("Failed to save original image!");
+				}
+			}
+
+			// 3.3 save images with key points painted
+			for(size_t i=0; i<calib_images_.size(); i++)
+			{
+				auto paint_image = calib_images_[i];
+				cv::drawChessboardCorners(*paint_image, KEY_POINTS_COUNT, key_points[i], key_points_found_flags[i]);
+				auto sub_folder = folder / "PaintImages";
+				Utils::createDirectory(sub_folder);
+				file_path = sub_folder / (std::to_string(i) + ".png");
+				if(!imwrite(file_path.string(), *paint_image))
+				{
+					throw std::runtime_error("Failed to save paint image!");
+				}
+			}
+		}
 	}
-
-	/*fs::path folder(calib_files_folder_);
-	auto filename_str = (boost::format("calib_%1%.png") % (++calib_images_count)).str();
-	auto save_path = folder / filename_str;
-	auto save_path_str = save_path.string();
-
-	auto saved = imwrite(save_path_str, frame_copy);
-	if(!saved)
+	catch (const std::exception& e)
 	{
-		throw std::runtime_error("Failed to save image to " + save_path_str);
+		logger_.error(e.what());
+		throw e;
 	}
-	Logger::log("Save runCalibration image to " + save_path_str); */
 }
 
 void SingleCameraCalibrationDialog::parameterButtonClicked()

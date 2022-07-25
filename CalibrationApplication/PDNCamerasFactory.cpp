@@ -70,7 +70,7 @@ std::vector<std::string> PDNCamerasFactory::enumerateCamerasIDs()
 	if(SDK_UNSUCCESS(code))
 	{
 		auto message = (boost::format("No v-sensor (mind vision) sensors found! error code %1%") % code).str();
-		Logger::instance(__FILE__).error(message);
+		GET_LOGGER().error(message);
 		return {};
 	}
 	

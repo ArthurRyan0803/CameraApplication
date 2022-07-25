@@ -39,6 +39,12 @@
     <Filter Include="Source Files\Cameras\CameraFactory">
       <UniqueIdentifier>{8fcc33a0-e1c2-4d5a-b5e5-489c3263f863}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Calibration">
+      <UniqueIdentifier>{cd399dda-d903-486d-9bb9-e65997267486}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Calibration">
+      <UniqueIdentifier>{e4d5dcea-f520-47f4-829e-2334a149a9b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="MainNavigationWindow.ui">
@@ -76,8 +82,8 @@
     <ClCompile Include="SingleCameraCalibrationDialog.cpp">
       <Filter>Source Files\Forms</Filter>
     </ClCompile>
-    <ClCompile Include="Calibration.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CalibrationMethods.cpp">
+      <Filter>Source Files\Calibration</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,14 +119,14 @@
     <ClInclude Include="WebCamera.h">
       <Filter>Header Files\Cameras</Filter>
     </ClInclude>
-    <ClInclude Include="Calibration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Def.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SingleViewCalibrationParameters.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="SingleViewCalibrationParams.hpp">
+      <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="Calibration.h">
+      <Filter>Header Files\Calibration</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
