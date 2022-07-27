@@ -53,6 +53,9 @@
     <QtUic Include="SingleCameraCalibrationDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="CalibBoardSettingsDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -85,12 +88,21 @@
     <ClCompile Include="CalibrationMethods.cpp">
       <Filter>Source Files\Calibration</Filter>
     </ClCompile>
+    <ClCompile Include="CalibBoardSettingsDialog.cpp">
+      <Filter>Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="CalibrationPatternMethod.cpp">
+      <Filter>Source Files\Calibration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainNavigationWindow.h">
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
     <QtMoc Include="SingleCameraCalibrationDialog.h">
+      <Filter>Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="CalibBoardSettingsDialog.h">
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
   </ItemGroup>
@@ -125,7 +137,13 @@
     <ClInclude Include="SingleViewCalibrationParams.hpp">
       <Filter>Header Files\Calibration</Filter>
     </ClInclude>
-    <ClInclude Include="Calibration.h">
+    <ClInclude Include="CalibrationMethods.h">
+      <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="CalibrationBoardSettings.hpp">
+      <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="CalibrationPatternMethod.h">
       <Filter>Header Files\Calibration</Filter>
     </ClInclude>
   </ItemGroup>

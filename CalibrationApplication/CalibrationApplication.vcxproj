@@ -92,12 +92,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CalibBoardSettingsDialog.cpp" />
     <ClCompile Include="CalibrationMethods.cpp" />
+    <ClCompile Include="CalibrationPatternMethod.cpp" />
     <ClCompile Include="PDNCamera.cpp" />
     <ClCompile Include="PDNCamerasFactory.cpp" />
     <ClCompile Include="SingleCameraCalibrationDialog.cpp" />
     <ClCompile Include="WebCamera.cpp" />
     <ClCompile Include="WebCamerasFactory.cpp" />
+    <QtUic Include="CalibBoardSettingsDialog.ui" />
     <QtUic Include="MainNavigationWindow.ui" />
     <QtMoc Include="MainNavigationWindow.h" />
     <ClCompile Include="AbstractCamerasFactory.cpp" />
@@ -108,7 +111,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractCamerasFactory.h" />
-    <ClInclude Include="Calibration.h" />
+    <QtMoc Include="CalibBoardSettingsDialog.h" />
+    <ClInclude Include="CalibrationMethods.h" />
+    <ClInclude Include="CalibrationBoardSettings.hpp" />
+    <ClInclude Include="CalibrationPatternMethod.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Def.hpp" />
     <ClInclude Include="Logger.hpp" />

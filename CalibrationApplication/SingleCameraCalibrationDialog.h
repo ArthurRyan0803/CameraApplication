@@ -7,11 +7,12 @@
 #include <boost/filesystem.hpp>
 
 #include "AbstractCamerasFactory.h"
-#include "Calibration.h"
+#include "CalibrationMethods.h"
 #include "Camera.h"
 #include "Logger.hpp"
 #include "MainNavigationWindow.h"
 #include "ui_SingleCameraCalibrationDialog.h"
+#include "CalibBoardSettingsDialog.h"
 #include "Utils.hpp"
 
 
@@ -38,6 +39,8 @@ private:
 	std::mutex q_image_mutex_;									// The r/w access mutex of QImage.
 	std::mutex frame_buffer_mutex_;								// The r/w access mutex of frame buffer.
 	std::mutex pattern_points_mutex_;							// The r/w access mutex of planarCalibration board key points.
+
+	CalibrationBoardSettings calib_board_settings_;				
 
 	Logger& logger_;
 	
@@ -71,5 +74,6 @@ private:
 	void calibrationButtonClicked();
 	void grabCalibImageButtonClicked();
 	void parameterButtonClicked();
+	void calibBoardSettingsButtonClicked();
 	/* ------ Slot methods ------ */
 };

@@ -1,5 +1,7 @@
-#include "SingleCameraCalibrationDialog.h"
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 
+#include "SingleCameraCalibrationDialog.h"
 #include "SingleViewCalibrationParams.hpp"
 
 
@@ -12,12 +14,10 @@ constexpr int MAX_CALIB_IMAGES_COUNT = 8;
 constexpr float PATTERN_PHY_WIDTH = KEY_POINTS_PHY_INTERVAL * KEY_POINTS_HORIZONTAL_COUNT;
 const cv::Size KEY_POINTS_COUNT(KEY_POINTS_HORIZONTAL_COUNT, KEY_POINTS_VERTICAL_COUNT);
 
-constexpr int SUB_PIXEL_SEARCH_WINDOW = 11;
-const cv::TermCriteria SUB_PIXEL_SEARCH_CRITERIA(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.0001);
-
 
 std::map<QString, Pattern> SingleCameraCalibrationDialog::patters_map_ {
-	{ "Chessboard", Chessboard }
+	{ "Chessboard", Chessboard },
+	{"CirclesArray", CirclesArray}
 };
 
 
@@ -37,6 +37,7 @@ SingleCameraCalibrationDialog::SingleCameraCalibrationDialog(
 	connect(ui_.btnCalibration, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::calibrationButtonClicked);
 	connect(ui_.btnGrabCalibImage, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::grabCalibImageButtonClicked);
 	connect(ui_.btnParameter, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::parameterButtonClicked);
+	connect(ui_.btnCalibBoardSetting, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::calibBoardSettingsButtonClicked);
 
 	camera_->setCapturingStartCallback([this]{ logger_.debug("Start capture!" );});
 	camera_->setCapturingStopCallback([this]{ logger_.debug("Stop capture!" );});
@@ -88,7 +89,6 @@ void SingleCameraCalibrationDialog::findingCalibBoardPattern()
 		logger_.debug("Start finding planarCalibration board pattern!");
 
 		cv::Mat image_to_detect;
-		auto flag = cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_ADAPTIVE_THRESH;
 		cv::Size2i chessboard_size(5, 7);
 		
 		// If the frame_buffer_ is empty, wait the camera to grab image.
@@ -122,15 +122,8 @@ void SingleCameraCalibrationDialog::findingCalibBoardPattern()
 
 			std::vector<cv::Point2f> points;
 
-			bool found;
-			switch(calib_pattern_)
-			{
-			case Chessboard:
-				found = findChessboardCorners(image_to_detect, chessboard_size, points, flag);
-				break;
-			default:
-				throw std::runtime_error((boost::format("Unrecognized planarCalibration board type: %1%") % calib_pattern_).str());
-			}
+			cv::Size points_count(calib_board_settings_.horizontal_count, calib_board_settings_.vertical_count);
+			bool found = findKeyPoints(image_to_detect, points, calib_pattern_, points_count,true);
 			
 			{
 				std::lock_guard lock(pattern_points_mutex_);
@@ -340,7 +333,6 @@ void SingleCameraCalibrationDialog::calibrationButtonClicked()
 		ui_.gbOptions->setEnabled(false);
 		ui_.gbCamOperations->setEnabled(false);
 		ui_.btnGrabCalibImage->setEnabled(true);
-		ui_.btnGrabCalibImage->setText("Grab planarCalibration image (0)");
 
 		// Enable real-time preview
 		camera_->startCapture();
@@ -355,7 +347,6 @@ void SingleCameraCalibrationDialog::calibrationButtonClicked()
 		ui_.gbOptions->setEnabled(true);
 		ui_.gbCamOperations->setEnabled(true);
 		ui_.btnGrabCalibImage->setEnabled(false);
-		ui_.btnGrabCalibImage->setText("Grab planarCalibration image");
 
 		// Disable real-time preview
 		camera_->stopCapture();
@@ -382,7 +373,7 @@ void SingleCameraCalibrationDialog::grabCalibImageButtonClicked()
 		calib_images_.push_back(image);
 		ui_.btnGrabCalibImage->setText(
 			QString::fromStdString(
-				(boost::format("Grab planarCalibration image (%1%/%2%)") % calib_images_.size() % MAX_CALIB_IMAGES_COUNT).str()
+				(boost::format("Grab Calibration Image (%1%/%2%)") % calib_images_.size() % MAX_CALIB_IMAGES_COUNT).str()
 			)
 		);
 
@@ -400,8 +391,7 @@ void SingleCameraCalibrationDialog::grabCalibImageButtonClicked()
 				calib_images_, cameraIntrinsicMatrix, 
 				distortionCoefficient, 
 				rotationMatrix, translationVector,
-				key_points, key_points_found_flags, PATTERN_PHY_WIDTH, KEY_POINTS_COUNT, 
-				cv::Size(SUB_PIXEL_SEARCH_WINDOW, SUB_PIXEL_SEARCH_WINDOW),
+				key_points, key_points_found_flags, PATTERN_PHY_WIDTH, KEY_POINTS_COUNT,
 				Chessboard, rms
 			);
 
@@ -457,6 +447,8 @@ void SingleCameraCalibrationDialog::grabCalibImageButtonClicked()
 					throw std::runtime_error("Failed to save paint image!");
 				}
 			}
+
+			ui_.gbCamOperations->setEnabled(true);
 		}
 	}
 	catch (const std::exception& e)
@@ -472,6 +464,15 @@ void SingleCameraCalibrationDialog::parameterButtonClicked()
 	if(button != ui_.btnParameter)
 		return;
 	camera_->showParameterDialog();
+}
+
+void SingleCameraCalibrationDialog::calibBoardSettingsButtonClicked()
+{
+	auto button = dynamic_cast<QPushButton*>(sender());
+	if(button != ui_.btnCalibBoardSetting)
+		return;
+	CalibBoardSettingsDialog dialog(calib_board_settings_, this);
+	dialog.exec();
 }
 
 /* -------------------- Slot methods --------------------*/

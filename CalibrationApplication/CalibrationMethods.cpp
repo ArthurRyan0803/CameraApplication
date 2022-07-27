@@ -1,4 +1,4 @@
-#include "Calibration.h"
+#include "CalibrationMethods.h"
 
 
 constexpr int CHESSBOARD_FLAGS = cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_ADAPTIVE_THRESH;
@@ -6,55 +6,12 @@ const cv::TermCriteria SUB_PIXEL_SEARCH_CRITERIA(cv::TermCriteria::EPS + cv::Ter
 
 static Logger& logger_ = GET_LOGGER();
 
-bool findKeyPoints(
-	const cv::Mat& calibBoardImage, std::vector<cv::Point2f>& keyPoints, Pattern pattern, const cv::Size& keyPointsCount,
-	const cv::Size& subPixelSearchWindowSize
-)
-{
-	cv::Mat grayImage;
-	cvtColor(calibBoardImage, grayImage, cv::COLOR_RGB2GRAY);
-
-	assert(grayImage.elemSize() == 1 && "Gray calibBoardImage element size is not!");
-
-	int flag;
-	if(pattern == Chessboard)
-		flag = CHESSBOARD_FLAGS;
-	else
-		throw std::invalid_argument("The flag is not supported!");
-
-	bool found = findChessboardCorners(grayImage, keyPointsCount, keyPoints, flag);
-	if(!found)
-		return false;
-
-	cornerSubPix(grayImage, keyPoints, subPixelSearchWindowSize, cv::Size(-1, -1), SUB_PIXEL_SEARCH_CRITERIA);
-	return true;
-}
-
-
-void calKeyPointsPhyCoordinates(
-	const cv::Size& keyPointsCount, float keyPointsPhyInterval, std::vector<cv::Point3f>& points, Pattern pattern
-)
-{
-	points.clear();
-	
-    switch(pattern)
-    {
-    case Chessboard:
-        for( int i = 0; i < keyPointsCount.height; ++i )
-            for( int j = 0; j < keyPointsCount.width; ++j )
-                points.emplace_back(cv::Point3f(keyPointsPhyInterval * j, keyPointsPhyInterval * i, 0));
-        break;
-    default:
-        break;
-    }
-}
-
 
 bool planarCalibration(
 	const std::vector<std::shared_ptr<cv::Mat>>& images, 
 	cv::Mat& intrinsic_matrix, cv::Mat& distort_coefficients, cv::Mat& rotation_matrix, cv::Mat& translation_vector,
 	std::vector<std::vector<cv::Point2f>>& key_points, std::vector<bool>& key_points_found_flags,
-	float key_points_phy_interval, const cv::Size& key_points_count, const cv::Size& sub_pixel_search_window_size, 
+	float key_points_phy_interval, const cv::Size& key_points_count,
 	Pattern pattern, double& RMS
 )
 {
@@ -71,13 +28,13 @@ bool planarCalibration(
 		{
 			std::shared_ptr<std::thread> thread(
 				new std::thread(
-					[i, &images, &key_points, &key_points_found_flags, pattern, &key_points_count, &sub_pixel_search_window_size]()
+					[i, &images, &key_points, &key_points_found_flags, pattern, &key_points_count]()
 					{
 						key_points[i].clear();
 						try
 						{
 							key_points_found_flags[i] = findKeyPoints(
-								*images[i], key_points[i], pattern, key_points_count, sub_pixel_search_window_size
+								*images[i], key_points[i], pattern, key_points_count
 							);
 						}
 						catch (const std::exception& e)
