@@ -23,65 +23,6 @@ const cv::Mat element = cv::getStructuringElement(
 );
 
 
-bool findCirclesPatterns(
-	const cv::Mat& image_gray, const cv::Size& points_count, std::vector<cv::Point2f>& points
-)
-{
-	cv::Mat image_binary;
-	cv::adaptiveThreshold(image_gray, image_binary, ADA_THD_MAX_VALUE, 
-		cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, ADA_THD_BLOCK_SIZE, ADA_THD_CONST
-	);
-	
-	cv::imwrite("C:\\Users\\ryan\\Desktop\\shot.png", image_gray);
-	cv::imwrite("C:\\Users\\ryan\\Desktop\\shot_thd_erode_before.png", image_binary);
-	cv::erode(image_binary, image_binary, element);
-	cv::imwrite("C:\\Users\\ryan\\Desktop\\shot_thd_erode_after.png", image_binary);
-	
-	cv::Mat labels, stats, centroids;
-	auto count = cv::connectedComponentsWithStats(image_binary, labels, stats, centroids);
-
-	// Roughly filter areas
-	//double area_sum = 0;
-	std::vector<int> indices;
-	for(int i=0; i < count; i++)
-	{
-		auto width = stats.at<int>(i, 2), height = stats.at<int>(i, 3);
-		if(width <= 5 || height <= 5 || abs(width - height) > 5)
-			continue;
-		
-		indices.push_back(i);
-		//area_sum += stats.at<int>(i, 4);
-	}
-
-	points.clear();
-	for(auto i: indices)
-	{
-		auto x = static_cast<float>(centroids.at<double>(i, 0));
-		auto y = static_cast<float>(centroids.at<double>(i, 1));
-		points.emplace_back(x, y);
-	}
-
-	//double area_avg = area_sum / count;
-	
-	//cv::Mat image_color;
-	//cv::cvtColor(image_gray, image_color, cv::COLOR_GRAY2RGB);
-	//for(auto i: indices)
-	//{
-	//	int x = static_cast<int>(centroids.at<double>(i, 0));
-	//	int y = static_cast<int>(centroids.at<double>(i, 1));
-	//	cv::Point center(x, y);
-	//	auto width = stats.at<int>(i, 2), height = stats.at<int>(i, 3);
-	//	auto radius = static_cast<int>(sqrt(pow(width, 2) + pow(height, 2)) / 2);
-
-	//	cv::circle(image_color, center, radius, cv::Scalar(255, 0, 0));		// color: RGB
-	//}
-
-	//cv::imwrite("C:\\Users\\ryan\\Desktop\\shot_circles.png", image_color);
-
-	return true;
-}
-
-
 bool findKeyPoints(
 	const cv::Mat& image, std::vector<cv::Point2f>& points, Pattern pattern, const cv::Size& points_count, bool roughly
 )
@@ -112,10 +53,11 @@ bool findKeyPoints(
 		}
 		
 		case CirclesArray:
-			return findCirclesPatterns(
+			image_detect = 255 - image_detect;
+			return cv::findCirclesGrid(image_detect, points_count, points);
+			cv::findCirclesGrid(
 				image_detect, points_count, points
 			);
-
 		default:
 			throw std::invalid_argument("Unrecognized calibration pattern!");
 	}
