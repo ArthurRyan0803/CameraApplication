@@ -16,8 +16,6 @@ private:
 	std::unique_ptr<std::thread> capture_thread_ = nullptr;
 	std::vector<std::array<int, 2>> resolutions_table_;
 
-	std::function<void()> capture_start_callback_;
-	std::function<void()> capture_stop_callback_;
 	std::function<void(cv::InputArray)> frame_ready_callback_;
 	
 	void continuouslyCapture();
@@ -46,8 +44,6 @@ public:
 	size_t getPixelType() override;
 
 	// callbacks
-	void setCapturingStartCallback(std::function<void()>&& callback) override;
-	void setCapturingStopCallback(std::function<void()>&& callback) override;
 	void setFrameReadyCallback(std::function<void(cv::InputArray)> callback) override;
 
 	~WebCamera() override;

@@ -78,7 +78,5 @@ public:
 	
 	size_t getPixelType() override;
 
-	void setCapturingStartCallback(std::function<void()>&& callback) override;
-	void setCapturingStopCallback(std::function<void()>&& callback) override;
 	void setFrameReadyCallback(std::function<void(cv::InputArray)> callback) override;
 };

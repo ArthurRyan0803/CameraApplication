@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SingleCameraCalibrationDialogClass</class>
- <widget class="QDialog" name="SingleCameraCalibrationDialogClass">
+ <class>SingleViewCalibrationWindowClass</class>
+ <widget class="QDialog" name="SingleViewCalibrationWindowClass">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Single Camera Calibration</string>
+   <string>Single View Calibration</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>

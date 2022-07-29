@@ -1,8 +1,8 @@
-#include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
 
-#include "SingleCameraCalibrationDialog.h"
-#include "SingleViewCalibrationParams.hpp"
+#include "SingleViewCalibrationWindow.h"
+#include "CameraCalibrationParams.hpp"
 
 
 namespace fs=boost::filesystem;
@@ -15,50 +15,37 @@ constexpr float PATTERN_PHY_WIDTH = KEY_POINTS_PHY_INTERVAL * KEY_POINTS_HORIZON
 const cv::Size KEY_POINTS_COUNT(KEY_POINTS_HORIZONTAL_COUNT, KEY_POINTS_VERTICAL_COUNT);
 
 
-std::map<QString, Pattern> SingleCameraCalibrationDialog::patters_map_ {
-	{ "Chessboard", Chessboard },
-	{"CirclesArray", CirclesArray}
-};
-
-
-SingleCameraCalibrationDialog::SingleCameraCalibrationDialog(
+SingleViewCalibrationWindow::SingleViewCalibrationWindow(
 	std::shared_ptr<Camera> camera, QWidget* parent
-):	QDialog(parent), q_image_buffer_(nullptr), cam_resolution_({}), calib_pattern_(Invalid), check_calib_board_(false),
+):	QMainWindow(parent), q_image_buffer_(nullptr), cam_resolution_({}), calib_pattern_(Invalid), check_calib_board_(false),
     is_calibrating(false), logger_(GET_LOGGER()), camera_(std::move(camera))
 {
 	ui_.setupUi(this);
 
-	connect(ui_.btnOneShot, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::oneShotButtonClicked);
-	connect(ui_.btnCapture, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::captureButtonClicked);
-	connect(ui_.btnExit, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::close);
-	connect(ui_.cmbCalibPattern, &QComboBox::currentTextChanged, this, &SingleCameraCalibrationDialog::calibPatternChanged);
-	connect(ui_.ckbDetectCalibBoard, &QCheckBox::stateChanged, this, &SingleCameraCalibrationDialog::detectBoardCheckboxStateChanged);
-	connect(ui_.btnSaveImage, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::saveImageButtonClicked);
-	connect(ui_.btnCalibration, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::calibrationButtonClicked);
-	connect(ui_.btnGrabCalibImage, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::grabCalibImageButtonClicked);
-	connect(ui_.btnParameter, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::parameterButtonClicked);
-	connect(ui_.btnCalibBoardSetting, &QPushButton::clicked, this, &SingleCameraCalibrationDialog::calibBoardSettingsButtonClicked);
+	connect(ui_.btnOneShot, &QPushButton::clicked, this, &SingleViewCalibrationWindow::oneShotButtonClicked);
+	connect(ui_.btnCapture, &QPushButton::clicked, this, &SingleViewCalibrationWindow::captureButtonClicked);
+	connect(ui_.btnExit, &QPushButton::clicked, this, &SingleViewCalibrationWindow::close);
+	connect(ui_.cmbCalibPattern, &QComboBox::currentTextChanged, this, &SingleViewCalibrationWindow::calibPatternChanged);
+	connect(ui_.ckbDetectCalibBoard, &QCheckBox::stateChanged, this, &SingleViewCalibrationWindow::detectBoardCheckboxStateChanged);
+	connect(ui_.btnSaveImage, &QPushButton::clicked, this, &SingleViewCalibrationWindow::saveImageButtonClicked);
+	connect(ui_.btnCalibration, &QPushButton::clicked, this, &SingleViewCalibrationWindow::calibrationButtonClicked);
+	connect(ui_.btnGrabCalibImage, &QPushButton::clicked, this, &SingleViewCalibrationWindow::grabCalibImageButtonClicked);
+	connect(ui_.btnParameter, &QPushButton::clicked, this, &SingleViewCalibrationWindow::parameterButtonClicked);
+	connect(ui_.btnCalibBoardSetting, &QPushButton::clicked, this, &SingleViewCalibrationWindow::calibBoardSettingsButtonClicked);
 
-	camera_->setCapturingStartCallback([this]{ logger_.debug("Start capture!" );});
-	camera_->setCapturingStopCallback([this]{ logger_.debug("Stop capture!" );});
 	camera_->setFrameReadyCallback([this](cv::InputArray data) { cameraFrameReadyCallback(data); });
 	
 	ui_.canvas->installEventFilter(this);
 
-	for(auto& pair: patters_map_)
-		ui_.cmbCalibPattern->addItem(pair.first);
+	for(auto& pair: UICommon::string_to_clib_pattern_map)
+		ui_.cmbCalibPattern->addItem(QString::fromStdString(pair.first));
 
 	camera_->open();
-	cam_resolution_ =  camera_->getCurrentResolution();
-}
-
-SingleCameraCalibrationDialog::~SingleCameraCalibrationDialog()
-{
-	logger_.debug("SingleCameraCalibrationDialog deconstruct!");
+	cam_resolution_ = camera_->getCurrentResolution();
 }
 
 
-void SingleCameraCalibrationDialog::cameraFrameReadyCallback(cv::InputArray image_data)
+void SingleViewCalibrationWindow::cameraFrameReadyCallback(cv::InputArray image_data)
 {
 	if(image_data.empty())
 		return;
@@ -82,7 +69,7 @@ void SingleCameraCalibrationDialog::cameraFrameReadyCallback(cv::InputArray imag
 }
 
 
-void SingleCameraCalibrationDialog::findingCalibBoardPattern()
+void SingleViewCalibrationWindow::findingCalibBoardPattern()
 {
 	try
 	{
@@ -145,17 +132,17 @@ void SingleCameraCalibrationDialog::findingCalibBoardPattern()
 }
 
 
-void SingleCameraCalibrationDialog::startCalibBoardDetectThread()
+void SingleViewCalibrationWindow::startCalibBoardDetectThread()
 {
 	if(board_detect_thread_)
 		throw std::logic_error("Why the planarCalibration board detection thread is still alive?");
 
 	check_calib_board_ = true;
 	board_detect_thread_ = 
-		std::make_unique<std::thread>(std::bind(&SingleCameraCalibrationDialog::findingCalibBoardPattern, this));
+		std::make_unique<std::thread>(std::bind(&SingleViewCalibrationWindow::findingCalibBoardPattern, this));
 }
 
-void SingleCameraCalibrationDialog::stopCalibBoardDetectThread()
+void SingleViewCalibrationWindow::stopCalibBoardDetectThread()
 {
 	if(!board_detect_thread_)
 		return;
@@ -166,9 +153,9 @@ void SingleCameraCalibrationDialog::stopCalibBoardDetectThread()
 }
 /* -------------------- Events --------------------*/
 
-void SingleCameraCalibrationDialog::closeEvent(QCloseEvent* e)
+void SingleViewCalibrationWindow::closeEvent(QCloseEvent* e)
 {
-	QDialog::closeEvent(e);
+	QMainWindow::closeEvent(e);
 	camera_->close();
 	if(board_detect_thread_)
 	{
@@ -178,7 +165,7 @@ void SingleCameraCalibrationDialog::closeEvent(QCloseEvent* e)
 	}
 }
 
-bool SingleCameraCalibrationDialog::eventFilter(QObject* obj, QEvent* e)
+bool SingleViewCalibrationWindow::eventFilter(QObject* obj, QEvent* e)
 {
 	if(e->type() == QEvent::Paint && obj == ui_.canvas)
 	{
@@ -230,21 +217,21 @@ bool SingleCameraCalibrationDialog::eventFilter(QObject* obj, QEvent* e)
 		return true;
 	}
 
-	return QDialog::eventFilter(obj, e);
+	return QMainWindow::eventFilter(obj, e);
 }
 
 /* -------------------- Events --------------------*/
 
 /* -------------------- Slot methods --------------------*/
 
-void SingleCameraCalibrationDialog::calibPatternChanged()
+void SingleViewCalibrationWindow::calibPatternChanged()
 {
 	auto box = dynamic_cast<QComboBox*>(sender());
 	auto text  = box->currentText();
-	calib_pattern_ = patters_map_[text];
+	calib_pattern_ = UICommon::string_to_clib_pattern_map.find(text.toStdString())->second;
 }
 
-void SingleCameraCalibrationDialog::detectBoardCheckboxStateChanged()
+void SingleViewCalibrationWindow::detectBoardCheckboxStateChanged()
 {
 	auto checkbox = dynamic_cast<QCheckBox*>(sender());
 	if(checkbox->isChecked())
@@ -257,7 +244,7 @@ void SingleCameraCalibrationDialog::detectBoardCheckboxStateChanged()
 	}
 }
 
-void SingleCameraCalibrationDialog::oneShotButtonClicked()
+void SingleViewCalibrationWindow::oneShotButtonClicked()
 {
 	{
 		std::lock_guard lock(frame_buffer_mutex_);
@@ -278,7 +265,7 @@ void SingleCameraCalibrationDialog::oneShotButtonClicked()
 	ui_.btnSaveImage->setEnabled(true);
 }
 
-void SingleCameraCalibrationDialog::captureButtonClicked()
+void SingleViewCalibrationWindow::captureButtonClicked()
 {
 	if(camera_->isCapturing())
 	{
@@ -297,7 +284,7 @@ void SingleCameraCalibrationDialog::captureButtonClicked()
 	}
 }
 
-void SingleCameraCalibrationDialog::saveImageButtonClicked()
+void SingleViewCalibrationWindow::saveImageButtonClicked()
 {
 	std::unique_ptr<cv::Mat> frame_copy;
 	{
@@ -317,7 +304,7 @@ void SingleCameraCalibrationDialog::saveImageButtonClicked()
 }
 
 
-void SingleCameraCalibrationDialog::calibrationButtonClicked()
+void SingleViewCalibrationWindow::calibrationButtonClicked()
 {
 	if(!is_calibrating)
 	{
@@ -355,7 +342,7 @@ void SingleCameraCalibrationDialog::calibrationButtonClicked()
 
 }
 
-void SingleCameraCalibrationDialog::grabCalibImageButtonClicked()
+void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 {
 	try
 	{
@@ -413,7 +400,7 @@ void SingleCameraCalibrationDialog::grabCalibImageButtonClicked()
 			fs::path folder(calib_files_folder_);
 			fs::path file_path = folder / "params.json";
 
-			SingleViewCalibrationParams params;
+			CameraCalibrationParams params;
 			Utils::flat_mat_to_vector<double>(cameraIntrinsicMatrix, params.intrinsic_parameters);
 			Utils::flat_mat_to_vector<double>(rotationMatrix, params.rotation);
 			Utils::flat_mat_to_vector<double>(translationVector, params.translation);
@@ -458,7 +445,7 @@ void SingleCameraCalibrationDialog::grabCalibImageButtonClicked()
 	}
 }
 
-void SingleCameraCalibrationDialog::parameterButtonClicked()
+void SingleViewCalibrationWindow::parameterButtonClicked()
 {
 	auto button = dynamic_cast<QPushButton*>(sender());
 	if(button != ui_.btnParameter)
@@ -466,7 +453,7 @@ void SingleCameraCalibrationDialog::parameterButtonClicked()
 	camera_->showParameterDialog();
 }
 
-void SingleCameraCalibrationDialog::calibBoardSettingsButtonClicked()
+void SingleViewCalibrationWindow::calibBoardSettingsButtonClicked()
 {
 	auto button = dynamic_cast<QPushButton*>(sender());
 	if(button != ui_.btnCalibBoardSetting)

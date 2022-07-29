@@ -226,19 +226,6 @@ void PDNCamera::showParameterDialog()
 	CameraShowSettingPage(cam_handle_, true);
 }
 
-
-void PDNCamera::setCapturingStartCallback(std::function<void()>&& callback)
-{
-
-}
-
-
-void PDNCamera::setCapturingStopCallback(std::function<void()>&& callback)
-{
-
-}
-
-
 void PDNCamera::setFrameReadyCallback(std::function<void(cv::InputArray)> callback)
 {
 	frame_ready_callback_ = callback;

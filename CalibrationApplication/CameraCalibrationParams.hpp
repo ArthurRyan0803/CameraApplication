@@ -7,7 +7,7 @@
 #include "Logger.hpp"
 
 
-class SingleViewCalibrationParams
+class CameraCalibrationParams
 {
 	Logger& logger_;
 
@@ -19,7 +19,7 @@ public:
 
 	float RMS;
 
-	SingleViewCalibrationParams(): logger_(GET_LOGGER()), RMS(-1)
+	CameraCalibrationParams(): logger_(GET_LOGGER()), RMS(-1)
 	{
 		// Allocate space for params.
 		intrinsic_parameters.resize(9);

@@ -103,8 +103,6 @@ bool WebCamera::isCapturing()
 void WebCamera::continuouslyCapture()
 {
 	is_capturing_ = true;
-	if(capture_start_callback_)
-		capture_start_callback_();
 	
 	while(!stop_capturing_request_)
 	{
@@ -118,8 +116,6 @@ void WebCamera::continuouslyCapture()
 	}
 	
 	is_capturing_ = false;
-	if(capture_stop_callback_)
-		capture_stop_callback_();
 }
 
 
@@ -183,16 +179,6 @@ size_t WebCamera::getPixelType()
 //}
 
 /* ---------- callbacks --------- */
-
-void WebCamera::setCapturingStartCallback(std::function<void()>&& callback)
-{
-	capture_start_callback_ = callback;
-}
-
-void WebCamera::setCapturingStopCallback(std::function<void()>&& callback)
-{
-	capture_stop_callback_ = callback;
-}
 
 void WebCamera::setFrameReadyCallback(std::function<void(cv::InputArray)> callback)
 {

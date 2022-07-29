@@ -36,7 +36,5 @@ public:
 	virtual void oneShot(cv::OutputArray data) = 0;
 	virtual ~Camera() = 0;
 
-	virtual void setCapturingStartCallback(std::function<void()>&& callback) = 0;
-	virtual void setCapturingStopCallback(std::function<void()>&& callback) = 0;
 	virtual void setFrameReadyCallback(std::function<void(cv::InputArray)> callback) = 0;
 };

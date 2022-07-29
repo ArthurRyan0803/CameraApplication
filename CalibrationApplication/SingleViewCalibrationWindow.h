@@ -11,18 +11,17 @@
 #include "Camera.h"
 #include "Logger.hpp"
 #include "MainNavigationWindow.h"
-#include "ui_SingleCameraCalibrationDialog.h"
+#include "ui_SingleViewCalibrationWindow.h"
 #include "CalibBoardSettingsDialog.h"
 #include "Utils.hpp"
+#include "UICommon.h"
 
 
-class SingleCameraCalibrationDialog : public QDialog, std::enable_shared_from_this<SingleCameraCalibrationDialog>
+class SingleViewCalibrationWindow : public QMainWindow
 {
 	Q_OBJECT
 
 private:
-	
-	static std::map<QString, Pattern> patters_map_;
 
 	std::unique_ptr<QImage> q_image_buffer_;					// QImage for painting.
 	std::unique_ptr<cv::Mat> frame_buffer_;						// Image for processing.
@@ -45,11 +44,11 @@ private:
 	Logger& logger_;
 	
 public:
-	SingleCameraCalibrationDialog(std::shared_ptr<Camera> camera, QWidget *parent = nullptr);
-	~SingleCameraCalibrationDialog() override;
+	SingleViewCalibrationWindow(std::shared_ptr<Camera> camera, QWidget *parent = nullptr);
+	~SingleViewCalibrationWindow() override = default;
 
 private:
-	Ui::SingleCameraCalibrationDialogClass ui_{};
+	Ui::SingleViewCalibrationWindow ui_{};
 	std::shared_ptr<Camera> camera_;
 	
 	void cameraFrameReadyCallback(cv::InputArray image_data);

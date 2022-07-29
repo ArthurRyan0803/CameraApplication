@@ -1,7 +1,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "MainNavigationWindow.h"
-#include "SingleCameraCalibrationDialog.h"
+
 #include "AbstractCamerasFactory.h"
 #include "WebCamerasFactory.h"
 #include "PDNCamerasFactory.h"
@@ -13,6 +13,7 @@ MainNavigationWindow::MainNavigationWindow(QWidget *parent)
 {
 	ui_.setupUi(this);
 	connect(ui_.btnSingleCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
+	connect(ui_.btnDualViewCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
 	connect(ui_.cbCamCategory, &QComboBox::currentIndexChanged, this, &MainNavigationWindow::cameraCategorySelectionChanged);
 
 	AbstractCamerasFactory::registerFactory( WebCamerasFactory::name, WebCamerasFactory::instance());
@@ -58,7 +59,7 @@ void MainNavigationWindow::showEvent(QShowEvent* e)
 }
 
 
-void MainNavigationWindow::buttonClicked() const
+void MainNavigationWindow::buttonClicked()
 {
 	const auto button = sender();
 	std::string cam_category = ui_.cbCamCategory->currentText().toStdString();
@@ -66,14 +67,21 @@ void MainNavigationWindow::buttonClicked() const
 
 	auto camera = AbstractCamerasFactory::getCameraFactory(cam_category)->createCamera(cam_id);
 
+	calib_window_.reset();
+
 	if(button == ui_.btnSingleCalib)
+		calib_window_ = std::make_unique<SingleViewCalibrationWindow>(camera);
+	else if(button == ui_.btnDualViewCalib)
+		calib_window_ = std::make_unique<DualViewsCalibrationWindow>(camera);
+	
+	if(calib_window_)
 	{
-		SingleCameraCalibrationDialog dialog(camera);
-		dialog.exec();
+		calib_window_->setWindowModality(Qt::WindowModality::ApplicationModal);
+		calib_window_->show();
 	}
 	else
 	{
-		throw std::exception("Unrecognized button!");
+		throw std::runtime_error("Unrecognized button!");
 	}
 }
 

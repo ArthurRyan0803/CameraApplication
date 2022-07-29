@@ -95,19 +95,22 @@
     <ClCompile Include="CalibBoardSettingsDialog.cpp" />
     <ClCompile Include="CalibrationMethods.cpp" />
     <ClCompile Include="CalibrationPatternMethod.cpp" />
+    <ClCompile Include="DualViewsCalibrationWindow.cpp" />
     <ClCompile Include="PDNCamera.cpp" />
     <ClCompile Include="PDNCamerasFactory.cpp" />
-    <ClCompile Include="SingleCameraCalibrationDialog.cpp" />
+    <ClCompile Include="SingleViewCalibrationWindow.cpp" />
+    <ClCompile Include="UICommon.cpp" />
     <ClCompile Include="WebCamera.cpp" />
     <ClCompile Include="WebCamerasFactory.cpp" />
     <QtUic Include="CalibBoardSettingsDialog.ui" />
+    <QtUic Include="DualViewsCalibrationWindow.ui" />
     <QtUic Include="MainNavigationWindow.ui" />
     <QtMoc Include="MainNavigationWindow.h" />
     <ClCompile Include="AbstractCamerasFactory.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="MainNavigationWindow.cpp" />
     <ClCompile Include="main.cpp" />
-    <QtUic Include="SingleCameraCalibrationDialog.ui" />
+    <QtUic Include="SingleViewCalibrationWindow.ui" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractCamerasFactory.h" />
@@ -117,11 +120,13 @@
     <ClInclude Include="CalibrationPatternMethod.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Def.hpp" />
+    <QtMoc Include="DualViewsCalibrationWindow.h" />
     <ClInclude Include="Logger.hpp" />
     <ClInclude Include="PDNCamera.h" />
     <ClInclude Include="PDNCamerasFactory.h" />
-    <QtMoc Include="SingleCameraCalibrationDialog.h" />
-    <ClInclude Include="SingleViewCalibrationParams.hpp" />
+    <QtMoc Include="SingleViewCalibrationWindow.h" />
+    <ClInclude Include="CameraCalibrationParams.hpp" />
+    <ClInclude Include="UICommon.h" />
     <ClInclude Include="Utils.hpp" />
     <ClInclude Include="WebCamera.h" />
     <ClInclude Include="WebCamerasFactory.h" />

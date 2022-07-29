@@ -50,10 +50,13 @@
     <QtUic Include="MainNavigationWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="SingleCameraCalibrationDialog.ui">
+    <QtUic Include="CalibBoardSettingsDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="CalibBoardSettingsDialog.ui">
+    <QtUic Include="DualViewsCalibrationWindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="SingleViewCalibrationWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -82,7 +85,7 @@
     <ClCompile Include="WebCamera.cpp">
       <Filter>Source Files\Cameras</Filter>
     </ClCompile>
-    <ClCompile Include="SingleCameraCalibrationDialog.cpp">
+    <ClCompile Include="SingleViewCalibrationWindow.cpp">
       <Filter>Source Files\Forms</Filter>
     </ClCompile>
     <ClCompile Include="CalibrationMethods.cpp">
@@ -94,15 +97,24 @@
     <ClCompile Include="CalibrationPatternMethod.cpp">
       <Filter>Source Files\Calibration</Filter>
     </ClCompile>
+    <ClCompile Include="DualViewsCalibrationWindow.cpp">
+      <Filter>Source Files\Forms</Filter>
+    </ClCompile>
+    <ClCompile Include="UICommon.cpp">
+      <Filter>Source Files\Forms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainNavigationWindow.h">
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
-    <QtMoc Include="SingleCameraCalibrationDialog.h">
+    <QtMoc Include="SingleViewCalibrationWindow.h">
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
     <QtMoc Include="CalibBoardSettingsDialog.h">
+      <Filter>Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="DualViewsCalibrationWindow.h">
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
   </ItemGroup>
@@ -134,7 +146,7 @@
     <ClInclude Include="Def.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SingleViewCalibrationParams.hpp">
+    <ClInclude Include="CameraCalibrationParams.hpp">
       <Filter>Header Files\Calibration</Filter>
     </ClInclude>
     <ClInclude Include="CalibrationMethods.h">
@@ -145,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="CalibrationPatternMethod.h">
       <Filter>Header Files\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="UICommon.h">
+      <Filter>Header Files\Forms</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
