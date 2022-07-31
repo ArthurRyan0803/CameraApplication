@@ -14,7 +14,8 @@ MainNavigationWindow::MainNavigationWindow(QWidget *parent)
 	ui_.setupUi(this);
 	connect(ui_.btnSingleCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
 	connect(ui_.btnDualViewCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
-	connect(ui_.cbCamCategory, &QComboBox::currentIndexChanged, this, &MainNavigationWindow::cameraCategorySelectionChanged);
+	//connect(ui_.cbCamCategory, &QComboBox::currentIndexChanged, this, &MainNavigationWindow::cameraCategorySelectionChanged);
+	connect(ui_.cbCamCategory, SIGNAL(currentIndexChanged(int)), this, SLOT(cameraCategorySelectionChanged(int)));
 
 	AbstractCamerasFactory::registerFactory( WebCamerasFactory::name, WebCamerasFactory::instance());
 	AbstractCamerasFactory::registerFactory( PDNCamerasFactory::name, PDNCamerasFactory::instance());
@@ -86,17 +87,16 @@ void MainNavigationWindow::buttonClicked()
 }
 
 
-void MainNavigationWindow::cameraCategorySelectionChanged()
+void MainNavigationWindow::cameraCategorySelectionChanged(int index)
 {
 	auto cbCamCategory = dynamic_cast<QComboBox*>(sender());
 	ui_.cbCamId->clear();
 
 	auto selected_category = cbCamCategory->currentText();
-	QList<QString> list;
+	QVector<QString> list;
 	for(auto& id: cameras_ids_[selected_category.toStdString()])
-	{
-		list.append(QString::fromStdString(id));
-	}
-	auto items = QStringList::fromList(list);
+		list.push_back(QString::fromStdString(id));
+
+	auto items = QStringList::fromVector(list);
 	ui_.cbCamId->addItems(items);
 }

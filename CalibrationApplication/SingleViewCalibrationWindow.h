@@ -48,7 +48,7 @@ public:
 	~SingleViewCalibrationWindow() override = default;
 
 private:
-	Ui::SingleViewCalibrationWindow ui_{};
+	Ui::SingleViewCalibrationWindowClass ui_{};
 	std::shared_ptr<Camera> camera_;
 	
 	void cameraFrameReadyCallback(cv::InputArray image_data);

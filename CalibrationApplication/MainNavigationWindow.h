@@ -26,5 +26,5 @@ private:
 
 	void showEvent(QShowEvent* event) override;
 	void buttonClicked();
-	void cameraCategorySelectionChanged();
+	void cameraCategorySelectionChanged(int index);
 };
