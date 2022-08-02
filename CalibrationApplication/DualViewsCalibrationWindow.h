@@ -1,18 +1,14 @@
 #pragma once
 
-#include <QMainWindow>
 #include <qimage.h>
 #include <memory>
-#include <qpainter.h>
+#include <QFileDialog>
 
 #include "Camera.h"
-#include "UICommon.h"
 #include "ui_DualViewsCalibrationWindow.h"
-#include "CalibBoardSettingsDialog.h"
 #include "CalibrationBoardSettings.hpp"
 #include "CalibrationMethods.h"
 #include "Logger.hpp"
-#include "Utils.hpp"
 
 
 class DualViewsCalibrationWindow : public QMainWindow

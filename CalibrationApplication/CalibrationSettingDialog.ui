@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CalibBoardSettingsDialogClass</class>
- <widget class="QDialog" name="CalibBoardSettingsDialogClass">
+ <class>CalibrationSettingDialogClass</class>
+ <widget class="QDialog" name="CalibrationSettingDialogClass">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>449</width>
-    <height>135</height>
+    <height>152</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Calibration Board Setting</string>
+   <string>Calibration Setting</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -29,27 +29,10 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Vertical key points count:</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Keypoints interval (mm):</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QSpinBox" name="spHorizontalCount">
-       <property name="minimum">
-        <number>5</number>
-       </property>
-       <property name="value">
-        <number>11</number>
        </property>
       </widget>
      </item>
@@ -63,6 +46,23 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="spHorizontalCount">
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>11</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Vertical key points count:</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="1">
       <widget class="QDoubleSpinBox" name="dspInterval">
        <property name="minimum">
@@ -73,6 +73,23 @@
        </property>
        <property name="value">
         <double>15.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Calibration Images count:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="spCalibImagesCount">
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>8</number>
        </property>
       </widget>
      </item>
@@ -94,7 +111,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btnDefault">
+      <widget class="QPushButton" name="btnRestore">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -108,7 +125,7 @@
         </size>
        </property>
        <property name="text">
-        <string>Default</string>
+        <string>Restore</string>
        </property>
       </widget>
      </item>

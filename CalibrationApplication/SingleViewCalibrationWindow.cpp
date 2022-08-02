@@ -1,18 +1,8 @@
-#include <opencv2/imgproc.hpp>
-#include <opencv2/opencv.hpp>
-
 #include "SingleViewCalibrationWindow.h"
 #include "CameraCalibrationParams.hpp"
 
 
 namespace fs=boost::filesystem;
-
-constexpr int KEY_POINTS_PHY_INTERVAL = 50;		// The physical interval of key points. (Unit: mm)
-constexpr int KEY_POINTS_HORIZONTAL_COUNT = 7;
-constexpr int KEY_POINTS_VERTICAL_COUNT = 5;
-constexpr int MAX_CALIB_IMAGES_COUNT = 8;
-constexpr float PATTERN_PHY_WIDTH = KEY_POINTS_PHY_INTERVAL * KEY_POINTS_HORIZONTAL_COUNT;
-const cv::Size KEY_POINTS_COUNT(KEY_POINTS_HORIZONTAL_COUNT, KEY_POINTS_VERTICAL_COUNT);
 
 
 SingleViewCalibrationWindow::SingleViewCalibrationWindow(
@@ -24,7 +14,7 @@ SingleViewCalibrationWindow::SingleViewCalibrationWindow(
 
 	connect(ui_.btnOneShot, &QPushButton::clicked, this, &SingleViewCalibrationWindow::oneShotButtonClicked);
 	connect(ui_.btnCapture, &QPushButton::clicked, this, &SingleViewCalibrationWindow::captureButtonClicked);
-	connect(ui_.btnExit, &QPushButton::clicked, this, &SingleViewCalibrationWindow::close);
+	//connect(ui_.btnExit, &QPushButton::clicked, this, &SingleViewCalibrationWindow::close);
 	connect(ui_.cmbCalibPattern, &QComboBox::currentTextChanged, this, &SingleViewCalibrationWindow::calibPatternChanged);
 	connect(ui_.ckbDetectCalibBoard, &QCheckBox::stateChanged, this, &SingleViewCalibrationWindow::detectBoardCheckboxStateChanged);
 	connect(ui_.btnSaveImage, &QPushButton::clicked, this, &SingleViewCalibrationWindow::saveImageButtonClicked);
@@ -273,6 +263,7 @@ void SingleViewCalibrationWindow::captureButtonClicked()
 		ui_.btnCapture->setText("Start capturing");
 		ui_.btnOneShot->setEnabled(true);
 		ui_.ckbDetectCalibBoard->setChecked(false);	// This method will trigger slot [ detectBoardCheckboxStateChanged() ]
+		ui_.ckbDetectCalibBoard->setEnabled(false);
 	}
 	else
 	{
@@ -281,6 +272,7 @@ void SingleViewCalibrationWindow::captureButtonClicked()
 		ui_.btnOneShot->setEnabled(false);
 		ui_.ckbDetectCalibBoard->setEnabled(true);
 		ui_.btnSaveImage->setEnabled(true);
+		ui_.ckbDetectCalibBoard->setEnabled(true);
 	}
 }
 
@@ -316,7 +308,7 @@ void SingleViewCalibrationWindow::calibrationButtonClicked()
 		is_calibrating = true;
 
 		// Change controls' status
-		ui_.btnCalibration->setText("Stop planarCalibration");
+		ui_.btnCalibration->setText("Stop planar calibration");
 		ui_.gbOptions->setEnabled(false);
 		ui_.gbCamOperations->setEnabled(false);
 		ui_.btnGrabCalibImage->setEnabled(true);
@@ -324,13 +316,14 @@ void SingleViewCalibrationWindow::calibrationButtonClicked()
 		// Enable real-time preview
 		camera_->startCapture();
 		startCalibBoardDetectThread();
+		
 	}
 	else
 	{
 		calib_files_folder_ = "";
 		is_calibrating = false;
 
-		ui_.btnCalibration->setText("Start planarCalibration");
+		ui_.btnCalibration->setText("Start planar calibration");
 		ui_.gbOptions->setEnabled(true);
 		ui_.gbCamOperations->setEnabled(true);
 		ui_.btnGrabCalibImage->setEnabled(false);
@@ -338,12 +331,16 @@ void SingleViewCalibrationWindow::calibrationButtonClicked()
 		// Disable real-time preview
 		camera_->stopCapture();
 		stopCalibBoardDetectThread();
-	}
 
+		calib_images_.clear();
+	}
 }
 
 void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 {
+	float PATTERN_PHY_WIDTH = calib_board_settings_.horizontal_count * calib_board_settings_.interval;
+	const cv::Size key_points_count(calib_board_settings_.horizontal_count, calib_board_settings_.vertical_count);
+
 	try
 	{
 		if(calib_files_folder_.empty())
@@ -360,7 +357,7 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 		calib_images_.push_back(image);
 		ui_.btnGrabCalibImage->setText(
 			QString::fromStdString(
-				(boost::format("Grab Calibration Image (%1%/%2%)") % calib_images_.size() % MAX_CALIB_IMAGES_COUNT).str()
+				(boost::format("Grab Calibration Image (%1%/%2%)") % calib_images_.size() % calib_board_settings_.images_count).str()
 			)
 		);
 
@@ -378,7 +375,7 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 				calib_images_, cameraIntrinsicMatrix, 
 				distortionCoefficient, 
 				rotationMatrix, translationVector,
-				key_points, key_points_found_flags, PATTERN_PHY_WIDTH, KEY_POINTS_COUNT,
+				key_points, key_points_found_flags, PATTERN_PHY_WIDTH, key_points_count,
 				Chessboard, rms
 			);
 
@@ -388,7 +385,7 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 			ui_.btnGrabCalibImage->setEnabled(true);
 			ui_.btnGrabCalibImage->setText(
 				QString::fromStdString(
-					(boost::format("Grab planarCalibration image (0/%1%)") % MAX_CALIB_IMAGES_COUNT).str()
+					(boost::format("Grab planarCalibration image (0/%1%)") % calib_board_settings_.images_count).str()
 				)
 			);
 
@@ -425,7 +422,7 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 			for(size_t i=0; i<calib_images_.size(); i++)
 			{
 				auto paint_image = calib_images_[i];
-				cv::drawChessboardCorners(*paint_image, KEY_POINTS_COUNT, key_points[i], key_points_found_flags[i]);
+				cv::drawChessboardCorners(*paint_image, key_points_count, key_points[i], key_points_found_flags[i]);
 				auto sub_folder = folder / "PaintImages";
 				Utils::createDirectory(sub_folder);
 				file_path = sub_folder / (std::to_string(i) + ".png");

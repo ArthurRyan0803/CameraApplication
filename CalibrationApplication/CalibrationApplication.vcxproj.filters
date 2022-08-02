@@ -50,7 +50,7 @@
     <QtUic Include="MainNavigationWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="CalibBoardSettingsDialog.ui">
+    <QtUic Include="CalibrationSettingDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="DualViewsCalibrationWindow.ui">
@@ -91,7 +91,7 @@
     <ClCompile Include="CalibrationMethods.cpp">
       <Filter>Source Files\Calibration</Filter>
     </ClCompile>
-    <ClCompile Include="CalibBoardSettingsDialog.cpp">
+    <ClCompile Include="CalibrationSettingDialog.cpp">
       <Filter>Source Files\Forms</Filter>
     </ClCompile>
     <ClCompile Include="CalibrationPatternMethod.cpp">
@@ -111,7 +111,7 @@
     <QtMoc Include="SingleViewCalibrationWindow.h">
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
-    <QtMoc Include="CalibBoardSettingsDialog.h">
+    <QtMoc Include="CalibrationSettingDialog.h">
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
     <QtMoc Include="DualViewsCalibrationWindow.h">
@@ -161,5 +161,8 @@
     <ClInclude Include="UICommon.h">
       <Filter>Header Files\Forms</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

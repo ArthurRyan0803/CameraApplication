@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props" Condition="Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -95,7 +96,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CalibBoardSettingsDialog.cpp" />
+    <ClCompile Include="CalibrationSettingDialog.cpp" />
     <ClCompile Include="CalibrationMethods.cpp" />
     <ClCompile Include="CalibrationPatternMethod.cpp" />
     <ClCompile Include="DualViewsCalibrationWindow.cpp" />
@@ -105,7 +106,7 @@
     <ClCompile Include="UICommon.cpp" />
     <ClCompile Include="WebCamera.cpp" />
     <ClCompile Include="WebCamerasFactory.cpp" />
-    <QtUic Include="CalibBoardSettingsDialog.ui" />
+    <QtUic Include="CalibrationSettingDialog.ui" />
     <QtUic Include="DualViewsCalibrationWindow.ui" />
     <QtUic Include="MainNavigationWindow.ui" />
     <QtMoc Include="MainNavigationWindow.h" />
@@ -117,7 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractCamerasFactory.h" />
-    <QtMoc Include="CalibBoardSettingsDialog.h" />
+    <QtMoc Include="CalibrationSettingDialog.h" />
     <ClInclude Include="CalibrationMethods.h" />
     <ClInclude Include="CalibrationBoardSettings.hpp" />
     <ClInclude Include="CalibrationPatternMethod.h" />
@@ -134,10 +135,21 @@
     <ClInclude Include="WebCamera.h" />
     <ClInclude Include="WebCamerasFactory.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
   </ImportGroup>
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets" Condition="Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props'))" />
+    <Error Condition="!Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets'))" />
+  </Target>
 </Project>

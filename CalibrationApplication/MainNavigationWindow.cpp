@@ -14,8 +14,8 @@ MainNavigationWindow::MainNavigationWindow(QWidget *parent)
 	ui_.setupUi(this);
 	connect(ui_.btnSingleCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
 	connect(ui_.btnDualViewCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
-	//connect(ui_.cbCamCategory, &QComboBox::currentIndexChanged, this, &MainNavigationWindow::cameraCategorySelectionChanged);
-	connect(ui_.cbCamCategory, SIGNAL(currentIndexChanged(int)), this, SLOT(cameraCategorySelectionChanged(int)));
+	connect(ui_.cbCamCategory, &QComboBox::currentTextChanged, this, &MainNavigationWindow::cameraCategorySelectionChanged);
+	//connect(ui_.cbCamCategory, SIGNAL(currentIndexChanged(int)), this, SLOT(cameraCategorySelectionChanged(int)));
 
 	AbstractCamerasFactory::registerFactory( WebCamerasFactory::name, WebCamerasFactory::instance());
 	AbstractCamerasFactory::registerFactory( PDNCamerasFactory::name, PDNCamerasFactory::instance());
@@ -87,7 +87,7 @@ void MainNavigationWindow::buttonClicked()
 }
 
 
-void MainNavigationWindow::cameraCategorySelectionChanged(int index)
+void MainNavigationWindow::cameraCategorySelectionChanged()
 {
 	auto cbCamCategory = dynamic_cast<QComboBox*>(sender());
 	ui_.cbCamId->clear();

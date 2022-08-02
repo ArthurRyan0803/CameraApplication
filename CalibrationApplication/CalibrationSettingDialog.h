@@ -4,6 +4,7 @@
 #include "ui_CalibBoardSettingsDialog.h"
 #include "CalibrationBoardSettings.hpp"
 
+
 class CalibBoardSettingsDialog : public QDialog
 {
 	Q_OBJECT
@@ -13,9 +14,11 @@ public:
 	~CalibBoardSettingsDialog() = default;
 
 private:
-	Ui::CalibBoardSettingsDialogClass ui_{};
+	Ui::CalibrationSettingDialogClass ui_{};
 	CalibrationBoardSettings& settings_;
 
-	void defaultButtonClicked() const;
+	void restore() const;
+
+	void restoreButtonClicked() const;
 	void okButtonClicked();
 };

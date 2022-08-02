@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QPainter>
 #include <boost/filesystem.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "AbstractCamerasFactory.h"
 #include "CalibrationMethods.h"
@@ -12,7 +13,7 @@
 #include "Logger.hpp"
 #include "MainNavigationWindow.h"
 #include "ui_SingleViewCalibrationWindow.h"
-#include "CalibBoardSettingsDialog.h"
+#include "CalibrationSettingDialog.h"
 #include "Utils.hpp"
 #include "UICommon.h"
 

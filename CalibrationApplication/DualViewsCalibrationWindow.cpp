@@ -1,16 +1,22 @@
-#include <opencv2/imgproc.hpp>
+#include <opencv2/imgproc.hpp>				 // Do not swap #include
+#include <opencv2/imgcodecs.hpp>
+#include <QPainter>
+
 #include "DualViewsCalibrationWindow.h"
 
+#include "CalibrationSettingDialog.h"
+#include "UICommon.h"
+#include "Utils.hpp"
 
 
 DualViewsCalibrationWindow::DualViewsCalibrationWindow(std::shared_ptr<Camera> camera, QWidget *parent)
-	: QMainWindow(parent), logger_(GET_LOGGER()), camera_(camera), check_calib_board_(false)
+	: QMainWindow(parent), logger_(GET_LOGGER()), check_calib_board_(false), camera_(camera)
 {
 	ui_.setupUi(this);
 
 	connect(ui_.btnOneShot, &QPushButton::clicked, this, &DualViewsCalibrationWindow::oneShotButtonClicked);
 	connect(ui_.btnCapture, &QPushButton::clicked, this, &DualViewsCalibrationWindow::captureButtonClicked);
-	connect(ui_.btnExit, &QPushButton::clicked, this, &DualViewsCalibrationWindow::close);
+	//connect(ui_.btnExit, &QPushButton::clicked, this, &DualViewsCalibrationWindow::close);
 	connect(ui_.cmbCalibPattern, &QComboBox::currentTextChanged, this, &DualViewsCalibrationWindow::calibPatternChanged);
 	connect(ui_.ckbDetectCalibBoard, &QCheckBox::stateChanged, this, &DualViewsCalibrationWindow::detectBoardCheckboxStateChanged);
 	connect(ui_.btnSaveImage, &QPushButton::clicked, this, &DualViewsCalibrationWindow::saveImageButtonClicked);
@@ -54,15 +60,13 @@ bool DualViewsCalibrationWindow::eventFilter(QObject* obj, QEvent* e)
 	if(e->type() == QEvent::Paint)
 		if(obj == ui_.canvas_left)
 			return paintImage(0);
-		else if(obj == ui_.canvas_right)
+		if(obj == ui_.canvas_right)
 			return paintImage(1);
-		else
-			return false;
-	else
 		return false;
 
 	return QMainWindow::eventFilter(obj, e);
 }
+
 
 void DualViewsCalibrationWindow::oneShotButtonClicked()
 {
@@ -81,6 +85,7 @@ void DualViewsCalibrationWindow::oneShotButtonClicked()
 	ui_.btnSaveImage->setEnabled(true);
 }
 
+
 void DualViewsCalibrationWindow::captureButtonClicked()
 {
 	if(camera_->isCapturing())
@@ -89,6 +94,7 @@ void DualViewsCalibrationWindow::captureButtonClicked()
 		ui_.btnCapture->setText("Start capturing");
 		ui_.btnOneShot->setEnabled(true);
 		ui_.ckbDetectCalibBoard->setChecked(false);	// This method will trigger slot [ detectBoardCheckboxStateChanged() ]
+		ui_.ckbDetectCalibBoard->setEnabled(false);
 	}
 	else
 	{
@@ -97,8 +103,10 @@ void DualViewsCalibrationWindow::captureButtonClicked()
 		ui_.btnOneShot->setEnabled(false);
 		ui_.ckbDetectCalibBoard->setEnabled(true);
 		ui_.btnSaveImage->setEnabled(true);
+		ui_.ckbDetectCalibBoard->setEnabled(true);
 	}
 }
+
 
 void DualViewsCalibrationWindow::detectBoardCheckboxStateChanged()
 {
@@ -113,6 +121,7 @@ void DualViewsCalibrationWindow::detectBoardCheckboxStateChanged()
 	}
 }
 
+
 void DualViewsCalibrationWindow::calibPatternChanged()
 {
 	auto box = dynamic_cast<QComboBox*>(sender());
@@ -120,22 +129,45 @@ void DualViewsCalibrationWindow::calibPatternChanged()
 	calib_pattern_ = UICommon::string_to_clib_pattern_map.find(text.toStdString())->second;
 }
 
+
 void DualViewsCalibrationWindow::saveImageButtonClicked()
 {
+	auto filename = QFileDialog::getSaveFileName(this, "Save image", "", "*.png");
+	cv::Mat left_image, right_image;
+	{
+		std::lock_guard lock(frame_buffer_mutexes_[0]);
+		frame_buffers_[0]->copyTo(left_image);
+	}
+	{
+		std::lock_guard lock(frame_buffer_mutexes_[1]);
+		frame_buffers_[1]->copyTo(right_image);
+	}
+
+	assert(left_image.type() == right_image.type());
+	cv::Mat entire_image(left_image.rows, left_image.cols + right_image.cols, CV_MAT_TYPE(left_image.type()));
+	cv::Mat left_part(entire_image, cv::Rect(0, 0, left_image.cols, left_image.rows));
+	cv::Mat right_part(entire_image, cv::Rect(left_image.cols, 0, right_image.cols, right_image.rows));
+	left_image.copyTo(left_part);
+	right_image.copyTo(right_part);
+	cv::imwrite(filename.toStdString(), entire_image);
 }
+
 
 void DualViewsCalibrationWindow::calibrationButtonClicked()
 {
 }
 
+
 void DualViewsCalibrationWindow::grabCalibImageButtonClicked()
 {
 }
 
+
 void DualViewsCalibrationWindow::parameterButtonClicked()
 {
-
+	camera_->showParameterDialog();
 }
+
 
 void DualViewsCalibrationWindow::calibBoardSettingsButtonClicked()
 {
@@ -145,6 +177,7 @@ void DualViewsCalibrationWindow::calibBoardSettingsButtonClicked()
 	CalibBoardSettingsDialog dialog(calib_board_settings_, this);
 	dialog.exec();
 }
+
 
 void DualViewsCalibrationWindow::copyFrame(const cv::Mat& frame, int buffer_index)
 {
@@ -177,6 +210,7 @@ void DualViewsCalibrationWindow::copyFrame(const cv::Mat& frame, int buffer_inde
 		Utils::updateImageData(*frame_buffer, *q_image);
 	}
 }
+
 
 bool DualViewsCalibrationWindow::paintImage(int index)
 {
@@ -227,12 +261,10 @@ bool DualViewsCalibrationWindow::paintImage(int index)
 				painter.drawPoint(point_in_widget[0], point_in_widget[1]);
 			}
 		}
-
-		return true;
 	}
-
-	return false;
+	return true;
 }
+
 
 void DualViewsCalibrationWindow::cameraFrameReadyCallback(cv::InputArray image_data)
 {
@@ -245,6 +277,7 @@ void DualViewsCalibrationWindow::cameraFrameReadyCallback(cv::InputArray image_d
 	QMetaObject::invokeMethod(this, [this](){ ui_.canvas_left->update(); }, Qt::QueuedConnection);
 	QMetaObject::invokeMethod(this, [this](){ ui_.canvas_right->update(); }, Qt::QueuedConnection);
 }
+
 
 void DualViewsCalibrationWindow::startCalibBoardDetectThread()
 {
@@ -259,6 +292,7 @@ void DualViewsCalibrationWindow::startCalibBoardDetectThread()
 		std::make_unique<std::thread>(std::bind(&DualViewsCalibrationWindow::findingCalibBoardPattern, this, 1));
 }
 
+
 void DualViewsCalibrationWindow::stopCalibBoardDetectThread()
 {
 	if(!(board_detect_threads_[0] && board_detect_threads_[1]))
@@ -271,6 +305,7 @@ void DualViewsCalibrationWindow::stopCalibBoardDetectThread()
 		thread_ptr.reset();
 	}
 }
+
 
 void DualViewsCalibrationWindow::findingCalibBoardPattern(int index)
 {
