@@ -1,14 +1,16 @@
 #pragma once
 
+#include <pcl/visualization/pcl_visualizer.h>
+
 #include <qimage.h>
 #include <memory>
-#include <QFileDialog>
+
+#include <vtk-9.0/QVTKOpenGLStereoWidget.h>
 
 #include "Camera.h"
 #include "ui_DualViewsCalibrationWindow.h"
 #include "CalibrationBoardSettings.hpp"
 #include "CalibrationMethods.h"
-#include "Logger.hpp"
 
 
 class DualViewsCalibrationWindow : public QMainWindow
@@ -16,18 +18,22 @@ class DualViewsCalibrationWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	DualViewsCalibrationWindow(std::shared_ptr<Camera> camera, QWidget *parent = nullptr);
-	~DualViewsCalibrationWindow() = default;
+	DualViewsCalibrationWindow(
+		std::shared_ptr<Camera> camera,
+		QWidget *parent = nullptr
+	);
+	~DualViewsCalibrationWindow() override = default;
 
 private:
-	Ui::DualViewsCalibrationWindow ui_;
-	Logger& logger_;
+	std::shared_ptr<Camera> camera_;
+	Ui::DualViewsCalibrationWindow ui_{};
 	volatile bool check_calib_board_;
 	CalibrationBoardSettings calib_board_settings_;
 	volatile Pattern calib_pattern_;
-
-	std::shared_ptr<Camera> camera_;
-	std::array<int, 2> cam_resolution_;
+	volatile bool is_calibrating_;
+	std::vector<std::shared_ptr<cv::Mat>> left_calib_images_, right_calib_images_;
+	std::string calib_files_folder_;
+	std::array<int, 2> cam_resolution_{};
 
 	std::array<std::unique_ptr<QImage>, 2> q_images_;
 	std::array<std::unique_ptr<cv::Mat>, 2> frame_buffers_;
@@ -38,6 +44,9 @@ private:
 	std::array<std::mutex, 2> key_points_mutexes_;
 
 	std::array<std::unique_ptr<std::thread>, 2> board_detect_threads_;
+
+	std::unique_ptr<QVTKOpenGLStereoWidget> stereo_widget_;
+	std::unique_ptr<pcl::visualization::PCLVisualizer> pcl_visualizer_;
 
 	void cameraFrameReadyCallback(cv::InputArray image_data);
 
@@ -66,4 +75,13 @@ private:
 
 	void copyFrame(const cv::Mat& frame, int buffer_index);
 	bool paintImage(int buffer_index);
+
+	void DualViewsCalibrationWindow::visualizeCalibPlanar(
+		const CalibrationBoardSettings& settings, double r, double g, double b, const std::string& id
+	);
+
+	void DualViewsCalibrationWindow::visualizeCamera(
+		const PlanarCalibrationParams& camera_params, const cv::Mat& R, const std::string& id,
+		double r, double g, double b
+	);
 };

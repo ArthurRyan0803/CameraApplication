@@ -59,6 +59,9 @@
     <QtUic Include="SingleViewCalibrationWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="FunctionalDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -103,6 +106,9 @@
     <ClCompile Include="UICommon.cpp">
       <Filter>Source Files\Forms</Filter>
     </ClCompile>
+    <ClCompile Include="FunctionalDialog.cpp">
+      <Filter>Source Files\Forms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MainNavigationWindow.h">
@@ -115,6 +121,9 @@
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
     <QtMoc Include="DualViewsCalibrationWindow.h">
+      <Filter>Header Files\Forms</Filter>
+    </QtMoc>
+    <QtMoc Include="FunctionalDialog.h">
       <Filter>Header Files\Forms</Filter>
     </QtMoc>
   </ItemGroup>
@@ -146,7 +155,7 @@
     <ClInclude Include="Def.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CameraCalibrationParams.hpp">
+    <ClInclude Include="CalibrationParams.hpp">
       <Filter>Header Files\Calibration</Filter>
     </ClInclude>
     <ClInclude Include="CalibrationMethods.h">

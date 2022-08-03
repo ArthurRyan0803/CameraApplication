@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QDialog>
-#include "ui_CalibBoardSettingsDialog.h"
+#include "ui_CalibrationSettingDialog.h"
 #include "CalibrationBoardSettings.hpp"
 
 

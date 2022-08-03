@@ -1,5 +1,5 @@
 #include "SingleViewCalibrationWindow.h"
-#include "CameraCalibrationParams.hpp"
+#include "CalibrationParams.hpp"
 
 
 namespace fs=boost::filesystem;
@@ -338,9 +338,6 @@ void SingleViewCalibrationWindow::calibrationButtonClicked()
 
 void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 {
-	float PATTERN_PHY_WIDTH = calib_board_settings_.horizontal_count * calib_board_settings_.interval;
-	const cv::Size key_points_count(calib_board_settings_.horizontal_count, calib_board_settings_.vertical_count);
-
 	try
 	{
 		if(calib_files_folder_.empty())
@@ -363,24 +360,20 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 
 		// 2. calibration
 
-		if(calib_images_.size() == 8)
+		if(calib_images_.size() == calib_board_settings_.images_count)
 		{
 			ui_.btnGrabCalibImage->setEnabled(false);
 			cv::Mat cameraIntrinsicMatrix, distortionCoefficient, rotationMatrix, translationVector;
 			std::vector<std::vector<cv::Point2f>> key_points;
 			std::vector<bool> key_points_found_flags;
-
-			double rms;
+			
+			PlanarCalibrationParams params;
 			bool success = planarCalibration(
-				calib_images_, cameraIntrinsicMatrix, 
-				distortionCoefficient, 
-				rotationMatrix, translationVector,
-				key_points, key_points_found_flags, PATTERN_PHY_WIDTH, key_points_count,
-				Chessboard, rms
+				calib_images_, calib_board_settings_, calib_pattern_, params, key_points, key_points_found_flags
 			);
 
 			logger_.info((boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
-			logger_.info((boost::format("Calibration RMS: %1%.") % rms).str());
+			logger_.info((boost::format("Calibration RMS: %1%.") % params.RMS).str());
 
 			ui_.btnGrabCalibImage->setEnabled(true);
 			ui_.btnGrabCalibImage->setText(
@@ -396,13 +389,6 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 			// 3.1 save calibration params
 			fs::path folder(calib_files_folder_);
 			fs::path file_path = folder / "params.json";
-
-			CameraCalibrationParams params;
-			Utils::flat_mat_to_vector<double>(cameraIntrinsicMatrix, params.intrinsic_parameters);
-			Utils::flat_mat_to_vector<double>(rotationMatrix, params.rotation);
-			Utils::flat_mat_to_vector<double>(translationVector, params.translation);
-			Utils::flat_mat_to_vector<double>(distortionCoefficient, params.distortions);
-			params.RMS = rms;
 			params.save(file_path.string());
 
 			// 3.2 save original images
@@ -422,7 +408,11 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 			for(size_t i=0; i<calib_images_.size(); i++)
 			{
 				auto paint_image = calib_images_[i];
-				cv::drawChessboardCorners(*paint_image, key_points_count, key_points[i], key_points_found_flags[i]);
+				cv::drawChessboardCorners(
+					*paint_image, calib_board_settings_.count(),
+					key_points[i], key_points_found_flags[i]
+				);
+
 				auto sub_folder = folder / "PaintImages";
 				Utils::createDirectory(sub_folder);
 				file_path = sub_folder / (std::to_string(i) + ".png");
@@ -432,7 +422,7 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 				}
 			}
 
-			ui_.gbCamOperations->setEnabled(true);
+			calibrationButtonClicked();
 		}
 	}
 	catch (const std::exception& e)

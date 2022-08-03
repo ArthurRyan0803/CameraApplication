@@ -1,12 +1,13 @@
-#include "PDNCamera.h"
-#include "Logger.hpp"
-
 #include <stdexcept>
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 #include <thread>
 #include <opencv2/opencv.hpp>
 #include <array>
+
+#include "PDNCamera.h"
+#include "Logger.hpp"
+
 
 
 #define CAMERA_SDK_TRACK(OP) if(auto CODE = OP; SDK_UNSUCCESS(CODE)) throw PDNCameraException(#OP, CODE, __FILE__, __LINE__)

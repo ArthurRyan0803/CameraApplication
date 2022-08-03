@@ -4,6 +4,7 @@
 
 #include "CameraStatus.h"
 
+
 #define MAX_CROSS_LINE 9
 
 /// @ingroup MV_TYPEDEF

@@ -1,22 +1,45 @@
 #include <opencv2/imgproc.hpp>				 // Do not swap #include
 #include <opencv2/imgcodecs.hpp>
+
 #include <QPainter>
+#include <QFileDialog>
+#include <QMessageBox>
+
+#include <vtk-9.0/vtkSmartPointer.h>
+#include <vtk-9.0/vtkGenericOpenGLRenderWindow.h>
+#include <vtk-9.0/vtkRenderer.h>
 
 #include "DualViewsCalibrationWindow.h"
-
+#include "FunctionalDialog.h"
+#include "CalibrationMethods.h"
 #include "CalibrationSettingDialog.h"
 #include "UICommon.h"
 #include "Utils.hpp"
+#include "Logger.hpp"
 
 
-DualViewsCalibrationWindow::DualViewsCalibrationWindow(std::shared_ptr<Camera> camera, QWidget *parent)
-	: QMainWindow(parent), logger_(GET_LOGGER()), check_calib_board_(false), camera_(camera)
+static Logger& logger_ = GET_LOGGER();
+
+DualViewsCalibrationWindow::DualViewsCalibrationWindow(
+	std::shared_ptr<Camera> camera, 
+	QWidget *parent
+)
+	: QMainWindow(parent),  camera_(camera), check_calib_board_(false), is_calibrating_(false)
 {
 	ui_.setupUi(this);
 
+	stereo_widget_ = std::make_unique<QVTKOpenGLStereoWidget>();
+	stereo_widget_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	ui_.widget_vtk->layout()->addWidget(stereo_widget_.get());
+
+	auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+    auto renderer = vtkSmartPointer<vtkRenderer>::New();
+    renderWindow->AddRenderer(renderer);
+	pcl_visualizer_ = std::make_unique<pcl::visualization::PCLVisualizer>(renderer, renderWindow, "viewer", false);
+	stereo_widget_->setRenderWindow(renderWindow);
+	
 	connect(ui_.btnOneShot, &QPushButton::clicked, this, &DualViewsCalibrationWindow::oneShotButtonClicked);
 	connect(ui_.btnCapture, &QPushButton::clicked, this, &DualViewsCalibrationWindow::captureButtonClicked);
-	//connect(ui_.btnExit, &QPushButton::clicked, this, &DualViewsCalibrationWindow::close);
 	connect(ui_.cmbCalibPattern, &QComboBox::currentTextChanged, this, &DualViewsCalibrationWindow::calibPatternChanged);
 	connect(ui_.ckbDetectCalibBoard, &QCheckBox::stateChanged, this, &DualViewsCalibrationWindow::detectBoardCheckboxStateChanged);
 	connect(ui_.btnSaveImage, &QPushButton::clicked, this, &DualViewsCalibrationWindow::saveImageButtonClicked);
@@ -27,8 +50,7 @@ DualViewsCalibrationWindow::DualViewsCalibrationWindow(std::shared_ptr<Camera> c
 
 	ui_.canvas_left->installEventFilter(this);
 	ui_.canvas_right->installEventFilter(this);
-
-	// Camera
+	
 	camera->setFrameReadyCallback([this](cv::InputArray data) { cameraFrameReadyCallback(data); });
 	
 	for(auto& pair: UICommon::string_to_clib_pattern_map)
@@ -155,11 +177,178 @@ void DualViewsCalibrationWindow::saveImageButtonClicked()
 
 void DualViewsCalibrationWindow::calibrationButtonClicked()
 {
+	if(!is_calibrating_)
+	{
+		auto folder = QFileDialog::getExistingDirectory(this, "Please select a folder to store the planarCalibration files!");
+		if(folder.isEmpty())
+			return;
+
+		calib_files_folder_ = folder.toStdString();
+		is_calibrating_ = true;
+
+		// Change controls' status
+		ui_.btnCalibration->setText("Stop stereo calibration");
+		ui_.gbOptions->setEnabled(false);
+		ui_.gbCamOperations->setEnabled(false);
+		ui_.btnGrabCalibImage->setEnabled(true);
+
+		// Enable real-time preview
+		camera_->startCapture();
+		startCalibBoardDetectThread();
+		
+	}
+	else
+	{
+		calib_files_folder_ = "";
+		is_calibrating_ = false;
+
+		ui_.btnCalibration->setText("Start stereo calibration");
+		ui_.gbOptions->setEnabled(true);
+		ui_.gbCamOperations->setEnabled(true);
+		ui_.btnGrabCalibImage->setEnabled(false);
+
+		// Disable real-time preview
+		camera_->stopCapture();
+		stopCalibBoardDetectThread();
+		left_calib_images_.clear();
+		right_calib_images_.clear();
+	}
 }
 
 
 void DualViewsCalibrationWindow::grabCalibImageButtonClicked()
 {
+	namespace fs=boost::filesystem;
+
+	try
+	{
+		if(calib_files_folder_.empty())
+			throw std::logic_error("Why the calib_files_folder_ is empty?");
+
+		// 1. take shot
+		std::shared_ptr<cv::Mat> left_image = std::make_shared<cv::Mat>(), right_image = std::make_shared<cv::Mat>();
+		{
+			std::lock_guard lock(frame_buffer_mutexes_[0]);
+			frame_buffers_[0]->copyTo(*left_image);
+		}
+		{
+			std::lock_guard lock(frame_buffer_mutexes_[1]);
+			frame_buffers_[1]->copyTo(*right_image);
+		}
+		
+		left_calib_images_.push_back(left_image);
+		right_calib_images_.push_back(right_image);
+
+		ui_.btnGrabCalibImage->setText(
+			QString::fromStdString(
+				(boost::format("Grab Calibration Image (%1%/%2%)") % left_calib_images_.size() % calib_board_settings_.images_count).str()
+			)
+		);
+		
+		if(left_calib_images_.size() != calib_board_settings_.images_count)
+			return;
+
+		bool success;
+		// 2. calibration (if got enough images)
+		
+		std::vector<std::vector<cv::Point2f>> left_key_points, right_key_points;
+		std::vector<bool> left_flags, right_flags;
+		PlanarCalibrationParams left_params, right_params;
+		StereoCalibrationParams stereo_params;
+
+		FunctionalDialog dialog(nullptr,
+			[this, &success, &left_key_points, &right_key_points, &left_flags, &right_flags, &left_params, &right_params, &stereo_params]
+			{
+				success = stereoCalibration(
+					left_calib_images_, right_calib_images_, 0, calib_board_settings_, calib_pattern_,
+					left_params, right_params, stereo_params, 
+					left_key_points, left_flags, 
+					right_key_points, right_flags
+				);
+
+				logger_.info((boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
+				logger_.info((boost::format("Left calibration RMS: %1%.") % left_params.RMS).str());
+				logger_.info((boost::format("Right calibration RMS: %1%.") % right_params.RMS).str());
+				logger_.info((boost::format("Stereo calibration RMS: %1%.") % stereo_params.RMS).str());
+
+				if(success)
+				{
+					// 3. save
+					// 3.1 save calibration params
+					fs::path folder(calib_files_folder_);
+					fs::path file_path = folder / "params.json";
+
+					PlanarCalibrationParams params;
+					params.save(file_path.string());
+
+					// 3.2 save images
+					for(size_t i=0; i < left_calib_images_.size(); i++)
+					{
+						// original image
+						cv::Mat left_image = *left_calib_images_[i], right_image = *right_calib_images_[i];
+						auto sub_folder = folder / "OriginalImages";
+						Utils::createDirectory(sub_folder);
+						file_path = sub_folder / (std::to_string(i) + ".png");
+						cv::Mat whole_image;
+						Utils::stitch_image(left_image, right_image, whole_image);
+						if(!cv::imwrite(file_path.string(), whole_image))
+						throw std::runtime_error("Failed to save original image!");
+
+						// image with key points markers
+						cv::Mat left_paint_image, right_paint_image;
+						cv::cvtColor(left_image, left_paint_image, cv::COLOR_GRAY2RGB);
+						cv::cvtColor(right_image, right_paint_image, cv::COLOR_GRAY2RGB);
+
+						cv::drawChessboardCorners(left_paint_image, calib_board_settings_.count(), left_key_points[i], left_flags[i]);
+						cv::drawChessboardCorners(right_paint_image, calib_board_settings_.count(), right_key_points[i], right_flags[i]);
+
+						Utils::stitch_image(left_paint_image, right_paint_image, whole_image);
+						sub_folder = folder / "PaintImages";
+						Utils::createDirectory(sub_folder);
+						file_path = sub_folder / (std::to_string(i) + ".png");
+						if(!cv::imwrite(file_path.string(), whole_image))
+						throw std::runtime_error("Failed to save paint image!");
+
+						// rectified image
+						cv::Mat left_remap, right_remap;
+						cv::remap(left_paint_image, left_remap, stereo_params.left_map1, stereo_params.left_map2, cv::INTER_LANCZOS4);
+						cv::remap(right_paint_image, right_remap, stereo_params.right_map1, stereo_params.right_map2, cv::INTER_LANCZOS4);
+
+						Utils::stitch_image(left_remap, right_remap, whole_image);
+						sub_folder = folder / "RectifiedImages";
+						Utils::createDirectory(sub_folder);
+						file_path = sub_folder / (std::to_string(i) + ".png");
+						if(!cv::imwrite(file_path.string(), whole_image))
+						throw std::runtime_error("Failed to save paint image!");
+					}
+				}
+			},
+			"Calibrating..."
+		);
+		dialog.exec();
+		
+		ui_.btnGrabCalibImage->setText("Grab Calibration Image");
+		
+		if(success)
+		{
+			// 4. Visualize camera pos
+			visualizeCalibPlanar(calib_board_settings_, 0.7, 0.7, 0.7, "calib_planar");
+			visualizeCamera(left_params, stereo_params.R1, "left_camera", 0, 1, 0);
+			visualizeCamera(right_params, stereo_params.R2, "right_camera", 0, 0, 1);
+			pcl_visualizer_->addCoordinateSystem(100);
+			pcl_visualizer_->resetCamera();
+			stereo_widget_->update();
+			stereo_widget_->renderWindow()->Render();
+		}
+
+		calibrationButtonClicked();
+
+	}
+	catch (const std::exception& e)
+	{
+		logger_.error(e.what());
+		throw e;
+	}
 }
 
 
@@ -223,10 +412,10 @@ bool DualViewsCalibrationWindow::paintImage(int index)
 	painter.setPen(pen);
 
 	{
-		auto& qimag_mutex = q_image_mutexes_[index];
+		auto& qimage_mutex = q_image_mutexes_[index];
 		auto& qimage = q_images_[index];
 		// Paint image.
-		std::lock_guard lock(qimag_mutex);
+		std::lock_guard lock(qimage_mutex);
 			
 		if(qimage)
 		{
@@ -263,6 +452,49 @@ bool DualViewsCalibrationWindow::paintImage(int index)
 		}
 	}
 	return true;
+}
+
+
+void DualViewsCalibrationWindow::visualizeCalibPlanar(
+	const CalibrationBoardSettings& settings, double r, double g, double b, const std::string& id
+)
+{
+	auto w = settings.horizontal_count * settings.interval,
+			h = settings.vertical_count * settings.interval,
+			z = settings.interval;
+
+	pcl_visualizer_->addCube(
+		Eigen::Vector3f(w / 2,  h / 2, -z/2), Eigen::Quaternionf::Identity(), 
+		w, h, z, id
+	);
+	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id);
+	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, id);
+}
+
+
+void DualViewsCalibrationWindow::visualizeCamera(
+	const PlanarCalibrationParams& camera_params, const cv::Mat& R, const std::string& id,
+	double r, double g, double b
+)
+{
+	static int w=20, h=20, d=60;
+
+	cv::Mat r_mat;
+	cv::transpose(camera_params.rmat, r_mat);
+	cv::Mat t_mat = -r_mat*camera_params.tvec;
+
+	cv::Mat rectified_r_mat = R * r_mat;
+
+	auto t_eigen_vec = Utils::VectorCast<double, float, 3>(t_mat);
+	auto r_eigen_mat = Utils::MatrixCast<double, float, 3>(r_mat);
+	auto rectified_r_eigen_mat = Utils::MatrixCast<double, float, 3>(rectified_r_mat);
+
+	pcl_visualizer_->addCube(t_eigen_vec, Eigen::Quaternionf(r_eigen_mat), w, h, d, id + "_original");
+	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id + "_original");
+	
+	pcl_visualizer_->addCube(t_eigen_vec, Eigen::Quaternionf(rectified_r_eigen_mat), w, h, d, id + "_rectified");
+	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id + "_rectified");
+	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, id + "_rectified");
 }
 
 
@@ -319,7 +551,6 @@ void DualViewsCalibrationWindow::findingCalibBoardPattern(int index)
 		logger_.debug("Start finding calibration board pattern of view " + index);
 
 		cv::Mat image_to_detect;
-		cv::Size2i chessboard_size(5, 7);
 		
 		// If the frame_buffer_ is empty, wait the camera to grab image.
 		while(true)
@@ -370,5 +601,4 @@ void DualViewsCalibrationWindow::findingCalibBoardPattern(int index)
 		logger_.error(e.what());
 		throw e;
 	}
-
 }

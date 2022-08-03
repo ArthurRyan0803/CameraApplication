@@ -2,6 +2,8 @@
 
 #include <opencv2/core/types.hpp>
 
+#include "CalibrationBoardSettings.hpp"
+
 enum Pattern { Invalid = 0, Chessboard = 1, CirclesArray = 2 };
 
 
@@ -10,7 +12,9 @@ bool findKeyPoints(
 );
 
 void calKeyPointsPhyCoordinates(
-	const cv::Size& key_points_count, float key_points_phy_interval, 
-	std::vector<cv::Point3f>& points_coordinates, Pattern pattern
+	const CalibrationBoardSettings& settings, Pattern pattern, std::vector<cv::Point3f>& points_coordinates
 );
 
+void calImagesKeyPointsPhyCoordinates(
+	const CalibrationBoardSettings& settings, Pattern pattern, size_t images, std::vector<std::vector<cv::Point3f>>& phyKeyPoints
+);
