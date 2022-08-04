@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Programs\CalibrationApplication\CameraLib;../Include/MindVision;$(IncludePath)</IncludePath>
+    <IncludePath>../Include/MindVision;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\MindVision\SDK\X64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

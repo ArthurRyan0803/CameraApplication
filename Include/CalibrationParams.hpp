@@ -33,10 +33,10 @@ public:
 		fs.release();
 	}
 
-	static void load(const std::string& path, SerializableParams& params)
+	void load(const std::string& path)
 	{
 		cv::FileStorage fs(path, cv::FileStorage::READ | cv::FileStorage::FORMAT_JSON, "utf-8");
-		params.fs_deserialize(fs);
+		fs_deserialize(fs);
 		fs.release();
 	}
 

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.props" Condition="Exists('..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.props')" />
   <Import Project="..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props" Condition="Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -56,7 +57,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <IncludePath>D:\Programs\CalibrationApplication\CalibrationLib;D:\Programs\CalibrationApplication\CameraLib;D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;../Include;../Include/MindVision;$(IncludePath)</IncludePath>
+    <IncludePath>../CalibrationLib;../CameraLib;C:\Applications\vcpkg\installed\x64-windows\include\vtk-9.0;../Include;../Include/MindVision;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\MindVision\SDK\X64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -145,6 +146,7 @@
   </ImportGroup>
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets" Condition="Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets')" />
+    <Import Project="..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.targets" Condition="Exists('..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -152,5 +154,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props'))" />
     <Error Condition="!Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets'))" />
+    <Error Condition="!Exists('..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.props'))" />
+    <Error Condition="!Exists('..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.targets'))" />
   </Target>
 </Project>

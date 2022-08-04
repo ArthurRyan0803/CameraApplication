@@ -2,29 +2,59 @@
 #include <PDNCamerasFactory.h>
 #include <PDNCamera.h>
 #include <opencv2/opencv.hpp>
-#include <CalibrationParams.hpp>
 #include <Utils.hpp>
 #include <vtk-9.0/vtkObject.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <CalibrationPatternMethod.h>
+
+#include "CalibrationParams.hpp"
+#include "CalibrationPatternMethod.h"
+#include "CalibrationMethods.h"
 
 
-const static std::string param_file_path = R"(C:\Users\ryan\Desktop\stereo_calib\params.json)";
+namespace fs = boost::filesystem;
+
+const static fs::path data_folder(R"(C:\Users\ryan\Desktop\snap)");
+const static fs::path params_path = data_folder / "params.json";
+const static fs::path calib_folder = data_folder / "calib";
+
+
+CalibrationBoardSettings boardSetting()
+{
+	CalibrationBoardSettings board_settings;
+	board_settings.horizontal_count = 11;
+	board_settings.vertical_count = 9;
+	board_settings.interval = 15;
+	return board_settings;
+}
+
 
 
 void visualizeCalibPlanar(
 	pcl::visualization::PCLVisualizer& pcl_visualizer,
-	int horizontal_count, int vertical_count, int vertical, double r, double g, double b, const std::string& id
+	const CalibrationBoardSettings& settings, double r, double g, double b, const std::string& id
 )
 {
-	auto w = horizontal_count * vertical,
-			h = vertical_count * vertical,
-			z = vertical;
+	size_t index = 0;
+	for(size_t r = 0; r < settings.vertical_count; r++)
+	{
+		for(size_t c = 0; c < settings.horizontal_count; c++)
+		{
+			pcl::PointXYZ start(c * settings.interval, r * settings.interval, 0);
 
-	pcl_visualizer.addCube(
-		Eigen::Vector3f(w / 2,  h / 2, -z/2), Eigen::Quaternionf::Identity(), 
-		w, h, z, id
-	);
+			if(r != settings.vertical_count - 1)
+			{
+				pcl::PointXYZ end_1(c * settings.interval, (r + 1) * settings.interval, 0);
+				pcl_visualizer.addLine(start, end_1, "line" + std::to_string(index++));
+			}
+
+			if(c != settings.horizontal_count - 1)
+			{
+				pcl::PointXYZ end_2((c + 1) * settings.interval, r * settings.interval, 0);
+				pcl_visualizer.addLine(start, end_2, "line" + std::to_string(index++));
+			}
+		}
+	}
+	
 	pcl_visualizer.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id);
 	pcl_visualizer.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, id);
 }
@@ -57,127 +87,111 @@ void visualizeCamera(
 }
 
 
+void pcl_visualize(DualViewCalibrationParams& params)
+{
+	pcl::visualization::PCLVisualizer pcl_visualizer;
+	pcl_visualizer.initCameraParameters();
+	visualizeCalibPlanar(pcl_visualizer, boardSetting(), 0.7, 0.7, 0.7, "calib_planar");
+	visualizeCamera(pcl_visualizer, params.left, params.stereo.R1, "left_camera", 0, 1, 0);
+	visualizeCamera(pcl_visualizer, params.right, params.stereo.R2, "right_camera", 0, 0, 1);
+	pcl_visualizer.addCoordinateSystem(100);
+	pcl_visualizer.resetCamera();
 
-//pcl::visualization::PCLVisualizer pcl_visualizer;
-//pcl_visualizer.initCameraParameters();
-//visualizeCalibPlanar(pcl_visualizer, 11, 9, 15, 0.7, 0.7, 0.7, "calib_planar");
-//visualizeCamera(pcl_visualizer, params.left, params.stereo.R1, "left_camera", 0, 1, 0);
-//visualizeCamera(pcl_visualizer, params.right, params.stereo.R2, "right_camera", 0, 0, 1);
-//pcl_visualizer.addCoordinateSystem(100);
-//pcl_visualizer.resetCamera();
-//
-//while(!pcl_visualizer.wasStopped())
-//{
-//	pcl_visualizer.spinOnce(100);
-//	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//}
+	while (!pcl_visualizer.wasStopped())
+	{
+		pcl_visualizer.spinOnce(100);
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+}
+
+
+void split_image(const cv::Mat& image, cv::Mat& left_image, cv::Mat& right_image)
+{
+	image.rowRange(0, image.rows).colRange(0, image.cols / 2).copyTo(right_image);
+	image.rowRange(0, image.rows).colRange(image.cols / 2, image.cols).copyTo(left_image);
+}
+
+
+void calibrate()
+{
+	std::vector<std::shared_ptr<cv::Mat>> left_images;
+	std::vector<std::shared_ptr<cv::Mat>> right_images;
+
+	for (size_t i = 1;; i++)
+	{
+		auto image_path = data_folder / (std::to_string(i) + ".BMP");
+
+		if (!fs::exists(image_path))
+			break;
+
+		std::shared_ptr<cv::Mat> left_image = std::make_shared<cv::Mat>(), right_image = std::make_shared<cv::Mat>();
+
+		auto image = cv::imread(image_path.string());
+
+		split_image(image, *left_image, *right_image);
+
+		left_images.push_back(left_image);
+		right_images.push_back(right_image);
+	}
+
+	std::vector<std::vector<cv::Point2f>> left_points, right_points;
+	std::vector<bool> left_flags, right_flags;
+	DualViewCalibrationParams params;
+	
+	bool success = stereoCalibration(
+		left_images, right_images, 0, boardSetting(), CirclesArray,
+		params, left_points, left_flags, right_points, right_flags
+	);
+
+	assert(success);
+
+	params.save((data_folder / "params.json").string());
+}
+
 
 
 int main()
 {
 	vtkObject::GlobalWarningDisplayOff();
 
-	std::cout << "Loading calibration params..." << std::endl; 
+	//calibrate();
+	
 	DualViewCalibrationParams params;
-	std::ifstream is(param_file_path);
-	is >> params;
-	
-	std::cout << "Taking image..." << std::endl;
-	CameraLib::PDNCamerasFactory camera_factory;
-	auto ids = camera_factory.enumerateCamerasIDs();
-	auto camera = camera_factory.createCamera(ids[0]);
+	params.load(params_path.string());
 
-	camera->open();
-	cv::Mat image;
-	camera->oneShot(image);
-	camera->close();
-	
-	int cols = image.cols / 2;
-	int rows = image.rows;
-	cv::Mat left_image, right_image;
-	cv::Mat left_undistort_image, right_undistort_image;
+	pcl_visualize(params);
 
-	cv::Mat copy;
-	image.copyTo(copy);
+	//cv::Mat image = cv::imread((data_folder / "1.BMP").string());
 
-	image.rowRange(0, rows).colRange(0, cols).copyTo(left_image);
-	image.rowRange(0, rows).colRange(cols, cols * 2).copyTo(right_image);
+	//cv::Mat left_image, right_image, left_remap, right_remap;
 
-	cv::imwrite(R"(C:\Users\ryan\Desktop\test\entire.png)", image);
-	cv::imwrite(R"(C:\Users\ryan\Desktop\test\left.png)", left_image);
-	cv::imwrite(R"(C:\Users\ryan\Desktop\test\right.png)", right_image);
+	//split_image(image, left_image, right_image);
 
-	cv::undistort(left_image, left_undistort_image, params.left.camera_matrix, params.left.distortions);
-	cv::undistort(right_image, right_undistort_image, params.right.camera_matrix, params.right.distortions);
-	
-	cv::imwrite(R"(C:\Users\ryan\Desktop\test\left_undistort.png)", left_undistort_image);
-	cv::imwrite(R"(C:\Users\ryan\Desktop\test\right_undistort.png)", right_undistort_image);
-	
-	std::cout << "Finding key points..." << std::endl;
-	std::vector<cv::Point2f> left_points, right_points;
-	bool success = findKeyPoints(left_undistort_image, left_points, CirclesArray, {11, 9});
-	if(!success)
-		std::cout << "Failed to find left points!" << std::endl;
+	//cv::Mat left_map1, left_map2, right_map1, right_map2;
+	//cv::initUndistortRectifyMap(params.left.camera_matrix, params.left.distortions, params.left.rmat, 
+	//	params.stereo.P1, { image.cols / 2, image.rows }, CV_16SC2, left_map1, left_map2
+	//);
 
-	success = findKeyPoints(right_undistort_image, right_points, CirclesArray, {11, 9});
-	if(!success)
-		std::cout << "Failed to find right points!" << std::endl;
-	
-	auto type = CV_MAT_TYPE(params.left.camera_matrix.flags);
+	//cv::initUndistortRectifyMap(params.right.camera_matrix, params.right.distortions, params.right.rmat, 
+	//	params.stereo.P2, { image.cols / 2, image.rows }, CV_16SC2, right_map1, right_map2
+	//);
 
-	cv::Mat RT_l(3, 4, type), RT_r(3, 4, type);
-	RT_l.rowRange(0, 3).colRange(0, 3) = params.left.rmat;
-	RT_l.rowRange(0, 3).colRange(3, 4) = params.left.tvec;
-	cv::Mat P_l = params.left.camera_matrix * RT_l;
+	//cv::remap(left_image, left_remap, left_map1, left_map2, cv::INTER_LANCZOS4);
+	//cv::remap(right_image, right_remap, right_map1, right_map2, cv::INTER_LANCZOS4);
 
-	RT_r.rowRange(0, 3).colRange(0, 3) = params.right.rmat;
-	RT_r.rowRange(0, 3).colRange(3, 4) = params.right.tvec;
-	cv::Mat P_r = params.right.camera_matrix * RT_r;
+	//cv::imwrite((calib_folder / R"(/left_remap.png)").string(), left_remap);
+	//cv::imwrite((calib_folder / R"(/right_remap.png)").string(), right_remap);
+	//
+	//std::cout << "Finding key points..." << std::endl;
+	//std::vector<cv::Point2f> left_points, right_points;
+	//
+	//auto sgbm = cv::StereoSGBM::create();
+	//cv::Mat disparity;
+	//sgbm->compute(left_image, right_image, disparity);
+	//cv::imwrite((calib_folder / R"(/stereo.png)").string(), disparity);
 
-	std::vector<cv::Point3f> phy_points { cv::Point3f(0, 0, 0) };
-	std::vector<cv::Point2f> left_pix_points, right_pix_points;
-	cv::projectPoints(
-		phy_points, params.left.rvec, params.left.tvec, 
-		params.left.camera_matrix, params.left.distortions, left_pix_points
-	);
-	cv::projectPoints(
-		phy_points, params.right.rvec, params.right.tvec, 
-		params.right.camera_matrix, params.right.distortions, right_pix_points
-	);
+	//cv::Mat depth_image;
+	//cv::reprojectImageTo3D(disparity, depth_image, params.stereo.Q);
+	//cv::imwrite((calib_folder / R"(/depth.png)").string(), depth_image);
 
-	for(auto& pt: left_pix_points)
-		std::cout << pt << std::endl;
-
-	for(auto& pt: right_pix_points)
-		std::cout << pt << std::endl;
-
-	getchar();
-
-	for(size_t i=0; i<left_points.size(); i++)
-	{
-		auto left_point = left_points[i];
-		auto right_point = right_points[i];
-
-		auto type = CV_MAT_TYPE(params.left.camera_matrix.flags);
-
-		cv::Mat RT_l(3, 4, type), RT_r(3, 4, type);
-		RT_l.rowRange(0, 3).colRange(0, 3) = params.left.rmat;
-		RT_l.rowRange(0, 3).colRange(3, 4) = params.left.tvec;
-		cv::Mat P_l = params.left.camera_matrix * RT_l;
-
-		RT_r.rowRange(0, 3).colRange(0, 3) = params.right.rmat;
-		RT_r.rowRange(0, 3).colRange(3, 4) = params.right.tvec;
-		cv::Mat P_r = params.right.camera_matrix * RT_r;
-		
-		cv::Mat params_(4, 3, type);
-		params_.row(0) = left_point.x * P_l.row(2) - P_l.row(0);
-		params_.row(1) = left_point.y * P_l.row(2) - P_l.row(1);
-		params_.row(2) = right_point.x * P_r.row(2) - P_r.row(0);
-		params_.row(3) = right_point.y * P_r.row(2) - P_r.row(1);
-
-		cv::Mat X;
-		cv::solve(params_, cv::Mat::zeros(4, 1, type), X, cv::DECOMP_SVD);
-
-		std::cout << X.t() << std::endl;
-	}
 }
