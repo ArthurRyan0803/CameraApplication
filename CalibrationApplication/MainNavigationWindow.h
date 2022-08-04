@@ -7,6 +7,7 @@
 #include "ui_MainNavigationWindow.h"
 #include "SingleViewCalibrationWindow.h"
 #include "DualViewsCalibrationWindow.h"
+#include "Logger.hpp"
 
 
 class MainNavigationWindow : public QMainWindow
@@ -19,6 +20,7 @@ public:
 
 private:
 	std::map<std::string, std::vector<std::string>> cameras_ids_;
+	Logger& logger_;
 
 	Ui::MainNavigationWindowClass ui_;
 

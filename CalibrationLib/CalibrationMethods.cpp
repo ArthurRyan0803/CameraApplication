@@ -7,7 +7,7 @@ const cv::TermCriteria SUB_PIXEL_SEARCH_CRITERIA(cv::TermCriteria::EPS + cv::Ter
 static Logger& logger_ = GET_LOGGER();
 
 
-void find_key_points_mt(
+void APIENTRY find_key_points_mt(
 	const std::vector<std::shared_ptr<cv::Mat>>& images,
 	std::vector<std::vector<cv::Point2f>>& key_points,
 	std::vector<bool>& flags, Pattern pattern, CalibrationBoardSettings settings
@@ -43,7 +43,7 @@ void find_key_points_mt(
 }
 
 
-bool planarCalibration(
+bool APIENTRY planarCalibration(
 	const std::vector<std::shared_ptr<cv::Mat>>& images,
 	const CalibrationBoardSettings& board_settings, Pattern pattern,
 	PlanarCalibrationParams& params, std::vector<std::vector<cv::Point2f>>& key_points, std::vector<bool>& key_points_found_flags
@@ -87,13 +87,12 @@ bool planarCalibration(
 }
 
 
-bool stereoCalibration(
+bool APIENTRY stereoCalibration(
 	const std::vector<std::shared_ptr<cv::Mat>>& left_images, 
 	const std::vector<std::shared_ptr<cv::Mat>>& right_images,
 	size_t basis_image_index,
 	const CalibrationBoardSettings& board_settings, Pattern pattern,
-	PlanarCalibrationParams& left_cam_params, PlanarCalibrationParams& right_cam_params,
-	StereoCalibrationParams& stereo_params,
+	DualViewCalibrationParams& params,
 	std::vector<std::vector<cv::Point2f>>& left_key_points, std::vector<bool>& left_flags,
 	std::vector<std::vector<cv::Point2f>>& right_key_points, std::vector<bool>& right_flags
 )
@@ -123,46 +122,46 @@ bool stereoCalibration(
 	
 	// 3. Calibration
 	std::vector<cv::Mat> left_rvecs, right_rvecs, left_tvecs, right_tvecs;
-	left_cam_params.RMS = cv::calibrateCamera(
+	params.left.RMS = cv::calibrateCamera(
 		phyKeyPoints, left_key_points, image_size, 
-		left_cam_params.camera_matrix, left_cam_params.distortions, left_rvecs, left_tvecs
+		params.left.camera_matrix, params.left.distortions, left_rvecs, left_tvecs
 	);
-	left_cam_params.rvec = left_rvecs[basis_image_index];
-	left_cam_params.tvec = left_tvecs[basis_image_index];
-	cv::Rodrigues(left_cam_params.rvec, left_cam_params.rmat);
+	params.left.rvec = left_rvecs[basis_image_index];
+	params.left.tvec = left_tvecs[basis_image_index];
+	cv::Rodrigues(params.left.rvec, params.left.rmat);
 
-	right_cam_params.RMS = cv::calibrateCamera(
+	params.right.RMS = cv::calibrateCamera(
 		phyKeyPoints, right_key_points, image_size, 
-		right_cam_params.camera_matrix, right_cam_params.distortions, right_rvecs, right_tvecs
+		params.right.camera_matrix, params.right.distortions, right_rvecs, right_tvecs
 	);
-	right_cam_params.rvec = right_rvecs[basis_image_index];
-	right_cam_params.tvec = right_tvecs[basis_image_index];
-	cv::Rodrigues(right_cam_params.rvec, right_cam_params.rmat);
+	params.right.rvec = right_rvecs[basis_image_index];
+	params.right.tvec = right_tvecs[basis_image_index];
+	cv::Rodrigues(params.right.rvec, params.right.rmat);
 	
-	stereo_params.RMS = cv::stereoCalibrate(phyKeyPoints, left_key_points, right_key_points,
-		left_cam_params.camera_matrix, left_cam_params.distortions,
-		right_cam_params.camera_matrix, right_cam_params.distortions,
-		image_size, stereo_params.R, stereo_params.T, stereo_params.E, stereo_params.F
+	params.stereo.RMS = cv::stereoCalibrate(phyKeyPoints, left_key_points, right_key_points,
+		params.left.camera_matrix, params.left.distortions,
+		params.right.camera_matrix, params.right.distortions,
+		image_size, params.stereo.R, params.stereo.T, params.stereo.E, params.stereo.F
 	);
 
 	// 4. Epipolar rectify
 	cv::stereoRectify(
-		left_cam_params.camera_matrix, left_cam_params.distortions, 
-		right_cam_params.camera_matrix, right_cam_params.distortions,
-		image_size, stereo_params.R, stereo_params.T, 
-		stereo_params.R1, stereo_params.R2, stereo_params.P1, stereo_params.P2, stereo_params.Q
+		params.left.camera_matrix, params.left.distortions, 
+		params.right.camera_matrix, params.right.distortions,
+		image_size, params.stereo.R, params.stereo.T, 
+		params.stereo.R1, params.stereo.R2, params.stereo.P1, params.stereo.P2, params.stereo.Q
 	);
 
 	cv::initUndistortRectifyMap(
-		left_cam_params.camera_matrix, left_cam_params.distortions, 
-		stereo_params.R1, stereo_params.P1, image_size, CV_16SC2,
-		stereo_params.left_map1, stereo_params.left_map2
+		params.left.camera_matrix, params.left.distortions, 
+		params.stereo.R1, params.stereo.P1, image_size, CV_16SC2,
+		params.stereo.left_map1, params.stereo.left_map2
 	);
 
 	cv::initUndistortRectifyMap(
-		right_cam_params.camera_matrix, right_cam_params.distortions, 
-		stereo_params.R2, stereo_params.P2, image_size, CV_16SC2,
-		stereo_params.right_map1, stereo_params.right_map2
+		params.right.camera_matrix, params.right.distortions, 
+		params.stereo.R2, params.stereo.P2, image_size, CV_16SC2,
+		params.stereo.right_map1, params.stereo.right_map2
 	);
 
 	return true;

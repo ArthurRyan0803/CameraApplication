@@ -45,12 +45,12 @@ private:
 	Logger& logger_;
 	
 public:
-	SingleViewCalibrationWindow(std::shared_ptr<Camera> camera, QWidget *parent = nullptr);
+	SingleViewCalibrationWindow(std::shared_ptr<CameraLib::Camera> camera, QWidget *parent = nullptr);
 	~SingleViewCalibrationWindow() override = default;
 
 private:
 	Ui::SingleViewCalibrationWindowClass ui_{};
-	std::shared_ptr<Camera> camera_;
+	std::shared_ptr<CameraLib::Camera> camera_;
 	
 	void cameraFrameReadyCallback(cv::InputArray image_data);
 

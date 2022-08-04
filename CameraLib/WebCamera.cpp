@@ -1,6 +1,9 @@
+#include "Framework.h"
 #include "WebCamera.h"
 #include <opencv2/videoio.hpp>
 
+
+using namespace CameraLib;
 
 WebCamera::WebCamera(std::string id): Camera(), resolutions_table_({})
 {

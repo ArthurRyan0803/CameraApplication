@@ -1,13 +1,8 @@
-#include <stdexcept>
-#include <boost/format.hpp>
-#include <boost/algorithm/string.hpp>
-#include <thread>
-#include <opencv2/opencv.hpp>
-#include <array>
-
+#include "Framework.h"
 #include "PDNCamera.h"
-#include "Logger.hpp"
 
+
+using namespace CameraLib;
 
 
 #define CAMERA_SDK_TRACK(OP) if(auto CODE = OP; SDK_UNSUCCESS(CODE)) throw PDNCameraException(#OP, CODE, __FILE__, __LINE__)
@@ -58,7 +53,7 @@ sensor_mode_(mode), camera_info_(info), cam_handle_(0), is_opened_(false), isp_b
 PDNCamera::~PDNCamera()
 {
 	this->close();
-	GET_LOGGER().debug("PDN Camera release!");
+	//GET_LOGGER().debug("PDN Camera release!");
 }
 
 
@@ -205,7 +200,8 @@ void PDNCamera::oneShot(cv::OutputArray image)
 	CAMERA_SDK_TRACK(CameraGetImageBuffer(cam_handle_, &frame_head, &p_buffer, ONE_SHOT_WAIT_MS));
 	CAMERA_SDK_TRACK(CameraImageProcess(cam_handle_, p_buffer, isp_buffer_, &frame_head));
 	CAMERA_SDK_TRACK(CameraFlipFrameBuffer(isp_buffer_, &frame_head, 3));
-	
+
+	// It's just wrapper of isp_buffer_
 	auto mat = cv::Mat(
 		cv::Size(frame_head.iWidth, frame_head.iHeight), 
 		frame_head.uiMediaType == CAMERA_MEDIA_TYPE_MONO8 ? CV_8UC1 : CV_8UC3,
@@ -217,7 +213,7 @@ void PDNCamera::oneShot(cv::OutputArray image)
 	else if(sensor_mode_ == Right)
 		image.getMatRef() = mat.rowRange(0, frame_head.iHeight).colRange(frame_head.iWidth / 2, frame_head.iWidth).clone();
 	else
-		image.getMatRef() = mat;
+		image.getMatRef() = mat.clone();
 	
 	CAMERA_SDK_TRACK(CameraReleaseImageBuffer(cam_handle_, p_buffer));
 }

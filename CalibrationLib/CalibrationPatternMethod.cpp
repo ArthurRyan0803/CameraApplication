@@ -2,6 +2,7 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
+#include <minwindef.h>
 
 #include "CalibrationPatternMethod.h"
 
@@ -11,7 +12,7 @@ const cv::TermCriteria SUB_PIXEL_SEARCH_CRITERIA(cv::TermCriteria::EPS + cv::Ter
 constexpr int SUB_PIXEL_SEARCH_WINDOW = 11;
 
 
-bool findKeyPoints(
+bool APIENTRY findKeyPoints(
 	const cv::Mat& image, std::vector<cv::Point2f>& points, Pattern pattern, const cv::Size& points_count, bool roughly
 )
 {
@@ -52,7 +53,7 @@ bool findKeyPoints(
 }
 
 
-void calKeyPointsPhyCoordinates(
+void APIENTRY calKeyPointsPhyCoordinates(
 	const CalibrationBoardSettings& settings, Pattern pattern, std::vector<cv::Point3f>& points_coordinates
 )
 {
@@ -75,7 +76,7 @@ void calKeyPointsPhyCoordinates(
 }
 
 
-void calImagesKeyPointsPhyCoordinates(
+void APIENTRY calImagesKeyPointsPhyCoordinates(
 	const CalibrationBoardSettings& settings, Pattern pattern, size_t images, std::vector<std::vector<cv::Point3f>>& phyKeyPoints
 )
 {

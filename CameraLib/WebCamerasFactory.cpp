@@ -1,25 +1,8 @@
+#include "Framework.h"
 #include "WebCamerasFactory.h"
-#include <opencv2/videoio/videoio.hpp>
-#include "WebCamera.h"
 
 
-const std::string WebCamerasFactory::name("WebCamera");
-
-std::shared_ptr<WebCamerasFactory> WebCamerasFactory::instance()
-{
-	static std::shared_ptr<WebCamerasFactory> instance;
-	if(!instance)
-	{
-		instance.reset(new WebCamerasFactory);
-	}
-	return instance;
-}
-
-
-const std::string& WebCamerasFactory::getName() const
-{
-	return name;
-}
+using namespace CameraLib;
 
 
 std::vector<std::string> WebCamerasFactory::enumerateCamerasIDs()

@@ -19,13 +19,13 @@ class DualViewsCalibrationWindow : public QMainWindow
 
 public:
 	DualViewsCalibrationWindow(
-		std::shared_ptr<Camera> camera,
+		std::shared_ptr<CameraLib::Camera> camera,
 		QWidget *parent = nullptr
 	);
 	~DualViewsCalibrationWindow() override = default;
 
 private:
-	std::shared_ptr<Camera> camera_;
+	std::shared_ptr<CameraLib::Camera> camera_;
 	Ui::DualViewsCalibrationWindow ui_{};
 	volatile bool check_calib_board_;
 	CalibrationBoardSettings calib_board_settings_;

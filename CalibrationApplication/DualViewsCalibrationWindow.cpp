@@ -13,12 +13,15 @@
 #include "FunctionalDialog.h"
 #include "CalibrationMethods.h"
 #include "CalibrationSettingDialog.h"
+#include "CalibrationParams.hpp"
 #include "UICommon.h"
 #include "Utils.hpp"
 #include "Logger.hpp"
 
 
+using namespace CameraLib;
 static Logger& logger_ = GET_LOGGER();
+
 
 DualViewsCalibrationWindow::DualViewsCalibrationWindow(
 	std::shared_ptr<Camera> camera, 
@@ -53,7 +56,7 @@ DualViewsCalibrationWindow::DualViewsCalibrationWindow(
 	
 	camera->setFrameReadyCallback([this](cv::InputArray data) { cameraFrameReadyCallback(data); });
 	
-	for(auto& pair: UICommon::string_to_clib_pattern_map)
+	for(auto& pair: UICommon::string_to_calib_pattern_map)
 		ui_.cmbCalibPattern->addItem(QString::fromStdString(pair.first));
 
 	camera->open();
@@ -148,7 +151,7 @@ void DualViewsCalibrationWindow::calibPatternChanged()
 {
 	auto box = dynamic_cast<QComboBox*>(sender());
 	auto text  = box->currentText();
-	calib_pattern_ = UICommon::string_to_clib_pattern_map.find(text.toStdString())->second;
+	calib_pattern_ = UICommon::string_to_calib_pattern_map.find(text.toStdString())->second;
 }
 
 
@@ -188,6 +191,7 @@ void DualViewsCalibrationWindow::calibrationButtonClicked()
 
 		// Change controls' status
 		ui_.btnCalibration->setText("Stop stereo calibration");
+		ui_.btnGrabCalibImage->setText("Grab Calibration Image");
 		ui_.gbOptions->setEnabled(false);
 		ui_.gbCamOperations->setEnabled(false);
 		ui_.btnGrabCalibImage->setEnabled(true);
@@ -253,23 +257,23 @@ void DualViewsCalibrationWindow::grabCalibImageButtonClicked()
 		
 		std::vector<std::vector<cv::Point2f>> left_key_points, right_key_points;
 		std::vector<bool> left_flags, right_flags;
-		PlanarCalibrationParams left_params, right_params;
-		StereoCalibrationParams stereo_params;
+		DualViewCalibrationParams params;
 
 		FunctionalDialog dialog(nullptr,
-			[this, &success, &left_key_points, &right_key_points, &left_flags, &right_flags, &left_params, &right_params, &stereo_params]
+		[this, &success, &left_key_points, &right_key_points, &left_flags, &right_flags, &params]
 			{
 				success = stereoCalibration(
-					left_calib_images_, right_calib_images_, 0, calib_board_settings_, calib_pattern_,
-					left_params, right_params, stereo_params, 
+					left_calib_images_, right_calib_images_, 
+					0, calib_board_settings_, calib_pattern_,
+					params,
 					left_key_points, left_flags, 
 					right_key_points, right_flags
 				);
 
 				logger_.info((boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
-				logger_.info((boost::format("Left calibration RMS: %1%.") % left_params.RMS).str());
-				logger_.info((boost::format("Right calibration RMS: %1%.") % right_params.RMS).str());
-				logger_.info((boost::format("Stereo calibration RMS: %1%.") % stereo_params.RMS).str());
+				logger_.info((boost::format("Left calibration RMS: %1%.") % params.left.RMS).str());
+				logger_.info((boost::format("Right calibration RMS: %1%.") % params.right.RMS).str());
+				logger_.info((boost::format("Stereo calibration RMS: %1%.") % params.stereo.RMS).str());
 
 				if(success)
 				{
@@ -277,8 +281,7 @@ void DualViewsCalibrationWindow::grabCalibImageButtonClicked()
 					// 3.1 save calibration params
 					fs::path folder(calib_files_folder_);
 					fs::path file_path = folder / "params.json";
-
-					PlanarCalibrationParams params;
+					
 					params.save(file_path.string());
 
 					// 3.2 save images
@@ -311,8 +314,8 @@ void DualViewsCalibrationWindow::grabCalibImageButtonClicked()
 
 						// rectified image
 						cv::Mat left_remap, right_remap;
-						cv::remap(left_paint_image, left_remap, stereo_params.left_map1, stereo_params.left_map2, cv::INTER_LANCZOS4);
-						cv::remap(right_paint_image, right_remap, stereo_params.right_map1, stereo_params.right_map2, cv::INTER_LANCZOS4);
+						cv::remap(left_paint_image, left_remap, params.stereo.left_map1, params.stereo.left_map2, cv::INTER_LANCZOS4);
+						cv::remap(right_paint_image, right_remap, params.stereo.right_map1, params.stereo.right_map2, cv::INTER_LANCZOS4);
 
 						Utils::stitch_image(left_remap, right_remap, whole_image);
 						sub_folder = folder / "RectifiedImages";
@@ -333,8 +336,8 @@ void DualViewsCalibrationWindow::grabCalibImageButtonClicked()
 		{
 			// 4. Visualize camera pos
 			visualizeCalibPlanar(calib_board_settings_, 0.7, 0.7, 0.7, "calib_planar");
-			visualizeCamera(left_params, stereo_params.R1, "left_camera", 0, 1, 0);
-			visualizeCamera(right_params, stereo_params.R2, "right_camera", 0, 0, 1);
+			visualizeCamera(params.left, params.stereo.R1, "left_camera", 0, 1, 0);
+			visualizeCamera(params.right, params.stereo.R2, "right_camera", 0, 0, 1);
 			pcl_visualizer_->addCoordinateSystem(100);
 			pcl_visualizer_->resetCamera();
 			stereo_widget_->update();
@@ -395,8 +398,8 @@ void DualViewsCalibrationWindow::copyFrame(const cv::Mat& frame, int buffer_inde
 	{
 		std::lock_guard lock(q_image_mutex);
 		if(!q_image)
-			Utils::createQImage(*frame_buffer, q_image);
-		Utils::updateImageData(*frame_buffer, *q_image);
+			UICommon::createQImage(*frame_buffer, q_image);
+		UICommon::updateImageData(*frame_buffer, *q_image);
 	}
 }
 
@@ -419,7 +422,7 @@ bool DualViewsCalibrationWindow::paintImage(int index)
 			
 		if(qimage)
 		{
-			Utils::getImagePaintRegion(
+			UICommon::getImagePaintRegion(
 				{ qimage->width(), qimage->height() }, 
 				{ canvas->width(), canvas->height() }, 
 				paint_region
@@ -442,7 +445,7 @@ bool DualViewsCalibrationWindow::paintImage(int index)
 			for(auto& point: points)
 			{
 				auto point_in_widget =  
-					Utils::convertPaintPositions(
+					UICommon::convertPaintPositions(
 						{cam_resolution_[0] / 2, cam_resolution_[1]}, 
 						paint_region, {point.x, point.y}
 				);

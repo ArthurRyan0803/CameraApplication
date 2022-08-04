@@ -21,30 +21,6 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
-    <Filter Include="Header Files\Forms">
-      <UniqueIdentifier>{cc643412-4069-499d-8a81-74b8e38699aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Cameras">
-      <UniqueIdentifier>{6ce0aee0-4247-431f-aa14-cd8377437737}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Forms">
-      <UniqueIdentifier>{c7ef4a35-7631-4345-97e1-93cd68fd9405}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Cameras">
-      <UniqueIdentifier>{aedc5442-3d11-486f-90d1-557fe6c8cc13}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Cameras\CameraFactory">
-      <UniqueIdentifier>{8a732ef0-91dd-47fc-8ae3-486bc6a94148}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Cameras\CameraFactory">
-      <UniqueIdentifier>{8fcc33a0-e1c2-4d5a-b5e5-489c3263f863}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Calibration">
-      <UniqueIdentifier>{cd399dda-d903-486d-9bb9-e65997267486}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Calibration">
-      <UniqueIdentifier>{e4d5dcea-f520-47f4-829e-2334a149a9b8}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="MainNavigationWindow.ui">
@@ -67,111 +43,45 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainNavigationWindow.cpp">
-      <Filter>Source Files\Forms</Filter>
-    </ClCompile>
-    <ClCompile Include="AbstractCamerasFactory.cpp">
-      <Filter>Source Files\Cameras\CameraFactory</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Cameras</Filter>
-    </ClCompile>
-    <ClCompile Include="PDNCamera.cpp">
-      <Filter>Source Files\Cameras</Filter>
-    </ClCompile>
-    <ClCompile Include="PDNCamerasFactory.cpp">
-      <Filter>Source Files\Cameras\CameraFactory</Filter>
-    </ClCompile>
-    <ClCompile Include="WebCamerasFactory.cpp">
-      <Filter>Source Files\Cameras\CameraFactory</Filter>
-    </ClCompile>
-    <ClCompile Include="WebCamera.cpp">
-      <Filter>Source Files\Cameras</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleViewCalibrationWindow.cpp">
-      <Filter>Source Files\Forms</Filter>
-    </ClCompile>
-    <ClCompile Include="CalibrationMethods.cpp">
-      <Filter>Source Files\Calibration</Filter>
-    </ClCompile>
     <ClCompile Include="CalibrationSettingDialog.cpp">
-      <Filter>Source Files\Forms</Filter>
-    </ClCompile>
-    <ClCompile Include="CalibrationPatternMethod.cpp">
-      <Filter>Source Files\Calibration</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DualViewsCalibrationWindow.cpp">
-      <Filter>Source Files\Forms</Filter>
-    </ClCompile>
-    <ClCompile Include="UICommon.cpp">
-      <Filter>Source Files\Forms</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FunctionalDialog.cpp">
-      <Filter>Source Files\Forms</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainNavigationWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleViewCalibrationWindow.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="MainNavigationWindow.h">
-      <Filter>Header Files\Forms</Filter>
-    </QtMoc>
-    <QtMoc Include="SingleViewCalibrationWindow.h">
-      <Filter>Header Files\Forms</Filter>
-    </QtMoc>
     <QtMoc Include="CalibrationSettingDialog.h">
-      <Filter>Header Files\Forms</Filter>
+      <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="DualViewsCalibrationWindow.h">
-      <Filter>Header Files\Forms</Filter>
+      <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="FunctionalDialog.h">
-      <Filter>Header Files\Forms</Filter>
+      <Filter>Header Files</Filter>
     </QtMoc>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AbstractCamerasFactory.h">
-      <Filter>Header Files\Cameras\CameraFactory</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.hpp">
+    <QtMoc Include="MainNavigationWindow.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.hpp">
+    </QtMoc>
+    <QtMoc Include="SingleViewCalibrationWindow.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="PDNCamera.h">
-      <Filter>Header Files\Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="PDNCamerasFactory.h">
-      <Filter>Header Files\Cameras\CameraFactory</Filter>
-    </ClInclude>
-    <ClInclude Include="WebCamerasFactory.h">
-      <Filter>Header Files\Cameras\CameraFactory</Filter>
-    </ClInclude>
-    <ClInclude Include="WebCamera.h">
-      <Filter>Header Files\Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="Def.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CalibrationParams.hpp">
-      <Filter>Header Files\Calibration</Filter>
-    </ClInclude>
-    <ClInclude Include="CalibrationMethods.h">
-      <Filter>Header Files\Calibration</Filter>
-    </ClInclude>
-    <ClInclude Include="CalibrationBoardSettings.hpp">
-      <Filter>Header Files\Calibration</Filter>
-    </ClInclude>
-    <ClInclude Include="CalibrationPatternMethod.h">
-      <Filter>Header Files\Calibration</Filter>
-    </ClInclude>
-    <ClInclude Include="UICommon.h">
-      <Filter>Header Files\Forms</Filter>
-    </ClInclude>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="UICommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

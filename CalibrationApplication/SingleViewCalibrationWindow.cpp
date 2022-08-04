@@ -3,6 +3,7 @@
 
 
 namespace fs=boost::filesystem;
+using namespace CameraLib;
 
 
 SingleViewCalibrationWindow::SingleViewCalibrationWindow(
@@ -27,7 +28,7 @@ SingleViewCalibrationWindow::SingleViewCalibrationWindow(
 	
 	ui_.canvas->installEventFilter(this);
 
-	for(auto& pair: UICommon::string_to_clib_pattern_map)
+	for(auto& pair: UICommon::string_to_calib_pattern_map)
 		ui_.cmbCalibPattern->addItem(QString::fromStdString(pair.first));
 
 	camera_->open();
@@ -49,9 +50,9 @@ void SingleViewCalibrationWindow::cameraFrameReadyCallback(cv::InputArray image_
 		{
 			std::lock_guard q_image_lock(q_image_mutex_);
 			if(!q_image_buffer_)
-				Utils::createQImage(*frame_buffer_, q_image_buffer_);
+				UICommon::createQImage(*frame_buffer_, q_image_buffer_);
 
-			Utils::updateImageData(*frame_buffer_, *q_image_buffer_);
+			UICommon::updateImageData(*frame_buffer_, *q_image_buffer_);
 		}
 	}
 
@@ -171,7 +172,7 @@ bool SingleViewCalibrationWindow::eventFilter(QObject* obj, QEvent* e)
 			
 			if(q_image_buffer_)
 			{
-				Utils::getImagePaintRegion(
+				UICommon::getImagePaintRegion(
 					cam_resolution_, 
 					{ui_.canvas->width(), ui_.canvas->height()}, 
 					paint_region
@@ -197,7 +198,7 @@ bool SingleViewCalibrationWindow::eventFilter(QObject* obj, QEvent* e)
 				for(auto& point: std::get<1>(board_corners_copy))
 				{
 					auto point_in_widget =  
-						Utils::convertPaintPositions(cam_resolution_, paint_region, {point.x, point.y});
+						UICommon::convertPaintPositions(cam_resolution_, paint_region, {point.x, point.y});
 
 					painter.drawPoint(point_in_widget[0], point_in_widget[1]);
 				}
@@ -218,7 +219,7 @@ void SingleViewCalibrationWindow::calibPatternChanged()
 {
 	auto box = dynamic_cast<QComboBox*>(sender());
 	auto text  = box->currentText();
-	calib_pattern_ = UICommon::string_to_clib_pattern_map.find(text.toStdString())->second;
+	calib_pattern_ = UICommon::string_to_calib_pattern_map.find(text.toStdString())->second;
 }
 
 void SingleViewCalibrationWindow::detectBoardCheckboxStateChanged()
@@ -246,8 +247,8 @@ void SingleViewCalibrationWindow::oneShotButtonClicked()
 		{
 			std::lock_guard q_image_lock(q_image_mutex_);
 			if(!q_image_buffer_)
-				Utils::createQImage(*frame_buffer_, q_image_buffer_);
-			Utils::updateImageData(*frame_buffer_, *q_image_buffer_);
+				UICommon::createQImage(*frame_buffer_, q_image_buffer_);
+			UICommon::updateImageData(*frame_buffer_, *q_image_buffer_);
 		}
 	}
 

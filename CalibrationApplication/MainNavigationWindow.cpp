@@ -3,44 +3,49 @@
 #include "MainNavigationWindow.h"
 
 #include "AbstractCamerasFactory.h"
-#include "WebCamerasFactory.h"
 #include "PDNCamerasFactory.h"
+#include "WebCamerasFactory.h"
 #include "Logger.hpp"
 
 
+#define WEB_CAM "WebCamera"
+#define PDN_CAM "PDNCamera"
+
+
+std::map<std::string, std::shared_ptr<CameraLib::AbstractCamerasFactory>> factories;
+
+
 MainNavigationWindow::MainNavigationWindow(QWidget *parent)
-	: QMainWindow(parent)
+	: QMainWindow(parent), logger_(GET_LOGGER())
 {
 	ui_.setupUi(this);
 	connect(ui_.btnSingleCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
 	connect(ui_.btnDualViewCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
 	connect(ui_.cbCamCategory, &QComboBox::currentTextChanged, this, &MainNavigationWindow::cameraCategorySelectionChanged);
-	//connect(ui_.cbCamCategory, SIGNAL(currentIndexChanged(int)), this, SLOT(cameraCategorySelectionChanged(int)));
 
-	AbstractCamerasFactory::registerFactory( WebCamerasFactory::name, WebCamerasFactory::instance());
-	AbstractCamerasFactory::registerFactory( PDNCamerasFactory::name, PDNCamerasFactory::instance());
+	factories[WEB_CAM] = std::make_shared<CameraLib::WebCamerasFactory>();
+	factories[PDN_CAM] = std::make_shared<CameraLib::PDNCamerasFactory>();
 }
 
 
 void MainNavigationWindow::showEvent(QShowEvent* e)
 {
 	QMainWindow::showEvent(e);
-
-	auto factories = AbstractCamerasFactory::getAllFactories();
+	
 	for(const auto& pair: factories)
 	{
 		auto& factory = pair.second;
-		std::string camera_category = factory->getName();
+		std::string camera_category = pair.first;
 		auto ids = factory->enumerateCamerasIDs();
 		if(!ids.empty())
 		{
 			cameras_ids_[camera_category] = ids;
 			auto message = boost::format("Find camera ids {%1%} of %2%") % boost::join(ids, ",") % camera_category;
-			GET_LOGGER().debug(message.str());
+			logger_.debug(message.str());
 		}
 		else
 		{
-			GET_LOGGER().debug("Cannot find any camera of " + camera_category);
+			logger_.debug("Cannot find any camera of " + camera_category);
 		}
 	}
 
@@ -66,7 +71,7 @@ void MainNavigationWindow::buttonClicked()
 	std::string cam_category = ui_.cbCamCategory->currentText().toStdString();
 	std::string cam_id = ui_.cbCamId->currentText().toStdString();
 
-	auto camera = AbstractCamerasFactory::getCameraFactory(cam_category)->createCamera(cam_id);
+	auto camera = factories[cam_category]->createCamera(cam_id);
 
 	calib_window_.reset();
 

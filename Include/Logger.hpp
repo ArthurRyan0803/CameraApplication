@@ -11,7 +11,6 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/filesystem.hpp>
-#include <QDebug>
 
 #include "Def.hpp"
 
@@ -33,16 +32,10 @@ class Logger: boost::noncopyable
     {
         namespace fs=boost::filesystem;
         
-        fs::path app_log_dir_path = fs::path(Def::getAppDir()) / "CalibrationApp";
-        if(!is_directory(app_log_dir_path))
-            if(!exists(app_log_dir_path))
-            {
-                auto message = (boost::format("%s is not existing directory!") % app_log_dir_path).str();
-	            throw std::runtime_error(message);
-            }
+        fs::path app_log_dir_path = fs::path(Def::getAppDir());
 
-        fs::path log_path = app_log_dir_path / filename;
-        auto file_appender = std::make_shared<log4cpp::RollingFileAppender>(name, log_path.string());
+        auto log_path = (app_log_dir_path / filename).string();
+        auto file_appender = std::make_shared<log4cpp::RollingFileAppender>(name, log_path);
         appenders_.push_back(file_appender);
 
         // The appender will take over the resource management of layout, thus we don't need to dispose it.

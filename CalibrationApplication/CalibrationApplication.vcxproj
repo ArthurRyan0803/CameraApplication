@@ -56,7 +56,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <IncludePath>D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;../Include/MindVision;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programs\CalibrationApplication\CalibrationLib;D:\Programs\CalibrationApplication\CameraLib;D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;../Include;../Include/MindVision;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\MindVision\SDK\X64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
@@ -69,7 +69,7 @@
     </Link>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions);_AMD64_</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -109,49 +109,35 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CalibrationSettingDialog.cpp" />
-    <ClCompile Include="CalibrationMethods.cpp" />
-    <ClCompile Include="CalibrationPatternMethod.cpp" />
     <ClCompile Include="DualViewsCalibrationWindow.cpp" />
     <ClCompile Include="FunctionalDialog.cpp" />
-    <ClCompile Include="PDNCamera.cpp" />
-    <ClCompile Include="PDNCamerasFactory.cpp" />
     <ClCompile Include="SingleViewCalibrationWindow.cpp" />
-    <ClCompile Include="UICommon.cpp" />
-    <ClCompile Include="WebCamera.cpp" />
-    <ClCompile Include="WebCamerasFactory.cpp" />
     <QtUic Include="CalibrationSettingDialog.ui" />
     <QtUic Include="DualViewsCalibrationWindow.ui" />
     <QtUic Include="FunctionalDialog.ui" />
     <QtUic Include="MainNavigationWindow.ui" />
     <QtMoc Include="MainNavigationWindow.h" />
-    <ClCompile Include="AbstractCamerasFactory.cpp" />
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="MainNavigationWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <QtUic Include="SingleViewCalibrationWindow.ui" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AbstractCamerasFactory.h" />
     <QtMoc Include="CalibrationSettingDialog.h" />
-    <ClInclude Include="CalibrationMethods.h" />
-    <ClInclude Include="CalibrationBoardSettings.hpp" />
-    <ClInclude Include="CalibrationPatternMethod.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Def.hpp" />
     <QtMoc Include="DualViewsCalibrationWindow.h" />
     <QtMoc Include="FunctionalDialog.h" />
-    <ClInclude Include="Logger.hpp" />
-    <ClInclude Include="PDNCamera.h" />
-    <ClInclude Include="PDNCamerasFactory.h" />
     <QtMoc Include="SingleViewCalibrationWindow.h" />
-    <ClInclude Include="CalibrationParams.hpp" />
     <ClInclude Include="UICommon.h" />
-    <ClInclude Include="Utils.hpp" />
-    <ClInclude Include="WebCamera.h" />
-    <ClInclude Include="WebCamerasFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CalibrationLib\CalibrationLib.vcxproj">
+      <Project>{30b83f6a-ad6e-48fb-9621-9d5874220999}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CameraLib\CameraLib.vcxproj">
+      <Project>{12ff9e04-8be4-49ae-b098-8a701349e7e6}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

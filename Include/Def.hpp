@@ -13,16 +13,22 @@ public:
 
 	inline const static std::string appName = "CalibrationApp";
 
-	const static std::string& getSysAppDir()
+	const static std::string getSysAppDir()
 	{
 
 #if _WIN32
-		auto var_value = getenv("LOCALAPPDATA");
-		static auto sys_app_data_path = std::string(var_value);
+		//char* p_buffer = nullptr;
+		//size_t len = 0;
+		//_dupenv_s(&p_buffer, &len, "LOCALAPPDATA");
+		// ;
+		//assert(p_buffer && "p_buffer is null!");
+
+		auto sys_app_data_path = std::string(getenv("LOCALAPPDATA"));
+		//free(p_buffer);
 #else
 #error Current platform is not supported now!
 #endif
-		
+
 		assert(
 			boost::filesystem::is_directory(sys_app_data_path) && boost::filesystem::exists(sys_app_data_path)
 			&& "Why LOCALAPPDIR not exists?"
@@ -31,13 +37,15 @@ public:
 		return sys_app_data_path;
 	}
 
-	const static std::string& getAppDir()
+	const static std::string getAppDir()
 	{
-		auto& sys_app_dir = getSysAppDir();
-		auto app_dir = boost::filesystem::path(sys_app_dir) / appName;
+		auto sys_app_dir = getSysAppDir();
+
+		auto app_dir = (boost::filesystem::path(sys_app_dir) / appName);
+		auto app_dir_str = app_dir.string();
 
 		if(is_directory(app_dir))
-			return sys_app_dir;
+			return app_dir_str;
 
 		if(exists(app_dir))
 		{
@@ -46,7 +54,7 @@ public:
 		}
 
 		if(create_directory(app_dir))
-			return sys_app_dir;
+			return app_dir_str;
 
 		auto message = (boost::format("Create directory %s failed!") % app_dir).str();
 		throw std::runtime_error(message);

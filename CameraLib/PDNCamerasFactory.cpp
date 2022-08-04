@@ -1,13 +1,9 @@
-#include <opencv2/imgproc.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
-
+#include "Framework.h"
 #include "PDNCamerasFactory.h"
-#include "Logger.hpp"
 
+using namespace CameraLib;
 
 typedef PDNCamera::SensorMode SensorMode;
-
 
 SensorMode getMode(const std::string& mode_str)
 {
@@ -35,34 +31,13 @@ std::string getModeStr(SensorMode mode)
 }
 
 
-const std::string PDNCamerasFactory::name("PDNCamera");
-
-
 PDNCamerasFactory::PDNCamerasFactory(): AbstractCamerasFactory(), enum_cameras_ary_({}), cameras_nums_(MAX_CAMERA_CONNECTIONS)
 {
 	int code = CameraSdkInit(0);
 	sdk_init_success_ = code == CAMERA_STATUS_SUCCESS;
-	if(!sdk_init_success_)
-		Logger::instance(__FILE__).error((boost::format("Cannot init mind vision camera sdk! error code: %1%") % code).str());
+	//if(!sdk_init_success_)
+	//	Logger::instance(__FILE__).error((boost::format("Cannot init mind vision camera sdk! error code: %1%") % code).str());
 }
-
-
-std::shared_ptr<PDNCamerasFactory> PDNCamerasFactory::instance()
-{
-	static std::shared_ptr<PDNCamerasFactory> instance;
-	if(!instance)
-	{
-		instance.reset(new PDNCamerasFactory);
-	}
-	return instance;
-}
-
-
-const std::string& PDNCamerasFactory::getName() const
-{
-	return name;
-}
-
 
 std::vector<std::string> PDNCamerasFactory::enumerateCamerasIDs()
 {
@@ -70,16 +45,16 @@ std::vector<std::string> PDNCamerasFactory::enumerateCamerasIDs()
 	if(SDK_UNSUCCESS(code))
 	{
 		auto message = (boost::format("No v-sensor (mind vision) sensors found! error code %1%") % code).str();
-		GET_LOGGER().error(message);
+		//GET_LOGGER().error(message);
 		return {};
 	}
 	
 	std::vector<std::string> ids;
 	for(int i=0; i<cameras_nums_; i++)
 	{
+		ids.push_back((boost::format("%1%_%2%") % i % getModeStr(SensorMode::Both)).str());
 		ids.push_back((boost::format("%1%_%2%") % i % getModeStr(SensorMode::Left)).str());
 		ids.push_back((boost::format("%1%_%2%") % i % getModeStr(SensorMode::Right)).str());
-		ids.push_back((boost::format("%1%_%2%") % i % getModeStr(SensorMode::Both)).str());
 	}
 
 	return ids;
