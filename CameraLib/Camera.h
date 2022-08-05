@@ -2,6 +2,16 @@
 
 #include "Framework.h"
 
+#ifdef _MSC_VER
+	#ifdef _WIN64
+		#pragma comment(lib, "../SDK/x64/MVCAMSDK_X64.lib")
+	#else
+		#pragma comment(lib, "../SDK/MVCAMSDK.lib")
+	#endif
+#else
+#error "Unrecognized compiler!"
+#endif
+
 
 namespace CameraLib
 {
@@ -25,8 +35,8 @@ namespace CameraLib
 		virtual std::vector<std::array<int, 2>> enumerateAvailableResolutions() = 0;
 
 		/*
-	 * @return: {width, height}
-	 */
+		 * @return: {width, height}
+		 */
 		virtual std::array<int, 2> getCurrentResolution() = 0;
 		//virtual void setCurrentResolution(const std::array<int, 2>& resolution) = 0;
 

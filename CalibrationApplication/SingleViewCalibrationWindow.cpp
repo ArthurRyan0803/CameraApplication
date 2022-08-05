@@ -369,10 +369,13 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 			std::vector<bool> key_points_found_flags;
 			
 			PlanarCalibrationParams params;
-			bool success = planarCalibration(
+			std::string message = planarCalibration(
 				calib_images_, calib_board_settings_, calib_pattern_, params, key_points, key_points_found_flags
 			);
+			bool success = message.empty();
 
+			if(!success)
+				logger_.info(message);
 			logger_.info((boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
 			logger_.info((boost::format("Calibration RMS: %1%.") % params.RMS).str());
 

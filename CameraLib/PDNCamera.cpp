@@ -9,6 +9,7 @@ using namespace CameraLib;
 
 #define ONE_SHOT_WAIT_MS 1000
 #define ISP_BUFFER_ALIGNMENT 16
+#define IMAGE_FLIP_FLAG 1
 
 
 void PDNCamera::frameCallback(CameraHandle camera_handle, BYTE *frame_buffer, tSdkFrameHead* frame_head, PVOID context)
@@ -21,30 +22,15 @@ void PDNCamera::frameCallback(CameraHandle camera_handle, BYTE *frame_buffer, tS
 	{
 		
 		CAMERA_SDK_TRACK(CameraImageProcess(camera_handle, frame_buffer, camera->isp_buffer_, frame_head));
-		CAMERA_SDK_TRACK(CameraFlipFrameBuffer(camera->isp_buffer_, frame_head, 3));
-	
+		CAMERA_SDK_TRACK(CameraFlipFrameBuffer(camera->isp_buffer_, frame_head, IMAGE_FLIP_FLAG));
 		cv::Mat mat = cv::Mat(cv::Size(frame_head->iWidth, frame_head->iHeight), frame_head->uBytes, camera->isp_buffer_);
-
-		if(camera->sensor_mode_ == Both)
-			camera->frame_ready_callback_(mat);
-		else if (camera->sensor_mode_ == Left)
-			camera->frame_ready_callback_(
-				mat
-				.rowRange(0, frame_head->iHeight)
-				.colRange(0, frame_head->iWidth / 2)
-			);
-		else if (camera->sensor_mode_ == Right)
-			camera->frame_ready_callback_(
-				mat
-				.rowRange(0, frame_head->iHeight)
-				.colRange(frame_head->iWidth / 2,  frame_head->iWidth)
-			);
+		camera->frame_ready_callback_(mat);
 	}
 }
 
 
-PDNCamera::PDNCamera(const tSdkCameraDevInfo& info, SensorMode mode): Camera(),
-sensor_mode_(mode), camera_info_(info), cam_handle_(0), is_opened_(false), isp_buffer_(nullptr)
+PDNCamera::PDNCamera(const tSdkCameraDevInfo& info): Camera(),
+	camera_info_(info), cam_handle_(0), is_opened_(false), isp_buffer_(nullptr)
 {
 	std::memset(&capability_, 0, sizeof(capability_));
 }
@@ -149,7 +135,7 @@ std::array<int, 2> PDNCamera::getCurrentResolution()
 	tSdkImageResolution resolution;
 	CAMERA_SDK_TRACK(CameraGetImageResolution(cam_handle_, &resolution));
 	
-	return std::array<int, 2> {sensor_mode_ == Both ? resolution.iWidth * 2: resolution.iWidth, resolution.iHeight};
+	return std::array<int, 2> {resolution.iWidth * 2, resolution.iHeight};
 }
 
 
@@ -199,7 +185,7 @@ void PDNCamera::oneShot(cv::OutputArray image)
 	BYTE* p_buffer = nullptr;
 	CAMERA_SDK_TRACK(CameraGetImageBuffer(cam_handle_, &frame_head, &p_buffer, ONE_SHOT_WAIT_MS));
 	CAMERA_SDK_TRACK(CameraImageProcess(cam_handle_, p_buffer, isp_buffer_, &frame_head));
-	CAMERA_SDK_TRACK(CameraFlipFrameBuffer(isp_buffer_, &frame_head, 3));
+	CAMERA_SDK_TRACK(CameraFlipFrameBuffer(isp_buffer_, &frame_head, IMAGE_FLIP_FLAG));
 
 	// It's just wrapper of isp_buffer_
 	auto mat = cv::Mat(
@@ -208,13 +194,7 @@ void PDNCamera::oneShot(cv::OutputArray image)
 		isp_buffer_
 	);
 	
-	if(sensor_mode_ == Left)
-		image.getMatRef() = mat.rowRange(0, frame_head.iHeight).colRange(0, frame_head.iWidth / 2).clone();
-	else if(sensor_mode_ == Right)
-		image.getMatRef() = mat.rowRange(0, frame_head.iHeight).colRange(frame_head.iWidth / 2, frame_head.iWidth).clone();
-	else
-		image.getMatRef() = mat.clone();
-	
+	image.getMatRef() = mat.clone();
 	CAMERA_SDK_TRACK(CameraReleaseImageBuffer(cam_handle_, p_buffer));
 }
 

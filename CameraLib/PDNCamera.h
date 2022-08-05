@@ -33,11 +33,7 @@ namespace CameraLib
 	class CAMERALIB_DLL PDNCamera: public Camera
 	{
 
-	public:
-		 enum SensorMode {Left, Right, Both};
-
 	private:
-		const SensorMode sensor_mode_;
 		tSdkCameraDevInfo camera_info_;
 		CameraHandle cam_handle_;
 		volatile bool is_opened_;
@@ -52,7 +48,7 @@ namespace CameraLib
 
 	public:
 
-		 PDNCamera(const tSdkCameraDevInfo& info, SensorMode mode);
+		 PDNCamera(const tSdkCameraDevInfo& info);
 		 ~PDNCamera() override;
 
 		 void open()  override;

@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\Include\MindVision;..\Include;..\CameraLib;..\CalibrationLib;C:\Applications\vcpkg\installed\x64-windows\include\vtk-9.0;$(IncludePath)</IncludePath>
+    <IncludePath>..\Include\MindVision;..\Include;..\CameraLib;..\CalibrationLib;D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

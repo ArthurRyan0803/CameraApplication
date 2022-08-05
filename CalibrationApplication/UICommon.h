@@ -77,8 +77,8 @@ public:
 	static void updateImageData(const cv::Mat& src_image, QImage& dst_image)
 	{
 		assert(
-			(src_image.elemSize() == 3 && dst_image.format() == QImage::Format_BGR888) ||
-			(src_image.elemSize() == 1 && dst_image.format() == QImage::Format_Grayscale8)
+			(src_image.channels() == 3 && dst_image.format() == QImage::Format_BGR888) ||
+			(src_image.channels() == 1 && dst_image.format() == QImage::Format_Grayscale8)
 		);
 
 		auto size = src_image.rows * src_image.step;

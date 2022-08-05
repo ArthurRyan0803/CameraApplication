@@ -43,7 +43,7 @@ void APIENTRY find_key_points_mt(
 }
 
 
-bool APIENTRY planarCalibration(
+std::string APIENTRY planarCalibration(
 	const std::vector<std::shared_ptr<cv::Mat>>& images,
 	const CalibrationBoardSettings& board_settings, Pattern pattern,
 	PlanarCalibrationParams& params, std::vector<std::vector<cv::Point2f>>& key_points, std::vector<bool>& key_points_found_flags
@@ -63,7 +63,7 @@ bool APIENTRY planarCalibration(
 		);
 
 		if(!found)
-			return false;
+			return "Failed to find pattern";
 
 		std::vector<std::vector<cv::Point3f>> phyKeyPoints;
 		calImagesKeyPointsPhyCoordinates(board_settings, pattern, images.size(), phyKeyPoints);
@@ -77,7 +77,11 @@ bool APIENTRY planarCalibration(
 			params.rvec, params.tvec, cv::noArray()
 		);
 		
-		return cv::checkRange(params.camera_matrix) && cv::checkRange(params.distortions);
+		bool valid = cv::checkRange(params.camera_matrix) && cv::checkRange(params.distortions);
+		if(!valid)
+			return "Invalid range of camera_matrix or distortion!";
+		else
+			return "";
 	}
 	catch (const std::exception& e)
 	{
@@ -87,7 +91,7 @@ bool APIENTRY planarCalibration(
 }
 
 
-bool APIENTRY stereoCalibration(
+std::string APIENTRY stereoCalibration(
 	const std::vector<std::shared_ptr<cv::Mat>>& left_images, 
 	const std::vector<std::shared_ptr<cv::Mat>>& right_images,
 	size_t basis_image_index,
@@ -114,7 +118,7 @@ bool APIENTRY stereoCalibration(
 	);
 
 	if(!found)
-		return false;
+		return "Failed to find pattern!";
 
 	// 2. Pattern key points physical locations.
 	std::vector<std::vector<cv::Point3f>> phyKeyPoints;
@@ -164,5 +168,5 @@ bool APIENTRY stereoCalibration(
 		params.stereo.right_map1, params.stereo.right_map2
 	);
 
-	return true;
+	return "";
 }

@@ -1,37 +1,12 @@
 #include "Framework.h"
 #include "PDNCamerasFactory.h"
+#include "Logger.hpp"
 
 using namespace CameraLib;
 
-typedef PDNCamera::SensorMode SensorMode;
+#define USB_CAMERA "Usb3Camera0"
 
-SensorMode getMode(const std::string& mode_str)
-{
-	auto str = boost::to_upper_copy<std::string>(mode_str);
-	if(str == "LEFT")
-		return SensorMode::Left;
-	if(str == "RIGHT")
-		return SensorMode::Right;
-	if(str == "BOTH")
-		return SensorMode::Both;
-	
-	throw std::invalid_argument("Unrecognized sensor mode: " + mode_str);
-}
-
-
-std::string getModeStr(SensorMode mode)
-{
-	switch(mode)
-	{
-	case SensorMode::Left: return "left"; 
-	case SensorMode::Right: return "right";
-	case SensorMode::Both: return "both";
-	default: throw std::invalid_argument("Unrecognized sensor mode type!");
-	}
-}
-
-
-PDNCamerasFactory::PDNCamerasFactory(): AbstractCamerasFactory(), enum_cameras_ary_({}), cameras_nums_(MAX_CAMERA_CONNECTIONS)
+PDNCamerasFactory::PDNCamerasFactory(): AbstractCamerasFactory(), cameras_infos_({}), cameras_nums_(MAX_CAMERA_CONNECTIONS)
 {
 	int code = CameraSdkInit(0);
 	sdk_init_success_ = code == CAMERA_STATUS_SUCCESS;
@@ -41,45 +16,38 @@ PDNCamerasFactory::PDNCamerasFactory(): AbstractCamerasFactory(), enum_cameras_a
 
 std::vector<std::string> PDNCamerasFactory::enumerateCamerasIDs()
 {
-	auto code = CameraEnumerateDevice(enum_cameras_ary_.data(), &cameras_nums_);
+	std::array<tSdkCameraDevInfo, 10> ary;
+	auto code = CameraEnumerateDevice(ary.data(), &cameras_nums_);
+
 	if(SDK_UNSUCCESS(code))
 	{
 		auto message = (boost::format("No v-sensor (mind vision) sensors found! error code %1%") % code).str();
-		//GET_LOGGER().error(message);
+		GET_LOGGER().error(message);
 		return {};
 	}
-	
+
 	std::vector<std::string> ids;
-	for(int i=0; i<cameras_nums_; i++)
+	for(size_t i=0; i<cameras_nums_; i++)
 	{
-		ids.push_back((boost::format("%1%_%2%") % i % getModeStr(SensorMode::Both)).str());
-		ids.push_back((boost::format("%1%_%2%") % i % getModeStr(SensorMode::Left)).str());
-		ids.push_back((boost::format("%1%_%2%") % i % getModeStr(SensorMode::Right)).str());
+		std::string name(ary[i].acProductSeries);
+		if(name == USB_CAMERA)
+		{
+			std::string sn(ary[i].acSn);
+			cameras_infos_[sn] = ary[i];
+			ids.push_back(sn);
+		}
 	}
 
 	return ids;
 }
 
 
-std::shared_ptr<Camera> PDNCamerasFactory::createCamera(const std::string& id) const
+std::shared_ptr<Camera> PDNCamerasFactory::createCamera(const std::string& sn) const
 {
-	std::vector<std::string> strs;
+	if(cameras_infos_.find(sn) == cameras_infos_.end())
+		throw PDNCameraException("Invalid sn!", -1, __FILE__, __LINE__);
 
-	boost::split(strs, id,boost::is_any_of("_"));
-	if(strs.size() != 2)
-		throw std::invalid_argument("Invalid camera id! correct format: id_mode");
-	auto index_str = strs[0];
-
-	if(index_str.empty())
-		throw std::invalid_argument("Invalid camera id!");
-
-	if(!std::all_of(index_str.begin(), index_str.end(), ::isdigit))
-		throw std::invalid_argument((boost::format("Mv camera index [%1%] is not valid numerical string!") % 1).str());
-
-	auto camera_index = std::stoi(index_str);
-	if(camera_index >= cameras_nums_)
-		throw std::invalid_argument("Camera index out of range!");
-	
-	auto camera = std::make_shared<PDNCamera>(enum_cameras_ary_[camera_index], getMode(strs[1]));
+	auto info = cameras_infos_.at(sn);
+	auto camera = std::make_shared<PDNCamera>(info);
 	return std::static_pointer_cast<PDNCamera, Camera>(camera);
 }

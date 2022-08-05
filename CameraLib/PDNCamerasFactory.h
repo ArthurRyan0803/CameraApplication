@@ -11,7 +11,7 @@ namespace CameraLib
 	{
 	private:
 		bool sdk_init_success_;
-		std::array<tSdkCameraDevInfo, 10> enum_cameras_ary_;
+		std::map<std::string, tSdkCameraDevInfo> cameras_infos_;
 		int cameras_nums_;
 		
 	public:
@@ -20,7 +20,7 @@ namespace CameraLib
 		~PDNCamerasFactory() override = default;
 
 		std::vector<std::string> enumerateCamerasIDs() override;
-		std::shared_ptr<Camera> createCamera(const std::string& id) const override;
+		std::shared_ptr<Camera> createCamera(const std::string& sn) const override;
 	};
 }
 

@@ -17,13 +17,13 @@ public:
 	{
 
 #if _WIN32
-		//char* p_buffer = nullptr;
-		//size_t len = 0;
-		//_dupenv_s(&p_buffer, &len, "LOCALAPPDATA");
-		// ;
-		//assert(p_buffer && "p_buffer is null!");
+		static char* p_buffer = nullptr;
+		size_t len = 0;
+		_dupenv_s(&p_buffer, &len, "LOCALAPPDATA");
+		assert(p_buffer && "_dupenv_s return null!");
 
-		auto sys_app_data_path = std::string(getenv("LOCALAPPDATA"));
+		//auto sys_app_data_path = std::string(getenv("LOCALAPPDATA"));
+		std::string sys_app_data_path(p_buffer);
 		//free(p_buffer);
 #else
 #error Current platform is not supported now!

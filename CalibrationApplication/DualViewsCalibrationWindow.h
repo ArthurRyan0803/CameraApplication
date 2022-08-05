@@ -77,7 +77,7 @@ private:
 	bool paintImage(int buffer_index);
 
 	void DualViewsCalibrationWindow::visualizeCalibPlanar(
-		const CalibrationBoardSettings& settings, double r, double g, double b, const std::string& id
+		const CalibrationBoardSettings& settings, double r, double g, double b, const std::string& id_prefix
 	);
 
 	void DualViewsCalibrationWindow::visualizeCamera(

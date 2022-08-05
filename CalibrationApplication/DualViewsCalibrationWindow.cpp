@@ -33,7 +33,7 @@ DualViewsCalibrationWindow::DualViewsCalibrationWindow(
 
 	stereo_widget_ = std::make_unique<QVTKOpenGLStereoWidget>();
 	stereo_widget_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-	ui_.widget_vtk->layout()->addWidget(stereo_widget_.get());
+	ui_.gb_vtk->layout()->addWidget(stereo_widget_.get());
 
 	auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     auto renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -262,7 +262,7 @@ void DualViewsCalibrationWindow::grabCalibImageButtonClicked()
 		FunctionalDialog dialog(nullptr,
 		[this, &success, &left_key_points, &right_key_points, &left_flags, &right_flags, &params]
 			{
-				success = stereoCalibration(
+				std::string message = stereoCalibration(
 					left_calib_images_, right_calib_images_, 
 					0, calib_board_settings_, calib_pattern_,
 					params,
@@ -270,11 +270,14 @@ void DualViewsCalibrationWindow::grabCalibImageButtonClicked()
 					right_key_points, right_flags
 				);
 
+				success = message.empty();
+				if(!success)
+					logger_.info(message);
 				logger_.info((boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
 				logger_.info((boost::format("Left calibration RMS: %1%.") % params.left.RMS).str());
 				logger_.info((boost::format("Right calibration RMS: %1%.") % params.right.RMS).str());
 				logger_.info((boost::format("Stereo calibration RMS: %1%.") % params.stereo.RMS).str());
-
+				
 				if(success)
 				{
 					// 3. save
@@ -376,7 +379,7 @@ void DualViewsCalibrationWindow::copyFrame(const cv::Mat& frame, int buffer_inde
 	assert(buffer_index >= 0 && buffer_index <= 1);
 
 	size_t cols_half = frame.cols / 2;
-	size_t col_start = buffer_index * cols_half;
+	size_t col_start = (1 - buffer_index) * cols_half;	// TODO
 	size_t col_end = col_start + cols_half;
 
 	auto& frame_mutex = frame_buffer_mutexes_[buffer_index];
@@ -459,19 +462,31 @@ bool DualViewsCalibrationWindow::paintImage(int index)
 
 
 void DualViewsCalibrationWindow::visualizeCalibPlanar(
-	const CalibrationBoardSettings& settings, double r, double g, double b, const std::string& id
+	const CalibrationBoardSettings& settings, double r, double g, double b, const std::string& id_prefix
 )
 {
-	auto w = settings.horizontal_count * settings.interval,
-			h = settings.vertical_count * settings.interval,
-			z = settings.interval;
+	size_t index = 0;
+	for(size_t r = 0; r < settings.vertical_count; r++)
+	{
+		for(size_t c = 0; c < settings.horizontal_count; c++)
+		{
+			pcl::PointXYZ start(c * settings.interval, r * settings.interval, 0);
 
-	pcl_visualizer_->addCube(
-		Eigen::Vector3f(w / 2,  h / 2, -z/2), Eigen::Quaternionf::Identity(), 
-		w, h, z, id
-	);
-	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id);
-	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, id);
+			if(r != settings.vertical_count - 1)
+			{
+				pcl::PointXYZ end_1(c * settings.interval, (r + 1) * settings.interval, 0);
+				pcl_visualizer_->addLine(start, end_1, id_prefix + std::to_string(index++));
+			}
+
+			if(c != settings.horizontal_count - 1)
+			{
+				pcl::PointXYZ end_2((c + 1) * settings.interval, r * settings.interval, 0);
+				pcl_visualizer_->addLine(start, end_2, id_prefix + std::to_string(index++));
+			}
+		}
+	}
+	
+	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id_prefix);
 }
 
 
