@@ -57,8 +57,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <IncludePath>../CalibrationLib;../CameraLib;D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;../Include;../Include/MindVision;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\MindVision\SDK\X64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Applications\vcpkg\installed\x64-windows\include\vtk-9.0;../CalibrationLib;../CameraLib;D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;../Include;../Include/MindVision;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <IncludePath>../Include/MindVision;D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;$(IncludePath)</IncludePath>

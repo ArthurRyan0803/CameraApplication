@@ -4,7 +4,7 @@
 
 #ifdef _MSC_VER
 	#ifdef _WIN64
-		#pragma comment(lib, "../SDK/x64/MVCAMSDK_X64.lib")
+		#pragma comment(lib, "../SDK/MVCAMSDK_X64.lib")
 	#else
 		#pragma comment(lib, "../SDK/MVCAMSDK.lib")
 	#endif
