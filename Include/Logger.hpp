@@ -11,16 +11,21 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 
 #include "Def.hpp"
 
 #define GET_LOGGER() Logger::instance(__FILE__)
+#define LOG_ERROR(LOGGER, MESSAGE) (LOGGER).error((boost::format("[%1%]: %2%") % __LINE__ % (MESSAGE)).str())
+#define LOG_INFO(LOGGER, MESSAGE) (LOGGER).info((boost::format("[%1%]: %2%") % __LINE__ % (MESSAGE)).str())
+#define LOG_DEBUG(LOGGER, MESSAGE) (LOGGER).debug((boost::format("[%1%]: %2%") % __LINE__ % (MESSAGE)).str())
+
 
 class Logger: boost::noncopyable
 {
     log4cpp::Category& category_;
     std::vector<std::shared_ptr<log4cpp::LayoutAppender>> appenders_;
-    const std::string format_ = "[%d] [%t] [%x] [%p] [%c]: %m %n";  // Format : [time] [thread_id] [NDC] [priority] [category]: message newline
+    const std::string format_ = "[%d] [%t] [%x] [%p] [%c] %m %n";  // Format : [time] [thread_id] [NDC] [priority] [category] message newline
 
 #if _DEBUG
     const std::string filename = "debug.log";

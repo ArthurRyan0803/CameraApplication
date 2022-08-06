@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
     catch(const std::exception& e)
     {
         auto& logger = GET_LOGGER();
-        logger.error("Application error!");
-        logger.error("Exception: " + std::string(e.what()));
+        LOG_ERROR(logger, "Application error!");
+        LOG_ERROR(logger, "Exception: " + std::string(e.what()));
 	    return -1;
     }
 }

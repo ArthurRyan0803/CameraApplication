@@ -6,12 +6,14 @@ using namespace CameraLib;
 
 #define USB_CAMERA "Usb3Camera0"
 
+static Logger& logger = GET_LOGGER();
+
 PDNCamerasFactory::PDNCamerasFactory(): AbstractCamerasFactory(), cameras_infos_({}), cameras_nums_(MAX_CAMERA_CONNECTIONS)
 {
 	int code = CameraSdkInit(0);
 	sdk_init_success_ = code == CAMERA_STATUS_SUCCESS;
-	//if(!sdk_init_success_)
-	//	Logger::instance(__FILE__).error((boost::format("Cannot init mind vision camera sdk! error code: %1%") % code).str());
+	if (!sdk_init_success_)
+		LOG_ERROR(logger, (boost::format("Cannot init mind vision camera sdk! error code: %1%") % code).str());
 }
 
 std::vector<std::string> PDNCamerasFactory::enumerateCamerasIDs()
@@ -22,12 +24,12 @@ std::vector<std::string> PDNCamerasFactory::enumerateCamerasIDs()
 	if(SDK_UNSUCCESS(code))
 	{
 		auto message = (boost::format("No v-sensor (mind vision) sensors found! error code %1%") % code).str();
-		GET_LOGGER().error(message);
+		LOG_ERROR(logger, message);
 		return {};
 	}
 
 	std::vector<std::string> ids;
-	for(size_t i=0; i<cameras_nums_; i++)
+	for(size_t i=0; i < cameras_nums_; i++)
 	{
 		std::string name(ary[i].acProductSeries);
 		if(name == USB_CAMERA)

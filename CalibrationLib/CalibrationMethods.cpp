@@ -30,7 +30,7 @@ void APIENTRY find_key_points_mt(
 				}
 				catch (const std::exception& e)
 				{
-					logger_.error(e.what());
+					LOG_ERROR(logger_, std::string(e.what()));
 					throw e;
 				}
 			}
@@ -85,7 +85,7 @@ std::string APIENTRY planarCalibration(
 	}
 	catch (const std::exception& e)
 	{
-		logger_.error(e.what());
+		LOG_ERROR(logger_, std::string(e.what()));
 		throw e;
 	}
 }

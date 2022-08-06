@@ -123,8 +123,8 @@ void DualViewsCalibrationWindow::findingCalibBoardPattern(int index)
 
 	try
 	{
-		logger_.debug("Start finding calibration board pattern of view " + index);
-
+		LOG_DEBUG(logger_, "Start finding calibration board pattern of view " + std::to_string(index));
+		
 		cv::Mat image_to_detect;
 
 		// If the frame_buffer_ is empty, wait the camera to grab image.
@@ -169,11 +169,11 @@ void DualViewsCalibrationWindow::findingCalibBoardPattern(int index)
 			}
 		}
 
-		logger_.debug("Stop finding calibration board pattern of view " + index);
+		LOG_DEBUG(logger_, "Stop finding calibration board pattern of view " + std::to_string(index));
 	}
 	catch (const std::exception& e)
 	{
-		logger_.error(e.what());
+		LOG_ERROR(logger_, std::string(e.what()));
 		throw e;
 	}
 }
@@ -316,11 +316,11 @@ void DualViewsCalibrationWindow::calibrate(const std::string& folder)
 
 				success = message.empty();
 				if (!success)
-					logger_.info(message);
-				logger_.info((boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
-				logger_.info((boost::format("Left calibration RMS: %1%.") % params.left.RMS).str());
-				logger_.info((boost::format("Right calibration RMS: %1%.") % params.right.RMS).str());
-				logger_.info((boost::format("Stereo calibration RMS: %1%.") % params.stereo.RMS).str());
+					LOG_ERROR(logger_, message);
+				LOG_INFO(logger_, (boost::format("Calibration %1%.") % (success ? "Success" : "Failed")).str());
+				LOG_INFO(logger_, (boost::format("Left calibration RMS: %1%.") % params.left.RMS).str());
+				LOG_INFO(logger_, (boost::format("Right calibration RMS: %1%.") % params.right.RMS).str());
+				LOG_INFO(logger_, (boost::format("Stereo calibration RMS: %1%.") % params.stereo.RMS).str());
 
 				if (success)
 				{
@@ -395,7 +395,7 @@ void DualViewsCalibrationWindow::calibrate(const std::string& folder)
 	}
 	catch (const std::exception& e)
 	{
-		logger_.error(e.what());
+		LOG_ERROR(logger_, std::string(e.what()));
 		throw e;
 	}
 }

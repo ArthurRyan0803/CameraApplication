@@ -64,7 +64,7 @@ void SingleViewCalibrationWindow::findingCalibBoardPattern()
 {
 	try
 	{
-		logger_.debug("Start finding planarCalibration board pattern!");
+		LOG_DEBUG(logger_, "Start finding planarCalibration board pattern!");
 
 		cv::Mat image_to_detect;
 		cv::Size2i chessboard_size(5, 7);
@@ -112,12 +112,12 @@ void SingleViewCalibrationWindow::findingCalibBoardPattern()
 			std::string str = found ? "success" : "fails";
 			//logger_.debug("Find chessboard " + str);
 		}
-
-		logger_.debug("Stop finding planarCalibration board pattern!");
+		
+		LOG_DEBUG(logger_, "Stop finding planarCalibration board pattern!");
 	}
 	catch(const std::exception& e)
 	{
-		logger_.error(e.what());
+		LOG_ERROR(logger_, std::string(e.what()));
 		throw e;
 	}
 }
@@ -291,7 +291,7 @@ void SingleViewCalibrationWindow::saveImageButtonClicked()
 	auto filename = QFileDialog::getSaveFileName(this, "Save image", "", "*.png");
 	if(!filename.isEmpty())
 	{
-		logger_.debug("Save image to " + filename.toStdString());
+		LOG_DEBUG(logger_, "Save image to " + filename.toStdString());
 		cv::imwrite(filename.toStdString(), *frame_copy);
 	}
 }
