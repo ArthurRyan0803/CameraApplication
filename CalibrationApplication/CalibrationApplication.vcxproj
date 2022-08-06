@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.props" Condition="Exists('..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.props')" />
+  <Import Project="..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props" Condition="Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C498FD85-17E8-4F77-B7D6-50DE002DC59B}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>5.15.2_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>5.15.2_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <IncludePath>C:\Applications\vcpkg\installed\x64-windows\include\vtk-9.0;../CalibrationLib;../CameraLib;D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;../Include;../Include/MindVision;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <IncludePath>../Include/MindVision;D:\Programs\vcpkg\installed\x64-windows\include\vtk-9.0;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\MindVision\SDK\X64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <AdditionalDependencies>C:\Program Files (x86)\MindVision\SDK\X64\MVCAMSDK_X64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions);_AMD64_</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>C:\Program Files (x86)\MindVision\SDK\X64\MVCAMSDK_X64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="CalibrationSettingDialog.cpp" />
+    <ClCompile Include="DualViewsCalibrationWindow.cpp" />
+    <ClCompile Include="FunctionalDialog.cpp" />
+    <ClCompile Include="SingleViewCalibrationWindow.cpp" />
+    <QtUic Include="CalibrationSettingDialog.ui" />
+    <QtUic Include="DualViewsCalibrationWindow.ui" />
+    <QtUic Include="FunctionalDialog.ui" />
+    <QtUic Include="MainNavigationWindow.ui" />
+    <QtMoc Include="MainNavigationWindow.h" />
+    <ClCompile Include="MainNavigationWindow.cpp" />
+    <ClCompile Include="main.cpp" />
+    <QtUic Include="SingleViewCalibrationWindow.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="CalibrationSettingDialog.h" />
+    <QtMoc Include="DualViewsCalibrationWindow.h" />
+    <QtMoc Include="FunctionalDialog.h" />
+    <QtMoc Include="SingleViewCalibrationWindow.h" />
+    <ClInclude Include="UICommon.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CalibrationLib\CalibrationLib.vcxproj">
+      <Project>{30b83f6a-ad6e-48fb-9621-9d5874220999}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CameraLib\CameraLib.vcxproj">
+      <Project>{12ff9e04-8be4-49ae-b098-8a701349e7e6}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets" Condition="Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets')" />
+    <Import Project="..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.targets" Condition="Exists('..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.props'))" />
+    <Error Condition="!Exists('..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.D.Programs.vcpkg.1.0.0\build\native\vcpkg.D.Programs.vcpkg.targets'))" />
+    <Error Condition="!Exists('..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.props'))" />
+    <Error Condition="!Exists('..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\vcpkg.C.Applications.vcpkg.1.0.0\build\native\vcpkg.C.Applications.vcpkg.targets'))" />
+  </Target>
+</Project>

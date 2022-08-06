@@ -1,6 +1,8 @@
 # visual studio output
 Debug/
-/Release/
-/.vs
-x64/
+Release/
 x86/
+x64/
+
+
+/.vs
