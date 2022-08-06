@@ -110,11 +110,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CalibrationSettingDialog.cpp" />
+    <ClCompile Include="AbstractCalibrationWindow.cpp" />
     <ClCompile Include="DualViewsCalibrationWindow.cpp" />
     <ClCompile Include="FunctionalDialog.cpp" />
     <ClCompile Include="SingleViewCalibrationWindow.cpp" />
     <QtUic Include="CalibrationSettingDialog.ui" />
-    <QtUic Include="DualViewsCalibrationWindow.ui" />
+    <QtUic Include="AbstractCalibrationWindow.ui" />
     <QtUic Include="FunctionalDialog.ui" />
     <QtUic Include="MainNavigationWindow.ui" />
     <QtMoc Include="MainNavigationWindow.h" />
@@ -124,9 +125,10 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CalibrationSettingDialog.h" />
-    <QtMoc Include="DualViewsCalibrationWindow.h" />
+    <QtMoc Include="AbstractCalibrationWindow.h" />
     <QtMoc Include="FunctionalDialog.h" />
     <QtMoc Include="SingleViewCalibrationWindow.h" />
+    <ClInclude Include="DualViewsCalibrationWindow.h" />
     <ClInclude Include="UICommon.h" />
   </ItemGroup>
   <ItemGroup>

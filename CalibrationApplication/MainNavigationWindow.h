@@ -6,7 +6,7 @@
 #include "AbstractCamerasFactory.h"
 #include "ui_MainNavigationWindow.h"
 #include "SingleViewCalibrationWindow.h"
-#include "DualViewsCalibrationWindow.h"
+#include "AbstractCalibrationWindow.h"
 #include "Logger.hpp"
 
 

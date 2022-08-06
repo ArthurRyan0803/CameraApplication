@@ -1,7 +1,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "MainNavigationWindow.h"
-
+#include "DualViewsCalibrationWindow.h"
 #include "AbstractCamerasFactory.h"
 #include "PDNCamerasFactory.h"
 #include "WebCamerasFactory.h"

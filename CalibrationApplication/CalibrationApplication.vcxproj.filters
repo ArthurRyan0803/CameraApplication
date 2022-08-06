@@ -29,7 +29,7 @@
     <QtUic Include="CalibrationSettingDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="DualViewsCalibrationWindow.ui">
+    <QtUic Include="AbstractCalibrationWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="SingleViewCalibrationWindow.ui">
@@ -46,7 +46,7 @@
     <ClCompile Include="CalibrationSettingDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DualViewsCalibrationWindow.cpp">
+    <ClCompile Include="AbstractCalibrationWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FunctionalDialog.cpp">
@@ -58,12 +58,12 @@
     <ClCompile Include="SingleViewCalibrationWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DualViewsCalibrationWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CalibrationSettingDialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="DualViewsCalibrationWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="FunctionalDialog.h">
@@ -75,12 +75,18 @@
     <QtMoc Include="SingleViewCalibrationWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="AbstractCalibrationWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UICommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DualViewsCalibrationWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
