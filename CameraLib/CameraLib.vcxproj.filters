@@ -16,9 +16,6 @@
     <Filter Include="Header Files\CameraFactory">
       <UniqueIdentifier>{a9451956-9251-468b-a647-025f241b0888}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\CameraFactory">
-      <UniqueIdentifier>{e6a4c3f2-0a55-4097-88dd-081784bf55a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Cameras">
       <UniqueIdentifier>{306355c6-a6a1-48f7-bdfc-e535ac8abd33}</UniqueIdentifier>
     </Filter>
@@ -27,10 +24,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PDNCamerasFactory.h">
+    <ClInclude Include="VSensorCamerasFactory.hpp">
       <Filter>Header Files\CameraFactory</Filter>
     </ClInclude>
-    <ClInclude Include="WebCamerasFactory.h">
+    <ClInclude Include="WebCamerasFactory.hpp">
       <Filter>Header Files\CameraFactory</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -48,6 +45,15 @@
     <ClInclude Include="Framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PDRCamera.h">
+      <Filter>Header Files\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="VSensorDef.h">
+      <Filter>Header Files\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="PDRBuffer.h">
+      <Filter>Header Files\Cameras</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -59,11 +65,11 @@
     <ClCompile Include="WebCamera.cpp">
       <Filter>Source Files\Cameras</Filter>
     </ClCompile>
-    <ClCompile Include="PDNCamerasFactory.cpp">
-      <Filter>Source Files\CameraFactory</Filter>
+    <ClCompile Include="PDRCamera.cpp">
+      <Filter>Source Files\Cameras</Filter>
     </ClCompile>
-    <ClCompile Include="WebCamerasFactory.cpp">
-      <Filter>Source Files\CameraFactory</Filter>
+    <ClCompile Include="PDRBuffer.cpp">
+      <Filter>Source Files\Cameras</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -21,6 +21,12 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Header Files\CalibWindows">
+      <UniqueIdentifier>{a06b3bca-2f26-42e9-95df-ee085b83722e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CalibWindows">
+      <UniqueIdentifier>{8e3e07b8-e05d-4dba-be46-d66eb88056b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="MainNavigationWindow.ui">
@@ -46,20 +52,23 @@
     <ClCompile Include="CalibrationSettingDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AbstractCalibrationWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FunctionalDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MainNavigationWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SingleViewCalibrationWindow.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="AbstractCalibrationWindow.cpp">
+      <Filter>Source Files\CalibWindows</Filter>
     </ClCompile>
     <ClCompile Include="DualViewsCalibrationWindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\CalibWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleViewCalibrationWindow.cpp">
+      <Filter>Source Files\CalibWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="TripleViewsCalibrationWindow.cpp">
+      <Filter>Source Files\CalibWindows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,11 +81,11 @@
     <QtMoc Include="MainNavigationWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="SingleViewCalibrationWindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="AbstractCalibrationWindow.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\CalibWindows</Filter>
+    </QtMoc>
+    <QtMoc Include="SingleViewCalibrationWindow.h">
+      <Filter>Header Files\CalibWindows</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -87,7 +96,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DualViewsCalibrationWindow.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\CalibWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="TripleViewsCalibrationWindow.h">
+      <Filter>Header Files\CalibWindows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

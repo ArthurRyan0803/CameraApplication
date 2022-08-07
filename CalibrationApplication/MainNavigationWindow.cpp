@@ -2,17 +2,20 @@
 
 #include "MainNavigationWindow.h"
 #include "DualViewsCalibrationWindow.h"
+#include "TripleViewsCalibrationWindow.h"
 #include "AbstractCamerasFactory.h"
-#include "PDNCamerasFactory.h"
-#include "WebCamerasFactory.h"
+#include "VSensorCamerasFactory.hpp"
+#include "WebCamerasFactory.hpp"
 #include "Logger.hpp"
 
 
 #define WEB_CAM "WebCamera"
 #define PDN_CAM "PDNCamera"
+#define PDR_CAM "PDRCamera"
 
+using namespace CameraLib;
 
-std::map<std::string, std::shared_ptr<CameraLib::AbstractCamerasFactory>> factories;
+std::map<std::string, std::shared_ptr<AbstractCamerasFactory>> factories;
 
 
 MainNavigationWindow::MainNavigationWindow(QWidget *parent)
@@ -21,10 +24,12 @@ MainNavigationWindow::MainNavigationWindow(QWidget *parent)
 	ui_.setupUi(this);
 	connect(ui_.btnSingleCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
 	connect(ui_.btnDualViewCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
+	connect(ui_.btnTripleViewCalib, &QPushButton::clicked, this, &MainNavigationWindow::buttonClicked);
 	connect(ui_.cbCamCategory, &QComboBox::currentTextChanged, this, &MainNavigationWindow::cameraCategorySelectionChanged);
 
-	factories[WEB_CAM] = std::make_shared<CameraLib::WebCamerasFactory>();
-	factories[PDN_CAM] = std::make_shared<CameraLib::PDNCamerasFactory>();
+	factories[WEB_CAM] = std::make_shared<WebCamerasFactory>();
+	factories[PDN_CAM] = std::make_shared<VSensorCameraFactory<PDNCamera>>();
+	factories[PDR_CAM] = std::make_shared<VSensorCameraFactory<PDRCamera>>();
 }
 
 
@@ -75,10 +80,14 @@ void MainNavigationWindow::buttonClicked()
 
 	calib_window_.reset();
 
-	if(button == ui_.btnSingleCalib)
+	if (button == ui_.btnSingleCalib)
 		calib_window_ = std::make_unique<SingleViewCalibrationWindow>(camera);
-	else if(button == ui_.btnDualViewCalib)
+	else if (button == ui_.btnDualViewCalib)
 		calib_window_ = std::make_unique<DualViewsCalibrationWindow>(camera);
+	else if (button == ui_.btnTripleViewCalib)
+	{
+		calib_window_ = std::make_unique<TripleViewsCalibrationWindow>(camera);
+	}
 	
 	if(calib_window_)
 	{

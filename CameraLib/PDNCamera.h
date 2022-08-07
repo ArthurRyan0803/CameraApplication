@@ -2,34 +2,11 @@
 
 #include "Framework.h"
 #include "Camera.h"
+#include "CameraDefine.H"
 #include "CameraApi.h"
-
 
 namespace CameraLib
 {
-	class CAMERALIB_DLL PDNCameraException: public std::exception
-	{
-		std::string func_name;
-		int code;
-		std::string message;
-
-	public:
-		 PDNCameraException(std::string message, int code, std::string&& file, int line): func_name(std::move(func_name)), code(code)
-		{
-			message = 
-			(
-				boost::format("MVCamSDK error, %1%, error code: %2%, file: %3%, line: %4%") % message % code % file % line 
-			).str();
-		
-		}
-
-		 char const* what() const override
-		{
-			return message.c_str();
-		}
-	};
-
-
 	class CAMERALIB_DLL PDNCamera: public Camera
 	{
 

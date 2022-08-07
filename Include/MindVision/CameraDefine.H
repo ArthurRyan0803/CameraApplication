@@ -4,7 +4,6 @@
 
 #include "CameraStatus.h"
 
-
 #define MAX_CROSS_LINE 9
 
 /// @ingroup MV_TYPEDEF
@@ -232,10 +231,6 @@ typedef enum
   PROP_SHEET_INDEX_WDR=10,				///< \~chinese 宽动态 \~english Wide Dynamic
   PROP_SHEET_INDEX_MULTI_EXPOSURE=11,	///< \~chinese 多重曝光 \~english Multi exposure
   PROP_SHEET_INDEX_SPECIAL=12,			///< \~chinese 特殊设置 \~english Special settings
-  PROP_SHEET_INDEX_GIGE=13,				///< \~chinese GIGE设置 \~english GIGE settings
-  PROP_SHEET_INDEX_GF_SETTING_I = 14,   ///< \~chinese GF系列红外相机设置I  \~english GF Settings I
-  PROP_SHEET_INDEX_GF_SETTING_II = 15,  ///< \~chinese GF系列红外相机设置II \~english GF Settings II
-
 }emSdkPropSheetMask;
 
 /// @ingroup MV_ENUM_TYPE

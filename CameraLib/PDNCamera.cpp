@@ -1,11 +1,10 @@
 #include "Framework.h"
 #include "PDNCamera.h"
+#include "VSensorDef.h"
 
 
 using namespace CameraLib;
 
-
-#define CAMERA_SDK_TRACK(OP) if(auto CODE = OP; SDK_UNSUCCESS(CODE)) throw PDNCameraException(#OP, CODE, __FILE__, __LINE__)
 
 #define ONE_SHOT_WAIT_MS 1000
 #define ISP_BUFFER_ALIGNMENT 16
@@ -20,9 +19,8 @@ void PDNCamera::frameCallback(CameraHandle camera_handle, BYTE *frame_buffer, tS
 	auto camera = static_cast<PDNCamera*>(context);
 	if(camera->frame_ready_callback_)
 	{
-		
-		CAMERA_SDK_TRACK(CameraImageProcess(camera_handle, frame_buffer, camera->isp_buffer_, frame_head));
-		CAMERA_SDK_TRACK(CameraFlipFrameBuffer(camera->isp_buffer_, frame_head, IMAGE_FLIP_FLAG));
+		VSENSOR_SDK_TRACK(CameraImageProcess(camera_handle, frame_buffer, camera->isp_buffer_, frame_head));
+		VSENSOR_SDK_TRACK(CameraFlipFrameBuffer(camera->isp_buffer_, frame_head, IMAGE_FLIP_FLAG));
 		cv::Mat mat = cv::Mat(cv::Size(frame_head->iWidth, frame_head->iHeight), frame_head->uBytes, camera->isp_buffer_);
 		camera->frame_ready_callback_(mat);
 	}
@@ -30,9 +28,9 @@ void PDNCamera::frameCallback(CameraHandle camera_handle, BYTE *frame_buffer, tS
 
 
 PDNCamera::PDNCamera(const tSdkCameraDevInfo& info): Camera(),
-	camera_info_(info), cam_handle_(0), is_opened_(false), isp_buffer_(nullptr)
+	camera_info_(info), cam_handle_(0), is_opened_(false), isp_buffer_(nullptr), capability_({})
 {
-	std::memset(&capability_, 0, sizeof(capability_));
+
 }
 
 
@@ -45,8 +43,8 @@ PDNCamera::~PDNCamera()
 
 void PDNCamera::open()
 {
-	CAMERA_SDK_TRACK(CameraInit(&camera_info_, -1, -1, &cam_handle_));
-	CAMERA_SDK_TRACK(CameraGetCapability(cam_handle_, &capability_));
+	VSENSOR_SDK_TRACK(CameraInit(&camera_info_, -1, -1, &cam_handle_));
+	VSENSOR_SDK_TRACK(CameraGetCapability(cam_handle_, &capability_));
 	
     auto isp_buffer_size = capability_.sResolutionRange.iWidthMax * capability_.sResolutionRange.iHeightMax * 3;
     isp_buffer_ = CameraAlignMalloc(isp_buffer_size, ISP_BUFFER_ALIGNMENT);
@@ -54,14 +52,14 @@ void PDNCamera::open()
 
 	if(capability_.sIspCapacity.bMonoSensor)
 	{
-		CAMERA_SDK_TRACK(CameraSetIspOutFormat(cam_handle_, CAMERA_MEDIA_TYPE_MONO8));
+		VSENSOR_SDK_TRACK(CameraSetIspOutFormat(cam_handle_, CAMERA_MEDIA_TYPE_MONO8));
 	}
 
 	char camera_name[64];
 	strcpy_s(camera_name,camera_info_.acFriendlyName);
-	CAMERA_SDK_TRACK(CameraCreateSettingPage(cam_handle_, nullptr, camera_name,nullptr,nullptr,0));
-	CAMERA_SDK_TRACK(CameraSetTriggerMode(cam_handle_, SOFT_TRIGGER));
-	CAMERA_SDK_TRACK(CameraPlay(cam_handle_));
+	VSENSOR_SDK_TRACK(CameraCreateSettingPage(cam_handle_, nullptr, camera_name,nullptr,nullptr,0));
+	VSENSOR_SDK_TRACK(CameraSetTriggerMode(cam_handle_, SOFT_TRIGGER));
+	VSENSOR_SDK_TRACK(CameraPlay(cam_handle_));
 
 	is_opened_ = true;
 }
@@ -72,8 +70,8 @@ void PDNCamera::close()
 	if(!is_opened_)
 		return;
 
-	//CAMERA_SDK_TRACK(CameraPause(cam_handle_));
-	CAMERA_SDK_TRACK(CameraUnInit(cam_handle_));
+	//VSENSOR_SDK_TRACK(CameraPause(cam_handle_));
+	VSENSOR_SDK_TRACK(CameraUnInit(cam_handle_));
 
 	CameraAlignFree(isp_buffer_);
 	is_opened_ = false;
@@ -93,8 +91,8 @@ void PDNCamera::startCapture()
 	CHECK_IS_OPENED();
 	CHECK_NOT_CAPTURING();
 	
-	CAMERA_SDK_TRACK(CameraSetTriggerMode(cam_handle_, CONTINUATION));
-	CAMERA_SDK_TRACK(CameraSetCallbackFunction(cam_handle_, frameCallback, this, nullptr));
+	VSENSOR_SDK_TRACK(CameraSetTriggerMode(cam_handle_, CONTINUATION));
+	VSENSOR_SDK_TRACK(CameraSetCallbackFunction(cam_handle_, frameCallback, this, nullptr));
 }
 
 
@@ -105,15 +103,15 @@ void PDNCamera::stopCapture()
 	if(!isCapturing())
 		return;
 	
-	CAMERA_SDK_TRACK(CameraSetTriggerMode(cam_handle_, SOFT_TRIGGER));
-	CAMERA_SDK_TRACK(CameraSetCallbackFunction(cam_handle_, nullptr, nullptr, nullptr));
+	VSENSOR_SDK_TRACK(CameraSetTriggerMode(cam_handle_, SOFT_TRIGGER));
+	VSENSOR_SDK_TRACK(CameraSetCallbackFunction(cam_handle_, nullptr, nullptr, nullptr));
 }
 
 
 bool PDNCamera::isCapturing()
 {
 	INT mode;
-	CAMERA_SDK_TRACK(CameraGetTriggerMode(cam_handle_, &mode));
+	VSENSOR_SDK_TRACK(CameraGetTriggerMode(cam_handle_, &mode));
 	return mode == CONTINUATION;
 }
 
@@ -133,7 +131,7 @@ std::array<int, 2> PDNCamera::getCurrentResolution()
 	CHECK_IS_OPENED();
 
 	tSdkImageResolution resolution;
-	CAMERA_SDK_TRACK(CameraGetImageResolution(cam_handle_, &resolution));
+	VSENSOR_SDK_TRACK(CameraGetImageResolution(cam_handle_, &resolution));
 	
 	return std::array<int, 2> {resolution.iWidth * 2, resolution.iHeight};
 }
@@ -144,12 +142,12 @@ std::array<int, 2> PDNCamera::getCurrentResolution()
 //	CHECK_IS_OPENED();
 //
 //	tSdkImageResolution resolution_s;
-//	CAMERA_SDK_TRACK(CameraGetImageResolution(cam_handle_, &resolution_s));
+//	VSENSOR_SDK_TRACK(CameraGetImageResolution(cam_handle_, &resolution_s));
 //
 //	resolution_s.iWidth = useBothSensor() ? resolution[0] / 2 : resolution[0];
 //	resolution_s.iHeight = resolution[1];
 //	
-//	CAMERA_SDK_TRACK(CameraSetImageResolution(cam_handle_, &resolution_s));
+//	VSENSOR_SDK_TRACK(CameraSetImageResolution(cam_handle_, &resolution_s));
 //}
 
 
@@ -158,7 +156,7 @@ size_t PDNCamera::getPixelType()
 	CHECK_IS_OPENED();
 
 	UINT format;
-	CAMERA_SDK_TRACK(CameraGetIspOutFormat(cam_handle_, &format));
+	VSENSOR_SDK_TRACK(CameraGetIspOutFormat(cam_handle_, &format));
 	switch(format)
 	{
 	case CAMERA_MEDIA_TYPE_MONO8: 
@@ -179,13 +177,13 @@ void PDNCamera::oneShot(cv::OutputArray image)
 	CHECK_IS_OPENED();
 	CHECK_NOT_CAPTURING();
 
-	CAMERA_SDK_TRACK(CameraSoftTrigger(cam_handle_));
+	VSENSOR_SDK_TRACK(CameraSoftTrigger(cam_handle_));
 	
 	tSdkFrameHead frame_head;
 	BYTE* p_buffer = nullptr;
-	CAMERA_SDK_TRACK(CameraGetImageBuffer(cam_handle_, &frame_head, &p_buffer, ONE_SHOT_WAIT_MS));
-	CAMERA_SDK_TRACK(CameraImageProcess(cam_handle_, p_buffer, isp_buffer_, &frame_head));
-	CAMERA_SDK_TRACK(CameraFlipFrameBuffer(isp_buffer_, &frame_head, IMAGE_FLIP_FLAG));
+	VSENSOR_SDK_TRACK(CameraGetImageBuffer(cam_handle_, &frame_head, &p_buffer, ONE_SHOT_WAIT_MS));
+	VSENSOR_SDK_TRACK(CameraImageProcess(cam_handle_, p_buffer, isp_buffer_, &frame_head));
+	VSENSOR_SDK_TRACK(CameraFlipFrameBuffer(isp_buffer_, &frame_head, IMAGE_FLIP_FLAG));
 
 	// It's just wrapper of isp_buffer_
 	auto mat = cv::Mat(
@@ -195,7 +193,7 @@ void PDNCamera::oneShot(cv::OutputArray image)
 	);
 	
 	image.getMatRef() = mat.clone();
-	CAMERA_SDK_TRACK(CameraReleaseImageBuffer(cam_handle_, p_buffer));
+	VSENSOR_SDK_TRACK(CameraReleaseImageBuffer(cam_handle_, p_buffer));
 }
 
 void PDNCamera::showParameterDialog()

@@ -151,16 +151,19 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="PDNCamera.h" />
-    <ClInclude Include="PDNCamerasFactory.h" />
+    <ClInclude Include="PDRBuffer.h" />
+    <ClInclude Include="PDRCamera.h" />
+    <ClInclude Include="VSensorCamerasFactory.hpp" />
+    <ClInclude Include="VSensorDef.h" />
     <ClInclude Include="WebCamera.h" />
-    <ClInclude Include="WebCamerasFactory.h" />
+    <ClInclude Include="WebCamerasFactory.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="PDNCamera.cpp" />
-    <ClCompile Include="PDNCamerasFactory.cpp" />
+    <ClCompile Include="PDRBuffer.cpp" />
+    <ClCompile Include="PDRCamera.cpp" />
     <ClCompile Include="WebCamera.cpp" />
-    <ClCompile Include="WebCamerasFactory.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

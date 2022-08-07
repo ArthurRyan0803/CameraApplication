@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>228</height>
+    <height>269</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -103,6 +103,25 @@
          </property>
          <property name="text">
           <string>Dual View Calibration</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnTripleViewCalib">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Triple View Calibration</string>
          </property>
         </widget>
        </item>

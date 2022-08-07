@@ -2,17 +2,6 @@
 
 #include "Framework.h"
 
-#ifdef _MSC_VER
-	#ifdef _WIN64
-		#pragma comment(lib, "../SDK/MVCAMSDK_X64.lib")
-	#else
-		#pragma comment(lib, "../SDK/MVCAMSDK.lib")
-	#endif
-#else
-#error "Unrecognized compiler!"
-#endif
-
-
 namespace CameraLib
 {
 	#define CHECK_IS_OPENED() if(!isOpened()) throw std::logic_error("Camera is not opened!")

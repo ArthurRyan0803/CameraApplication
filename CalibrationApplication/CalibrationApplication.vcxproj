@@ -66,7 +66,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>C:\Program Files (x86)\MindVision\SDK\X64\MVCAMSDK_X64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -114,6 +114,7 @@
     <ClCompile Include="DualViewsCalibrationWindow.cpp" />
     <ClCompile Include="FunctionalDialog.cpp" />
     <ClCompile Include="SingleViewCalibrationWindow.cpp" />
+    <ClCompile Include="TripleViewsCalibrationWindow.cpp" />
     <QtUic Include="CalibrationSettingDialog.ui" />
     <QtUic Include="AbstractCalibrationWindow.ui" />
     <QtUic Include="FunctionalDialog.ui" />
@@ -129,6 +130,7 @@
     <QtMoc Include="FunctionalDialog.h" />
     <QtMoc Include="SingleViewCalibrationWindow.h" />
     <ClInclude Include="DualViewsCalibrationWindow.h" />
+    <ClInclude Include="TripleViewsCalibrationWindow.h" />
     <ClInclude Include="UICommon.h" />
   </ItemGroup>
   <ItemGroup>

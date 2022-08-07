@@ -6,7 +6,7 @@
 
 namespace CameraLib
 {
-	class CAMERALIB_DLL AbstractCamerasFactory: public boost::noncopyable
+	class AbstractCamerasFactory: public boost::noncopyable
 	{
 	
 	public:
