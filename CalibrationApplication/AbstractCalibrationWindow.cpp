@@ -44,7 +44,6 @@ AbstractCalibrationWindow::AbstractCalibrationWindow(
 	
 	camera->setFrameReadyCallback([this](cv::InputArray data) { cameraFrameReadyCallback(data); });
 	camera->open();
-	cam_resolution_ = camera->getCurrentResolution();
 }
 
 

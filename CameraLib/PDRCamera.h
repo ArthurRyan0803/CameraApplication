@@ -16,6 +16,7 @@ namespace CameraLib
 	private:
 		volatile bool is_opened_{ false };
 		volatile bool is_snap_{ false };
+		volatile bool is_capturing_ {false};
 
 		// Members for one shot (snap)
 		std::mutex snap_mutex_;
@@ -29,6 +30,8 @@ namespace CameraLib
 		CameraHandle cam_handle_{};
 		tSdkCameraDevInfo info_;
 		static int vsensor_frame_ready_callback(void* grabber, int phase, BYTE* frame_buffer, tSdkFrameHead* frame_head, void* context);
+		
+		std::function<void(cv::InputArray)> frame_ready_callback_;
 
 	public:
 		PDRCamera(const tSdkCameraDevInfo& info);
@@ -39,10 +42,8 @@ namespace CameraLib
 		void startCapture() override;
 		void stopCapture() override;
 		bool isCapturing() override;
+		size_t getViews() override;
 		void showParameterDialog() override;
-		std::vector<std::array<int, 2>> enumerateAvailableResolutions() override;
-		std::array<int, 2> getCurrentResolution() override;
-		size_t getPixelType() override;
 		void oneShot(cv::OutputArray data) override;
 		void setFrameReadyCallback(std::function<void(cv::InputArray)> callback) override;
 	};

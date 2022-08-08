@@ -116,60 +116,6 @@ bool PDNCamera::isCapturing()
 }
 
 
-std::vector<std::array<int, 2>> PDNCamera::enumerateAvailableResolutions()
-{
-	CHECK_IS_OPENED();
-
-	auto resolution = getCurrentResolution();
-	return { {resolution[0], resolution[1]} };
-}
-
-
-// This method get the virtual resolution
-std::array<int, 2> PDNCamera::getCurrentResolution()
-{
-	CHECK_IS_OPENED();
-
-	tSdkImageResolution resolution;
-	VSENSOR_SDK_TRACK(CameraGetImageResolution(cam_handle_, &resolution));
-	
-	return std::array<int, 2> {resolution.iWidth * 2, resolution.iHeight};
-}
-
-
-//void PDNCamera::setCurrentResolution(const std::array<int, 2>& resolution)
-//{
-//	CHECK_IS_OPENED();
-//
-//	tSdkImageResolution resolution_s;
-//	VSENSOR_SDK_TRACK(CameraGetImageResolution(cam_handle_, &resolution_s));
-//
-//	resolution_s.iWidth = useBothSensor() ? resolution[0] / 2 : resolution[0];
-//	resolution_s.iHeight = resolution[1];
-//	
-//	VSENSOR_SDK_TRACK(CameraSetImageResolution(cam_handle_, &resolution_s));
-//}
-
-
-size_t PDNCamera::getPixelType()
-{
-	CHECK_IS_OPENED();
-
-	UINT format;
-	VSENSOR_SDK_TRACK(CameraGetIspOutFormat(cam_handle_, &format));
-	switch(format)
-	{
-	case CAMERA_MEDIA_TYPE_MONO8: 
-		return CV_8U;
-	case CAMERA_MEDIA_TYPE_RGB8:
-	case CAMERA_MEDIA_TYPE_BGR8:
-		return CV_8UC3;
-	default:
-		throw std::runtime_error("Unrecognized format of isp!");
-	}
-}
-
-
 void PDNCamera::oneShot(cv::OutputArray image)
 {
 	assert(image.kind() == cv::_InputArray::MAT);
@@ -194,6 +140,11 @@ void PDNCamera::oneShot(cv::OutputArray image)
 	
 	image.getMatRef() = mat.clone();
 	VSENSOR_SDK_TRACK(CameraReleaseImageBuffer(cam_handle_, p_buffer));
+}
+
+size_t PDNCamera::getViews()
+{
+	return 2;
 }
 
 void PDNCamera::showParameterDialog()

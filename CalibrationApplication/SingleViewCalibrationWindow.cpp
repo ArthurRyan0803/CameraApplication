@@ -8,7 +8,7 @@ using namespace CameraLib;
 
 SingleViewCalibrationWindow::SingleViewCalibrationWindow(
 	std::shared_ptr<Camera> camera, QWidget* parent
-):	QMainWindow(parent), q_image_buffer_(nullptr), cam_resolution_({}), calib_pattern_(Invalid), check_calib_board_(false),
+):	QMainWindow(parent), q_image_buffer_(nullptr), calib_pattern_(Invalid), check_calib_board_(false),
     is_calibrating(false), logger_(GET_LOGGER()), camera_(std::move(camera))
 {
 	ui_.setupUi(this);
@@ -32,7 +32,6 @@ SingleViewCalibrationWindow::SingleViewCalibrationWindow(
 		ui_.cmbCalibPattern->addItem(QString::fromStdString(pair.first));
 
 	camera_->open();
-	cam_resolution_ = camera_->getCurrentResolution();
 }
 
 
@@ -40,12 +39,13 @@ void SingleViewCalibrationWindow::cameraFrameReadyCallback(cv::InputArray image_
 {
 	if(image_data.empty())
 		return;
-
+	
 	{
 		std::lock_guard frame_lock(frame_buffer_mutex_);
+		cv::Mat image = image_data.getMat();
 		if(!frame_buffer_)
-			frame_buffer_ = std::make_unique<cv::Mat>(cam_resolution_[1], cam_resolution_[0], camera_->getPixelType());
-		image_data.copyTo(*frame_buffer_);
+			frame_buffer_ = std::make_unique<cv::Mat>(image.rows, image.cols, CV_MAT_TYPE(image.type()));
+		image.copyTo(*frame_buffer_);
 
 		{
 			std::lock_guard q_image_lock(q_image_mutex_);
@@ -166,14 +166,17 @@ bool SingleViewCalibrationWindow::eventFilter(QObject* obj, QEvent* e)
 		auto pen = QPen(QBrush(QColor::fromRgb(255, 0, 0)), 10.0f);
 		painter.setPen(pen);
 
+		std::array<int, 2> resolution{};
+
 		{
 			// Paint image.
 			std::lock_guard lock(this->q_image_mutex_);
 			
 			if(q_image_buffer_)
 			{
+				resolution = {q_image_buffer_->width(), q_image_buffer_->height()};
 				UICommon::getImagePaintRegion(
-					cam_resolution_, 
+					resolution, 
 					{ui_.canvas->width(), ui_.canvas->height()}, 
 					paint_region
 				);
@@ -198,7 +201,7 @@ bool SingleViewCalibrationWindow::eventFilter(QObject* obj, QEvent* e)
 				for(auto& point: std::get<1>(board_corners_copy))
 				{
 					auto point_in_widget =  
-						UICommon::convertPaintPositions(cam_resolution_, paint_region, {point.x, point.y});
+						UICommon::convertPaintPositions(resolution, paint_region, {point.x, point.y});
 
 					painter.drawPoint(point_in_widget[0], point_in_widget[1]);
 				}

@@ -34,13 +34,17 @@ bool DualViewsCalibrationWindow::paintImage(int index)
 
 	auto& qimage_mutex = q_image_mutexes_[index];
 	auto& qimage = q_images_[index];
+	int width, height;
+
 	{
 		std::lock_guard lock(qimage_mutex);
 
 		if (qimage)
 		{
+			width = qimage->width();
+			height = qimage->height();
 			UICommon::getImagePaintRegion(
-				{ qimage->width(), qimage->height() },
+				{ width, height },
 				{ canvas->width(), canvas->height() },
 				paint_region
 			);
@@ -62,7 +66,7 @@ bool DualViewsCalibrationWindow::paintImage(int index)
 		{
 			auto point_in_widget =
 				UICommon::convertPaintPositions(
-					{ cam_resolution_[0] / 2, cam_resolution_[1] },
+					{ width, height },
 					paint_region, { point.x, point.y }
 			);
 

@@ -14,6 +14,7 @@ using namespace CameraLib;
 #define FRAME_WIDTH 1280
 #define FRAME_HEIGHT 1024
 
+
 static void copyRawData(BYTE* dst, BYTE* src, int w, int h, int step)
 {
 	for (int i = 0; i < h; ++i)
@@ -55,11 +56,45 @@ int PDRCamera::vsensor_frame_ready_callback(void* grabber, int phase, BYTE* fram
 		
 		camera->is_snap_ = false;
 	}
+	else if (camera->isCapturing())
+	{
+		auto& callback = camera->frame_ready_callback_;
+		if(!callback)
+			return 0;
+
+		auto& isp_buffer = camera->isp_buffer_;
+		auto& camera_handle = camera->cam_handle_;
+		
+		// parse and copy gray data
+		copyRawData(isp_buffer->left.get(), frame_buffer, FRAME_WIDTH, FRAME_HEIGHT, FRAME_WIDTH * 2);
+		copyRawData(isp_buffer->right.get(), frame_buffer + FRAME_WIDTH, FRAME_WIDTH, FRAME_HEIGHT, FRAME_WIDTH * 2);
+		
+		tSdkFrameHead rgb_head;
+		// directly process rgb data in camera core buffer.
+		CameraSetIspOutFormat(camera_handle, CAMERA_MEDIA_TYPE_BGR8);
+		fillFrameHead(rgb_head, CAMERA_MEDIA_TYPE_BAYRG8, FRAME_WIDTH, FRAME_HEIGHT);
+		CameraImageProcess(camera_handle, FRAME_WIDTH * FRAME_HEIGHT * 2 + frame_buffer, isp_buffer->rgb_isp.get(), &rgb_head);
+
+		// process gray data
+		tSdkFrameHead gray_head;
+		CameraSetIspOutFormat(camera_handle, CAMERA_MEDIA_TYPE_MONO8);
+		fillFrameHead(gray_head, CAMERA_MEDIA_TYPE_MONO8, FRAME_WIDTH, FRAME_HEIGHT);
+		
+		CameraImageProcess(camera_handle, isp_buffer->left.get(), isp_buffer->left_isp.get(), &gray_head);
+		CameraImageProcess(camera_handle, isp_buffer->right.get(), isp_buffer->right_isp.get(), &gray_head);
+
+		auto left_mat = cv::Mat(cv::Size(gray_head.iWidth, gray_head.iHeight), CV_8UC1, isp_buffer->left_isp.get());
+		auto right_mat = cv::Mat(cv::Size(gray_head.iWidth, gray_head.iHeight), CV_8UC1, isp_buffer->right_isp.get());
+		auto rgb_mat = cv::Mat(cv::Size(gray_head.iWidth, gray_head.iHeight), CV_8UC3, isp_buffer->rgb_isp.get());
+
+		callback(std::vector {left_mat, right_mat, rgb_mat});
+	}
 
 	return 0;
 }
 
-PDRCamera::PDRCamera(const tSdkCameraDevInfo& info): Camera(), info_(info), isp_buffer_(std::make_unique<PDRBuffer>(cv::Size(FRAME_WIDTH, FRAME_HEIGHT)))
+PDRCamera::PDRCamera(const tSdkCameraDevInfo& info)
+	:Camera(), isp_buffer_(std::make_unique<PDRBuffer>(cv::Size(FRAME_WIDTH, FRAME_HEIGHT))), info_(info)
 {
 }
 
@@ -98,14 +133,6 @@ void PDRCamera::open()
 	VSENSOR_SDK_TRACK(CameraSetAeState(cam_handle_, FALSE));				// Manual exposure.
 	VSENSOR_SDK_TRACK(CameraSetTriggerMode(cam_handle_, SOFT_TRIGGER));	// Soft trigger
 
-	//SELECT_GRAY_SENSOR(cam_handle_);
-	//VSENSOR_SDK_TRACK(CameraSetInPutIOMode(cam_handle_, 0, IOMODE_TRIG_INPUT));
-	//VSENSOR_SDK_TRACK(CameraSetInPutIOFormat(cam_handle_, 0, IOFORMAT_SINGLE));
-	//VSENSOR_SDK_TRACK(CameraSetOutPutIOMode(cam_handle_, 0, IOMODE_STROBE_OUTPUT));
-	//VSENSOR_SDK_TRACK(CameraSetOutPutIOFormat(cam_handle_, 0, IOFORMAT_SINGLE));
-	//VSENSOR_SDK_TRACK(CameraSetOutPutIOMode(cam_handle_, 1, IOMODE_GP_OUTPUT));
-	//VSENSOR_SDK_TRACK(CameraSetOutPutIOFormat(cam_handle_, 1, IOFORMAT_SINGLE));
-
 	VSENSOR_SDK_TRACK(CameraGrabber_StartLive(grabber_handle_));
 
 	is_opened_ = true;
@@ -133,8 +160,9 @@ void PDRCamera::startCapture()
 {
 	CHECK_IS_OPENED();
 	CHECK_NOT_CAPTURING();
-
+	
 	VSENSOR_SDK_TRACK(CameraSetTriggerMode(cam_handle_, CONTINUATION));
+	is_capturing_ = true;
 }
 
 void PDRCamera::stopCapture()
@@ -143,34 +171,24 @@ void PDRCamera::stopCapture()
 
 	if (!isCapturing())
 		return;
-
-	VSENSOR_SDK_TRACK(CameraGrabber_SetFrameListener(grabber_handle_, nullptr, nullptr));
+	
 	VSENSOR_SDK_TRACK(CameraSetTriggerMode(cam_handle_, SOFT_TRIGGER));
+	is_capturing_ = false;
 	
 }
 
 bool PDRCamera::isCapturing()
 {
-	return false;
+	return is_capturing_;
+}
+
+size_t PDRCamera::getViews()
+{
+	return 3;
 }
 
 void PDRCamera::showParameterDialog()
 {
-}
-
-std::vector<std::array<int, 2>> PDRCamera::enumerateAvailableResolutions()
-{
-	return {};
-}
-
-std::array<int, 2> PDRCamera::getCurrentResolution()
-{
-	return {};
-}
-
-size_t PDRCamera::getPixelType()
-{
-	return 0;
 }
 
 void PDRCamera::oneShot(cv::OutputArray images)
@@ -189,7 +207,8 @@ void PDRCamera::oneShot(cv::OutputArray images)
 	{
 		// waiting frame call back function
 		std::unique_lock lock(snap_mutex_);
-		snap_condition_var_.wait(lock);
+		if(snap_condition_var_.wait_for(lock, std::chrono::milliseconds(1000)) == std::cv_status::timeout)
+			throw std::runtime_error("Snap timeout!");
 
 		// parse and copy gray data
 		copyRawData(isp_buffer_->left.get(), snap_src_buffer_, FRAME_WIDTH, FRAME_HEIGHT, FRAME_WIDTH * 2);
@@ -213,9 +232,6 @@ void PDRCamera::oneShot(cv::OutputArray images)
 	CameraImageProcess(cam_handle_, isp_buffer_->left.get(), isp_buffer_->left_isp.get(), &gray_head);
 	CameraImageProcess(cam_handle_, isp_buffer_->right.get(), isp_buffer_->right_isp.get(), &gray_head);
 
-	CameraFlipFrameBuffer(isp_buffer_->left_isp.get(), &gray_head, 1);
-	CameraFlipFrameBuffer(isp_buffer_->rgb_isp.get(), &gray_head, 1);
-	
 	auto left_mat = cv::Mat(cv::Size(gray_head.iWidth, gray_head.iHeight), CV_8UC1, isp_buffer_->left_isp.get()).clone();
 	auto right_mat = cv::Mat(cv::Size(gray_head.iWidth, gray_head.iHeight), CV_8UC1, isp_buffer_->right_isp.get()).clone();
 	auto rgb_mat = cv::Mat(cv::Size(gray_head.iWidth, gray_head.iHeight), CV_8UC3, isp_buffer_->rgb_isp.get()).clone();
@@ -225,5 +241,5 @@ void PDRCamera::oneShot(cv::OutputArray images)
 
 void PDRCamera::setFrameReadyCallback(std::function<void(cv::InputArray)> callback)
 {
-
+	frame_ready_callback_ = callback;
 }

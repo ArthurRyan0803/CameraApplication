@@ -34,16 +34,8 @@ namespace CameraLib
 		void stopCapture() override;
 		bool isCapturing() override;
 		void oneShot(cv::OutputArray data) override;
-
+		size_t getViews() override;
 		void showParameterDialog() override;
-
-		std::vector<std::array<int, 2>> enumerateAvailableResolutions() override;
-
-		// Properties
-		std::array<int, 2> getCurrentResolution() override;
-		//void setCurrentResolution(const std::array<int, 2>& resolution) override;
-
-		size_t getPixelType() override;
 
 		// callbacks
 		void setFrameReadyCallback(std::function<void(cv::InputArray)> callback) override;

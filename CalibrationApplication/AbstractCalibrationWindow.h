@@ -26,7 +26,6 @@ protected:
 	volatile Pattern calib_pattern_;
 	CalibrationBoardSettings calib_board_settings_;
 	std::string calib_files_folder_;
-	std::array<int, 2> cam_resolution_{};
 	std::shared_ptr<CameraLib::Camera> camera_;
 
 	/* ------ Events ------ */

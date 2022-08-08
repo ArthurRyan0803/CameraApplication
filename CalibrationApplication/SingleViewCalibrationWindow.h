@@ -28,7 +28,6 @@ private:
 	std::unique_ptr<cv::Mat> frame_buffer_;						// Image for processing.
 	std::tuple<bool, std::vector<cv::Point2f>> pattern_points_;	// Key points in the planarCalibration board.
 	std::unique_ptr<std::thread> board_detect_thread_;			// The thread to detect points in the planarCalibration board.
-	std::array<int, 2> cam_resolution_;
 	std::vector<std::shared_ptr<cv::Mat>> calib_images_;		// Store images for planarCalibration.
 
 	Pattern calib_pattern_;										// Pattern of planarCalibration board.
