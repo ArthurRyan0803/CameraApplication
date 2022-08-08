@@ -6,9 +6,9 @@
 
 #ifdef _MSC_VER
 	#ifdef _WIN64
-		#pragma comment(lib, "../SDK/MindVision/x64/MVCAMSDK_X64.lib")
+		#pragma comment(lib, "../SDK/MindVision/Release_x64/MVCAMSDK_X64.lib")
 	#else
-		#pragma comment(lib, "../SDK/MindVision/MVCAMSDK.lib")
+		#pragma comment(lib, "../SDK/MindVision/Release_x86/MVCAMSDK.lib")
 	#endif
 #else
 	#error "Unrecognized compiler!"
