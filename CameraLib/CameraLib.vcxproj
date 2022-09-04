@@ -154,18 +154,20 @@
   <ItemGroup>
     <ClInclude Include="AbstractCamerasFactory.h" />
     <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="CoupledMVImageCamera.hpp" />
+    <ClInclude Include="CoupledMVImageCameraFactory.hpp" />
     <ClInclude Include="FrameListener.h" />
     <ClInclude Include="Framework.h" />
-    <ClInclude Include="MVDef.h" />
+    <ClInclude Include="MVDef.hpp" />
     <ClInclude Include="MVImageCamera.h" />
     <ClInclude Include="PDNImageCamera.h" />
     <ClInclude Include="PDRImageCamera.h" />
-    <ClInclude Include="VSensorDef.h" />
-    <ClInclude Include="MVCamerasFactory.hpp" />
+    <ClInclude Include="VSensorDef.hpp" />
+    <ClInclude Include="MVImageCameraFactory.hpp" />
     <ClInclude Include="VSensorPointCloudCamera.h" />
-    <ClInclude Include="VSensorPointCloudCamerasFactory.hpp" />
+    <ClInclude Include="VSensorPointCloudCameraFactory.hpp" />
     <ClInclude Include="WebCamera.h" />
-    <ClInclude Include="WebCamerasFactory.hpp" />
+    <ClInclude Include="WebCameraFactory.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MVCameraProjector.cpp" />

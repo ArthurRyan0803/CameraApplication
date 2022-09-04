@@ -4,11 +4,11 @@
 #include "Camera.hpp"
 #include "CameraDefine.H"
 #include "CameraApi.h"
-#include "MVImageCamera.h"
+#include "CoupledMVImageCamera.hpp"
 
 namespace CameraLib
 {
-	class CAMERALIB_SDK PDNImageCamera: public MVImageCamera
+	class CAMERALIB_SDK PDNImageCamera: public CoupledMVImageCamera
 	{
 	protected:
 		void wrapIspBuffer(BYTE* frame_buffer, tSdkFrameHead& frame_head, const std::shared_ptr<BYTE>& buffer, cv::OutputArray data) override;

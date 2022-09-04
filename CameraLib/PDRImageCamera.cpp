@@ -1,6 +1,6 @@
 #include "PDRImageCamera.h"
 #include "MindVision/CameraApi.h"
-#include "MVDef.h"
+#include "MVDef.hpp"
 
 using namespace CameraLib;
 
@@ -81,7 +81,7 @@ void copyFrame(CameraHandle cam_handle, BYTE* src, BYTE* gray, BYTE* rgb)
 //}
 
 PDRImageCamera::PDRImageCamera(const tSdkCameraDevInfo& info)
-	: MVImageCamera(info)
+	: CoupledMVImageCamera(info)
 {
 }
 

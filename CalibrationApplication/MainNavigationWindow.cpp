@@ -4,7 +4,7 @@
 #include "DualViewsCalibrationWindow.h"
 #include "TripleViewsCalibrationWindow.h"
 #include "AbstractCamerasFactory.h"
-#include "MVCamerasFactory.hpp"
+#include "MVImageCameraFactory.hpp"
 #include "WebCamerasFactory.hpp"
 #include "Logger.hpp"
 
@@ -29,9 +29,9 @@ MainNavigationWindow::MainNavigationWindow(QWidget *parent)
 	connect(ui_.cbCamCategory, &QComboBox::currentTextChanged, this, &MainNavigationWindow::cameraCategorySelectionChanged);
 
 	factories[WEB_CAM] = std::make_shared<WebCamerasFactory>();
-	factories[MV_CAM] = std::make_shared<MVCameraFactory<MVImageCamera>>();
-	factories[PDN_CAM] = std::make_shared<MVCameraFactory<PDNImageCamera>>();
-	factories[PDR_CAM] = std::make_shared<MVCameraFactory<PDRImageCamera>>();
+	factories[MV_CAM] = std::make_shared<MVImageCameraFactory<MVImageCamera>>();
+	factories[PDN_CAM] = std::make_shared<MVImageCameraFactory<PDNImageCamera>>();
+	factories[PDR_CAM] = std::make_shared<MVImageCameraFactory<PDRImageCamera>>();
 }
 
 

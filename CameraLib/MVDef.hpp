@@ -1,5 +1,7 @@
+#pragma once
+
 #include <Logger.hpp>
-#include "VSensorDef.h"
+#include "VSensorDef.hpp"
 
 namespace CameraLib
 {

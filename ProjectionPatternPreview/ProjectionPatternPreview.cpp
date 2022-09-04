@@ -1,104 +1,25 @@
 #include "ProjectionPatternPreview.h"
 #include "UICommon.hpp"
+#include "StructuredLightUtils.hpp"
 
-#include <QPainter>
-#include <QSpinbox>
-#include <QSlider>
-#include <QMessageBox>
+#include <CoupledMVImageCameraFactory.hpp>
+
 #include <QDebug>
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QPainter>
+#include <QSlider>
+#include <QSpinbox>
 
 #include <cmath>
 #include <math.h>
 
 
-#define M_PI       3.14159265358979323846
-#define GRAY_CODE_INVALID 0xff
-#define FB_TOLERENCE 20
-
-
-cv::Mat ProjectionPatternPreview::calPhaseMat(const std::vector<cv::Mat>& images)
-{
-	cv::Mat phase_image(images[0].rows, images[0].cols, CV_64FC1);
-
-	for(int y=0; y<images[0].rows; y++)
-	{
-		for(int x=0; x<images[0].cols; x++)
-		{
-			auto i1 = images[0].at<uint8_t>(y, x);
-			auto i2 = images[1].at<uint8_t>(y, x);
-			auto i3 = images[2].at<uint8_t>(y, x);
-			auto i4 = images[3].at<uint8_t>(y, x);
-
-			auto phase = std::atan2((i4 - i2), (i1 - i3));
-
-			phase_image.at<double>(y, x) = phase;
-		}
-	}
-
-	return phase_image;
-}
-
-
-cv::Mat ProjectionPatternPreview::calGrayCodeOrderMap(const std::vector<cv::Mat>& images, cv::OutputArray thd_mat)
-{
-	cv::Mat dark_image = images[0], bright_image = images[1];
-
-	cv::Mat thd_image(dark_image.rows, dark_image.cols, CV_8UC1);
-
-	for(size_t r=0; r<dark_image.rows; r++)
-	{
-		for(size_t c=0; c<dark_image.cols; c++)
-		{
-			auto max = bright_image.at<uint8_t>(r, c), min = dark_image.at<uint8_t>(r, c);
-
-			thd_image.at<uint8_t>(r, c) = std::abs(max - min) > FB_TOLERENCE ? (max - min) / 2: 0;
-		}
-	}
-
-	//std::vector<cv::Mat> binary_images;
-	cv::Mat gray_code_mat(thd_image.rows, thd_image.cols, CV_8UC1, cv::Scalar(0));
-
-	for(size_t i=6; i<patterns_count_; i++)
-	{
-		cv::Mat image = images.at(i);
-
-		for(size_t r=0; r<image.rows; r++)
-			for(size_t c=0; c<image.cols; c++)
-			{
-				auto thd = thd_image.at<uint8_t>(r, c);
-				auto& code = gray_code_mat.at<uint8_t>(r, c);
-
-				if(thd == 0)
-					code = GRAY_CODE_INVALID;
-				else
-				{
-					code = (code << 1) | (image.at<uint8_t>(r, c) > thd ? 0x01: 0);
-				}	
-			}
-	}
-	
-	if(thd_mat.kind() == cv::_InputArray::MAT)
-		thd_mat.assign(thd_image);
-
-	return gray_code_mat;
-}
-
-
-cv::Mat ProjectionPatternPreview::phaseMatToImage(const cv::Mat& phase_mat)
-{
-	cv::Mat gray_image(phase_mat.rows, phase_mat.cols, CV_8UC1);
-
-	for(int y=0; y<phase_mat.rows; y++)
-	{
-		for(int x=0; x<phase_mat.cols; x++)
-		{
-			gray_image.at<uint8_t>(y, x) = static_cast<uint8_t>(phase_mat.at<double>(y, x) / 2 * M_PI * 255);
-		}
-	}
-
-	return gray_image;
-}
+#define DARK_IMAGE(IMAGES) (IMAGES)[0]
+#define BRIGHT_IMAGE(IMAGES) (IMAGES)[1]
+#define FRINGE_IMAGES(IMAGES) {(IMAGES)[2], (IMAGES)[3], (IMAGES)[4], (IMAGES)[5]}
+#define GC_IMAGES(IMAGES) {(IMAGES)[6], (IMAGES)[7], (IMAGES)[8], (IMAGES)[9]}
+#define TOLERANCE 20
 
 
 void updateValueController(QSpinBox* spinbox, QSlider* slider, double value, double min, double max, double nominator=1)
@@ -116,21 +37,11 @@ void updateValueController(QSpinBox* spinbox, QSlider* slider, double value, dou
 	slider->setMaximum(max_int);
 }
 
+
 ProjectionPatternPreview::ProjectionPatternPreview(QWidget *parent)
     : QMainWindow(parent), patterns_count_(10), current_pattern_index_(0)
 {
     ui.setupUi(this);
-
-    auto factory = CameraLib::MVCameraFactory<CameraLib::PDNImageCamera>();
-    auto ids = factory.enumerateCamerasIDs();
-    assert(ids.size() == 1);
-
-    camera_ = factory.createMVCamera(ids[0]);
-    camera_->open();
-	camera_->setExposure(5 * 1000);
-	camera_->setGain(1);
-
-	projector_ = std::make_shared<CameraLib::MVCameraProjector>(camera_);
 
 	connect(ui.btnCapture, &QPushButton::clicked, this, &ProjectionPatternPreview::captureButtonClicked);
 	connect(ui.btnNextPattern, &QPushButton::clicked, this, &ProjectionPatternPreview::nextPatternButtonClicked);
@@ -150,6 +61,22 @@ ProjectionPatternPreview::ProjectionPatternPreview(QWidget *parent)
 	ui.canvs_left->installEventFilter(this);
 	ui.canvs_right->installEventFilter(this);
 
+	auto factory = CameraLib::CoupledMVImageCameraFactory<CameraLib::PDNImageCamera>();
+	auto ids = factory.enumerateCamerasIDs();
+
+	if(ids.empty())
+	{
+		ui.centralWidget->setEnabled(false);
+		return;
+	}
+
+	camera_ = factory.createMVCamera(ids[0]);
+	camera_->open();
+	camera_->setExposure(5 * 1000);
+	camera_->setGain(1);
+
+	projector_ = std::make_shared<CameraLib::MVCameraProjector>(camera_);
+	
 	updateParametersUi(camera_);
 
 	projector_->loadPattern();
@@ -163,6 +90,9 @@ ProjectionPatternPreview::ProjectionPatternPreview(QWidget *parent)
 
 ProjectionPatternPreview::~ProjectionPatternPreview()
 {
+	if (!camera_)
+		return;
+
 	if(camera_->isCapturing())
 		camera_->stopContinuesCapture();
 	camera_->close();
@@ -173,7 +103,7 @@ void ProjectionPatternPreview::saveImage(const std::string& filename)
 
 }
 
-void ProjectionPatternPreview::captureButtonClicked()
+void ProjectionPatternPreview::captureButtonClicked() const
 {
 	if(camera_->isCapturing())
 	{
@@ -248,23 +178,39 @@ void ProjectionPatternPreview::openDirAndCalPhase()
 
 	try
 	{
-		auto left_phase_mat = calPhaseMat(left_images);
-		auto left_phase_image = phaseMatToImage(left_phase_mat);
-		auto right_phase_mat = calPhaseMat(right_images);
-		auto right_phase_image = phaseMatToImage(right_phase_mat);
+		auto left_phase_mat = StructuredLightUtils::cal4StepPhaseMat(
+			FRINGE_IMAGES(left_images), DARK_IMAGE(left_images), BRIGHT_IMAGE(left_images)
+		);
+		auto left_phase_image = StructuredLightUtils::phaseMatToImage(left_phase_mat);
+
+		auto right_phase_mat = StructuredLightUtils::cal4StepPhaseMat(
+			FRINGE_IMAGES(right_images), DARK_IMAGE(right_images), BRIGHT_IMAGE(right_images)
+		);
+
+		auto right_phase_image = StructuredLightUtils::phaseMatToImage(right_phase_mat);
 
 		cv::imwrite((path + "/left_phase.png").toStdString(), left_phase_image);
 		cv::imwrite((path + "/right_phase.png").toStdString(), right_phase_image);
+		
+		auto left_bc_mat = StructuredLightUtils::calBinaryCodeFromCodingImages(
+			GC_IMAGES(left_images), DARK_IMAGE(left_images), BRIGHT_IMAGE(left_images)
+		);
 
-		cv::Mat left_thd_map, right_thd_map;
-		auto left_gray_order_mat = calGrayCodeOrderMap(left_images, left_thd_map);
-		auto right_gray_order_mat = calGrayCodeOrderMap(right_images, right_thd_map);
+		auto right_bc_mat = StructuredLightUtils::calBinaryCodeFromCodingImages(
+			GC_IMAGES(right_images), DARK_IMAGE(right_images), BRIGHT_IMAGE(right_images)
+		);
 
-		cv::imwrite((path + "/left_code_mat.png").toStdString(), left_gray_order_mat);
-		cv::imwrite((path + "/right_code_mat.png").toStdString(), right_gray_order_mat);
+		auto left_unwrapped_map = StructuredLightUtils::unwrapPhaseMat(left_phase_mat, left_bc_mat);
+		auto right_unwrapped_map = StructuredLightUtils::unwrapPhaseMat(right_phase_mat, right_bc_mat);
 
-		cv::imwrite((path + "/left_thd_image.png").toStdString(), left_thd_map);
-		cv::imwrite((path + "/right_thd_image.png").toStdString(), right_thd_map);
+		auto left_unwrapped_image = StructuredLightUtils::unwrappedPhaseMatToImage(left_unwrapped_map, 16);
+		auto right_unwrapped_image = StructuredLightUtils::unwrappedPhaseMatToImage(right_unwrapped_map, 16);
+
+		cv::imwrite((path + "/left_bc.png").toStdString(), left_bc_mat);
+		cv::imwrite((path + "/right_bc.png").toStdString(), right_bc_mat);
+
+		cv::imwrite((path + "/left_unwrapped_phase.png").toStdString(), left_unwrapped_image);
+		cv::imwrite((path + "/right_unwrapped_phase.png").toStdString(), right_unwrapped_image);
 
 	}
 	catch(const std::exception& e)
@@ -322,7 +268,7 @@ void ProjectionPatternPreview::copyFrame(const std::vector<cv::Mat>& images, int
 		UICommon::updateImageData(images[index], *q_image);
 	}
 
-	if(is_continus_projecting_)
+	if(is_continues_projecting_)
 	{
 		assert(pattern_images_[index].size() <= patterns_count_);
 		pattern_images_[index].emplace_back(images[index].clone());
@@ -421,7 +367,7 @@ void ProjectionPatternPreview::continuesProjectionButtonClicked()
 	{ 
 		try
 		{
-			is_continus_projecting_ = true;
+			is_continues_projecting_ = true;
 			projector_->projectPatterns(0, patterns_count_-1);
 		}
 		catch(const std::exception& e)
@@ -429,7 +375,7 @@ void ProjectionPatternPreview::continuesProjectionButtonClicked()
 			QMetaObject::invokeMethod(this, [this, &e] { QMessageBox::warning(this, "Warning!", e.what()); }, Qt::BlockingQueuedConnection);
 		}
 
-		is_continus_projecting_ = false;
+		is_continues_projecting_ = false;
 
 		QMetaObject::invokeMethod(this, [this] { setEnabled(true); }, Qt::QueuedConnection);
 
@@ -440,6 +386,9 @@ void ProjectionPatternPreview::continuesProjectionButtonClicked()
 
 void ProjectionPatternPreview::showEvent(QShowEvent* event)
 {
+	if (!camera_)
+		return;
+
 	if(!is_listener_registered_)
 	{
 		camera_->registerFrameListener(shared_from_this());

@@ -1,6 +1,6 @@
 #include "MVCameraProjector.h"
 #include "MindVision/CameraApi.h"
-#include "MVDef.h"
+#include "MVDef.hpp"
 
 
 #define CAM_CONTROL_UART_BASE				(0x8000)

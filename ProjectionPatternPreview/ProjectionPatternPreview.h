@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#include <MVCamerasFactory.hpp>
+#include <MVImageCameraFactory.hpp>
 #include <PDRImageCamera.h>
 #include <MVCameraProjector.h>
 #include <FrameListener.h>
@@ -23,7 +23,7 @@ private:
     uint8_t patterns_count_;
     uint8_t current_pattern_index_;
     bool is_listener_registered_ {false};
-    bool is_continus_projecting_ {false};
+    bool is_continues_projecting_ {false};
 
     std::array<std::unique_ptr<QImage>, 2> q_images_;
     //std::array<std::unique_ptr<cv::Mat>, 2> frame_buffers_;
@@ -35,15 +35,15 @@ private:
 
     bool is_capturing_ {false};
 
-	void saveImage(const std::string& filename);
-    void captureButtonClicked();
+    static void saveImage(const std::string& filename);
+    void captureButtonClicked() const;
     void sliderValueChanged() const;
     void saveSeqPatterns();
     void openDirAndCalPhase();
 
-    void frameReadyCallback(cv::InputArray image_data);
+    void frameReadyCallback(cv::InputArray image_data) override;
 
-    bool eventFilter(QObject* obj, QEvent* e);
+    bool eventFilter(QObject* obj, QEvent* e) override;
 
     void copyFrame(const std::vector<cv::Mat>& images, int index);
     bool paintImage(int index);
@@ -52,10 +52,6 @@ private:
     void nextPatternButtonClicked();
     void prevPatternButtonClicked();
     void continuesProjectionButtonClicked();
-
-    cv::Mat calPhaseMat(const std::vector<cv::Mat>& images);
-    cv::Mat calGrayCodeOrderMap(const std::vector<cv::Mat>& images, cv::OutputArray thd_mat);
-    cv::Mat phaseMatToImage(const cv::Mat& phase_mat);
 
 protected:
     void showEvent(QShowEvent *event) override;

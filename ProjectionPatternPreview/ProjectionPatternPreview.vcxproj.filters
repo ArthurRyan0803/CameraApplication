@@ -45,5 +45,8 @@
     <ClInclude Include="UICommon.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StructuredLightUtils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

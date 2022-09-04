@@ -1,11 +1,11 @@
 #include "Framework.h"
 #include "PDNImageCamera.h"
-#include "MVDef.h"
+#include "MVDef.hpp"
 
 
 using namespace CameraLib;
 
-PDNImageCamera::PDNImageCamera(const tSdkCameraDevInfo& info): MVImageCamera(info)
+PDNImageCamera::PDNImageCamera(const tSdkCameraDevInfo& info): CoupledMVImageCamera(info)
 {
 }
 

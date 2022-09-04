@@ -1,6 +1,6 @@
 #include "VSensorPointCloudCamera.h"
 #include "VSensor/VSensor.h"
-#include "VSensorDef.h"
+#include "VSensorDef.hpp"
 
 using namespace CameraLib;
 

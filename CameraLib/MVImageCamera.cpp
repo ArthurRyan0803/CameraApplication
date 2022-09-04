@@ -1,5 +1,5 @@
 #include "MVImageCamera.h"
-#include "MVDef.h"
+#include "MVDef.hpp"
 
 
 using namespace CameraLib;

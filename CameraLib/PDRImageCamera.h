@@ -5,12 +5,12 @@
 #include "Camera.hpp"
 #include "CameraApi.h"
 #include "CameraDefine.H"
-#include "MVImageCamera.h"
+#include "CoupledMVImageCamera.hpp"
 
 
 namespace CameraLib
 {
-	class CAMERALIB_SDK PDRImageCamera: public MVImageCamera
+	class CAMERALIB_SDK PDRImageCamera: public CoupledMVImageCamera
 	{
 	public:
 		enum SensorType {Gray, Color, All};

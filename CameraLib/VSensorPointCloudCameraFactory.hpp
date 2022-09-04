@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "AbstractCamerasFactory.h"
-#include "VSensorDef.h"
+#include "VSensorDef.hpp"
 #include "VSensor/VSensorDefine.h"
 #include "VSensor/VSensor.h"
 #include "VSensorPointCloudCamera.h"
