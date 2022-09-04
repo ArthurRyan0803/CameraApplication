@@ -23,6 +23,7 @@ private:
     uint8_t patterns_count_;
     uint8_t current_pattern_index_;
     bool is_listener_registered_ {false};
+    bool is_continus_projecting_ {false};
 
     std::array<std::unique_ptr<QImage>, 2> q_images_;
     //std::array<std::unique_ptr<cv::Mat>, 2> frame_buffers_;
@@ -30,12 +31,15 @@ private:
     std::array<std::mutex, 2> q_image_mutexes_;
     //std::array<std::mutex, 2> frame_buffer_mutexes_;
 
+    std::array<std::vector<cv::Mat>, 2> pattern_images_;
+
     bool is_capturing_ {false};
 
-    void shotImage();
 	void saveImage(const std::string& filename);
     void captureButtonClicked();
     void sliderValueChanged() const;
+    void saveSeqPatterns();
+    void openDirAndCalPhase();
 
     void frameReadyCallback(cv::InputArray image_data);
 
@@ -46,7 +50,12 @@ private:
     void updateParametersUi(const std::shared_ptr<CameraLib::PDNImageCamera>& camera) const;
 
     void nextPatternButtonClicked();
+    void prevPatternButtonClicked();
     void continuesProjectionButtonClicked();
+
+    cv::Mat calPhaseMat(const std::vector<cv::Mat>& images);
+    cv::Mat calGrayCodeOrderMap(const std::vector<cv::Mat>& images, cv::OutputArray thd_mat);
+    cv::Mat phaseMatToImage(const cv::Mat& phase_mat);
 
 protected:
     void showEvent(QShowEvent *event) override;

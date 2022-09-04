@@ -26,8 +26,11 @@ public:
 
 private:
     typedef pcl::PointXYZRGB MyPoint;
-    typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloud;
+    typedef pcl::PointXYZRGBNormal MyPointNormal;
+    typedef pcl::PointCloud<MyPoint> PointCloud;
+    typedef pcl::PointCloud<MyPointNormal> PointNormalCloud;
     typedef PointCloud::Ptr PointCloudPtr;
+    typedef PointNormalCloud::Ptr PointNormalCloudPtr;
 
     Ui::HumanFaceReconstructionClass ui;
 
@@ -37,6 +40,8 @@ private:
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> render_window_;
     vtkSmartPointer<vtkRenderer> renderer_;
     PointCloudPtr left_cloud_, right_cloud_, stitched_cloud_, intersection_cloud_before_icp_, intersection_cloud_after_icp_;
+    PointNormalCloudPtr stitched_normal_cloud_;
+
     std::array<std::unique_ptr<VSensorResult>, 2> pdr_results_;
     VisualizationParams visualization_params_;
 
@@ -84,6 +89,7 @@ private:
 	// Slots
     void constructHumanFace();
     void saveStitchedPointCloud();
+    void saveStitchedPointNormalCloud();
     void saveLeftPointCloud();
     void saveRightPointCloud();
     void saveInetersectionPointCloudBeforeICP();
@@ -105,6 +111,7 @@ private:
     );
 
     void openFileDialogToSaveCloud(const PointCloudPtr& cloud);
+    void openFileDialogToSaveCloud(const PointNormalCloudPtr& cloud);
 
     void openCameraAndStartCaptureImages(
         std::shared_ptr<CameraLib::VSensorPointCloudCamera> camera, const CameraParams& params, bool initialize

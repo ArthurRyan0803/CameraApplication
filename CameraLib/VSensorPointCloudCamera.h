@@ -55,7 +55,7 @@ namespace CameraLib
 		void getAnalogGain(int& r, int& g, int& b) const;
 		void getAnalogGain(int& value, SensorType type) const;
 		void setZAxisRange(int min, int max) const;
-		void whiteBalance();
+		//void whiteBalance();
 		void setCaptureMode(CaptureMode mode);
 		void setLight(int open) const;
 

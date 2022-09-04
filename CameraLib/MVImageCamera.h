@@ -71,6 +71,10 @@ namespace CameraLib
 		void registerFrameListener(std::weak_ptr<FrameListener> listener) override;
 
 		virtual uint8_t getViews();
+
+#ifdef _DEBUG
+		volatile size_t callback_frames {0};
+#endif
 	};
 	
 }

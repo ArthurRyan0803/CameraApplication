@@ -45,7 +45,6 @@ CamerasImagesPreviewWindow::CamerasImagesPreviewWindow(
 		ui.setupUi(this);
 	
 		connect(ui.btnShot, &QPushButton::clicked, this, &CamerasImagesPreviewWindow::oneShot);
-		connect(ui.btnWhiteBalance, &QPushButton::clicked, this, &CamerasImagesPreviewWindow::whiteBalance);
 		connect(ui.btnOK, &QPushButton::clicked, this, &CamerasImagesPreviewWindow::overwriteParams);
 		connect(ui.btnRestore, &QPushButton::clicked, this, &CamerasImagesPreviewWindow::restoreParams);
 		connect(ui.btnCancel, &QPushButton::clicked, this, &CamerasImagesPreviewWindow::close);
@@ -101,8 +100,8 @@ void CamerasImagesPreviewWindow::oneShot()
 			{
 				std::lock_guard lock_qimage(mutexes_[i]);
 				if (!q_images_[i])
-					createQImage(images[i], q_images_[i]);
-				updateImageData(images[i], *q_images_[i]);
+					UiUtils::createQImage(images[i], q_images_[i]);
+				UiUtils::updateImageData(images[i], *q_images_[i]);
 			}
 
 			canvas_[i]->update();
@@ -131,12 +130,6 @@ void CamerasImagesPreviewWindow::colorExpValueChanged()
 {
 	QSpinBox* box = static_cast<QSpinBox*>(sender());
 	selected_camera_->setExposure(box->value(), VSensorPointCloudCamera::Color);
-}
-
-void CamerasImagesPreviewWindow::whiteBalance()
-{
-	left_camera_->whiteBalance();
-	right_camera_->whiteBalance();
 }
 
 void CamerasImagesPreviewWindow::overwriteParams()
@@ -200,7 +193,7 @@ bool CamerasImagesPreviewWindow::paintImage(QWidget* canvas, std::unique_ptr<QIm
 		{
 			width = qimage->width();
 			height = qimage->height();
-			getImagePaintRegion({ width, height }, { canvas->width(), canvas->height() }, paint_region);
+			UiUtils::getImagePaintRegion({ width, height }, { canvas->width(), canvas->height() }, paint_region);
 			QRectF region_rect_f(paint_region[0], paint_region[1], paint_region[2], paint_region[3]);
 			painter.drawImage(region_rect_f, *qimage);
 			return true;

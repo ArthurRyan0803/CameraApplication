@@ -162,10 +162,10 @@ void VSensorPointCloudCamera::setZAxisRange(int min, int max) const
 	VSENSOR_SDK_CHECK(vsensor_api_->SetZaxisRange(min, max));
 }
 
-void CameraLib::VSensorPointCloudCamera::whiteBalance()
-{
-	VSENSOR_SDK_CHECK(vsensor_api_->SetCameraOnceWB());
-}
+//void VSensorPointCloudCamera::whiteBalance()
+//{
+//	VSENSOR_SDK_CHECK(vsensor_api_->SetCameraOnceWB());
+//}
 
 void VSensorPointCloudCamera::setCaptureMode(CaptureMode mode)
 {

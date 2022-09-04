@@ -119,6 +119,10 @@ void MVImageCamera::createOutputContainer(cv::_OutputArray& data)
 
 void MVImageCamera::notifyFrameListeners(BYTE* frame_buffer, tSdkFrameHead& frame_head)
 {
+#ifdef _DEBUG
+	callback_frames += 1;
+#endif
+
 	std::lock_guard lock(listeners_mutex_);
 
 	if(!frame_listeners_.empty())
@@ -198,6 +202,12 @@ bool MVImageCamera::isCapturing()
 
 void MVImageCamera::onceCapture(cv::OutputArray image)
 {
+#ifdef _DEBUG
+	INT mode;
+	MV_SDK_CHECK(CameraGetTriggerMode(cam_handle_, &mode));
+	assert(mode == SOFT_TRIGGER);
+#endif
+
 	assert(image.kind() == cv::_InputArray::MAT);
 
 	CHECK_IS_OPENED();

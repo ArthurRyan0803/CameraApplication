@@ -9,7 +9,7 @@ namespace CameraLib
 // Check return value of vsensor camera sdk
 #define VSENSOR_SDK_CHECK(OP) if(auto CODE = OP; CODE != 0) throw VSensorSDKException(#OP, CODE, __FILE__, __LINE__)
 
-#define ONE_SHOT_WAIT_MS 1000
+#define ONE_SHOT_WAIT_MS 5000
 #define ISP_BUFFER_ALIGNMENT 16
 #define IMAGE_VERTICAL_FLIP_FLAG 1
 #define IMAGE_HORIZONTAL_FLIP_FLAG 2

@@ -30,9 +30,6 @@
     <Filter Include="Source Files\Form">
       <UniqueIdentifier>{b1acc9be-8153-4ad8-ab85-7c5b8ca24407}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Utils">
-      <UniqueIdentifier>{563c9543-8587-42d6-96dd-80cd6fefa681}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Configurations">
       <UniqueIdentifier>{7a58d151-5a85-4439-a5c3-2b325e467198}</UniqueIdentifier>
     </Filter>
@@ -57,9 +54,6 @@
     </ClCompile>
     <ClCompile Include="CamerasImagesPreviewWindow.cpp">
       <Filter>Source Files\Form</Filter>
-    </ClCompile>
-    <ClCompile Include="UiUtils.cpp">
-      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

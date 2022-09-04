@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <pcl/io/ply_io.h>
 #include <pcl/surface/mls.h>
 #include <pcl/search/kdtree.h>
@@ -11,6 +12,8 @@ typedef pcl::PointCloud<PointNormal> CloudWithNormal;
 
 #define SEARCH_RADIUS 8
 #define VOXEl_SIZE 1.0f
+
+#define _OPENMP
 
 int main()
 {
@@ -40,7 +43,7 @@ int main()
 	mls.setComputeNormals(true);
 	mls.setPolynomialOrder(2);
 	mls.setSqrGaussParam(0.0001);
-	mls.setNumberOfThreads(16);
+	mls.setNumberOfThreads(std::thread::hardware_concurrency());
 
 	mls.process(cloud_out);
 

@@ -17,8 +17,10 @@ namespace CameraLib
 		std::mutex frames__mutex_;
 		std::condition_variable frames_cv_;
 
-		uint8_t frames_count_ {0};
-		uint8_t rcv_frames_count_ {0};
+		volatile uint8_t frames_count_ {0};
+		volatile uint8_t rcv_frames_count_ {0};
+
+		void setPatternSwitchInterval(uint16_t ms);
 
 	public:
 		MVCameraProjector(std::shared_ptr<PDNImageCamera> camera);
@@ -29,5 +31,16 @@ namespace CameraLib
 		void projectPatterns(uint8_t start_index, uint8_t end_index);
 		uint8_t getPatternIndex() const;
 		void frameReadyCallback(cv::InputArray data) override;
+
+		class ResponseLengthError: std::exception
+		{
+
+		public:
+			uint8_t rcv_length {0}, right_length {0};
+
+			ResponseLengthError(uint8_t rcv_length, uint8_t right_length);
+
+			char const* what() const override;
+		};
 	};
 }

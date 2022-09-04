@@ -39,7 +39,6 @@ private:
 	void grayGainValueChanged();
 	void colorExpValueChanged();
 	void colorGainValueChanged();
-	void whiteBalance();
 
 	void overwriteParams();
 	void restoreParams();

@@ -8,6 +8,7 @@
 #include <pcl/registration/icp.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/registration/correspondence_estimation.h>
+#include <pcl/surface/mls.h>
 
 #include "VSensorPointCloudCamerasFactory.hpp"
 #include "Logger.hpp"
@@ -25,6 +26,7 @@ auto& logger = GET_LOGGER();
 #define LEFT_CLOUD_ID "left"
 #define RIGHT_CLOUD_ID "right"
 #define STITCHED_CLOUD_ID "stitched"
+#define SEARCH_RADIUS 8
 
 void HumanFaceReconstruction::openCameraAndStartCaptureImages(
 	std::shared_ptr<CameraLib::VSensorPointCloudCamera> camera, const CameraParams& params, bool initialize
@@ -37,8 +39,7 @@ void HumanFaceReconstruction::openCameraAndStartCaptureImages(
 	camera->setAnalogGain(params.color_gain, CameraLib::VSensorPointCloudCamera::Color);
 	camera->setCaptureMode(VSensorPointCloudCamera::ImageCapture);
 
-	camera->oneShot(std::vector<cv::Mat>{cv::Mat(), cv::Mat(), cv::Mat()});
-	camera->whiteBalance();
+	camera->onceCapture(std::vector<cv::Mat>{cv::Mat(), cv::Mat(), cv::Mat()});
 
 	// Set up background threads to capture color image in real-time.
 	setupCaptureThread(camera);
@@ -54,7 +55,9 @@ HumanFaceReconstruction::HumanFaceReconstruction(QWidget *parent)
 	// Connect slots
 	connect(ui.btnConstruct, &QPushButton::clicked, this, &HumanFaceReconstruction::constructHumanFace);
 	connect(ui.btnClearLog, &QPushButton::clicked, ui.tbLog, &QTextEdit::clear);
+
 	connect(ui.actSaveStitchedCloud, &QAction::triggered, this, &HumanFaceReconstruction::saveStitchedPointCloud);
+	connect(ui.actSaveStitchedNormalCloud, &QAction::triggered, this, &HumanFaceReconstruction::saveStitchedPointNormalCloud);
 	connect(ui.actSaveLeftCloud, &QAction::triggered, this, &HumanFaceReconstruction::saveLeftPointCloud);
 	connect(ui.actSaveRightCloud, &QAction::triggered, this, &HumanFaceReconstruction::saveRightPointCloud);
 	connect(ui.actSaveCoarseIntersectionCloud, &QAction::triggered, this, &HumanFaceReconstruction::saveInetersectionPointCloudBeforeICP);
@@ -96,6 +99,7 @@ HumanFaceReconstruction::HumanFaceReconstruction(QWidget *parent)
 	left_cloud_ = std::make_shared<PointCloud>();
 	right_cloud_ = std::make_shared<PointCloud>();
 	stitched_cloud_ = std::make_shared<PointCloud>();
+	stitched_normal_cloud_ = std::make_shared<PointNormalCloud>();
 	intersection_cloud_before_icp_ = std::make_shared<PointCloud>();
 	intersection_cloud_after_icp_ = std::make_shared<PointCloud>();
 	
@@ -231,7 +235,30 @@ void HumanFaceReconstruction::constructHumanFace()
 			addLogThreadSafe("---- Processing ----");
 			
 			if(cloud_process_params_.process_stitched_cloud)
+			{
 				preProcessPointCloud(stitched_cloud_);
+
+				auto tree = std::make_shared<pcl::search::KdTree<MyPoint>>();
+				pcl::MovingLeastSquares<MyPoint, MyPointNormal> mls;
+
+				mls.setInputCloud(stitched_cloud_);
+				mls.setSearchMethod(tree);
+				mls.setSearchRadius(SEARCH_RADIUS);
+				mls.setComputeNormals(true);
+				mls.setPolynomialOrder(2);
+				mls.setSqrGaussParam(0.0001);
+				mls.setNumberOfThreads(std::thread::hardware_concurrency());
+
+				mls.process(*stitched_normal_cloud_);
+				
+				stitched_cloud_->clear();
+
+				for(auto& pt_normal: stitched_normal_cloud_->points)
+					stitched_cloud_->push_back(
+						MyPoint(pt_normal.x, pt_normal.y, pt_normal.z, pt_normal.r, pt_normal.g, pt_normal.b)
+					);
+
+			}
 
 			auto center = PclPointCloudUtils<MyPoint>::cloudsCentroid({ stitched_cloud_ });
 			PclPointCloudUtils<MyPoint>::translatePointCloud(stitched_cloud_, center);
@@ -248,6 +275,11 @@ void HumanFaceReconstruction::constructHumanFace()
 void HumanFaceReconstruction::saveStitchedPointCloud()
 {
 	openFileDialogToSaveCloud(stitched_cloud_);
+}
+
+void HumanFaceReconstruction::saveStitchedPointNormalCloud()
+{
+	openFileDialogToSaveCloud(stitched_normal_cloud_);
 }
 
 void HumanFaceReconstruction::saveLeftPointCloud()
@@ -370,7 +402,7 @@ bool HumanFaceReconstruction::fetchPointCloudsFromCamera()
 					try
 					{
 						cameras[i]->constructPointCloud(pdr_results_[i]);
-						getPointCloudFromPDRResult(*pdr_results_[i], clouds[i]);
+						UiUtils::getPointCloudFromPDRResult(*pdr_results_[i], clouds[i]);
 					}
 					catch(const std::exception& e)
 					{
@@ -410,7 +442,7 @@ bool HumanFaceReconstruction::paintImage(QWidget* canvas, std::unique_ptr<QImage
 			{
 				width = qimage->width();
 				height = qimage->height();
-				getImagePaintRegion({ width, height }, { canvas->width(), canvas->height() }, paint_region);
+				UiUtils::getImagePaintRegion({ width, height }, { canvas->width(), canvas->height() }, paint_region);
 				QRectF region_rect_f(paint_region[0], paint_region[1], paint_region[2], paint_region[3]);
 				painter.drawImage(region_rect_f, *qimage);
 				return true;
@@ -521,6 +553,19 @@ void HumanFaceReconstruction::openFileDialogToSaveCloud(const PointCloudPtr& clo
 	pcl::io::savePLYFileASCII(save_path.toStdString(), *cloud);
 }
 
+
+void HumanFaceReconstruction::openFileDialogToSaveCloud(const PointNormalCloudPtr& cloud)
+{
+	if(!cloud || cloud->empty())
+	{
+		QMessageBox::information(this, "Tip", "Please construct point cloud first!");
+		return;
+	}
+
+	auto save_path = QFileDialog::getSaveFileName(nullptr, "Select a path to save point cloud.", QDir::homePath(), "*.ply");
+	pcl::io::savePLYFileASCII(save_path.toStdString(), *cloud);
+}
+
 void HumanFaceReconstruction::addLogThreadSafe(const std::string& message)
 {
 	QMetaObject::invokeMethod(this, [this, message]
@@ -544,7 +589,7 @@ void HumanFaceReconstruction::visualizeStitchedPointCloudThreadSafe(PointCloudPt
 		this, 
 		[this, stitched_cloud] 
 		{ 
-			visualizePointCloud( { {"stitched", stitched_cloud} }, *visualizer_, visualization_params_.point_size);
+			UiUtils::visualizePointCloud( { {"stitched", stitched_cloud} }, *visualizer_, visualization_params_.point_size);
 			vtk_widget_->update();
 		}, 
 		Qt::BlockingQueuedConnection
@@ -557,7 +602,7 @@ void HumanFaceReconstruction::updatePCLPointSize()
 		this, 
 		[this] 
 		{ 
-			updatePointSize(STITCHED_CLOUD_ID, visualization_params_.point_size, *visualizer_);
+			UiUtils::updatePointSize(STITCHED_CLOUD_ID, visualization_params_.point_size, *visualizer_);
 		}, 
 		Qt::BlockingQueuedConnection
 	);
@@ -690,9 +735,9 @@ void HumanFaceReconstruction::setupCaptureThread(
 					{
 						std::lock_guard image_lock(image_mutex);
 						if(!q_image)
-							createQImage(color_image, q_image);
+							UiUtils::createQImage(color_image, q_image);
 
-						updateImageData(color_image, *q_image);
+						UiUtils::updateImageData(color_image, *q_image);
 						QMetaObject::invokeMethod(this, [this, canvas] 
 						{ 
 							canvas->update();

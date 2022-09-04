@@ -273,6 +273,7 @@
       <string>Save Point Cloud</string>
      </property>
      <addaction name="actSaveStitchedCloud"/>
+     <addaction name="actSaveStitchedNormalCloud"/>
      <addaction name="actSaveLeftCloud"/>
      <addaction name="actSaveRightCloud"/>
      <addaction name="actSaveCoarseIntersectionCloud"/>
@@ -331,6 +332,11 @@
   <action name="actSavePreciseIntersectionCloud">
    <property name="text">
     <string>Save Precise Intersection Cloud</string>
+   </property>
+  </action>
+  <action name="actSaveStitchedNormalCloud">
+   <property name="text">
+    <string>Save Stitched Cloud With Normals</string>
    </property>
   </action>
  </widget>
