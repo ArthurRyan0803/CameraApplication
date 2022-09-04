@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Framework.h"
-#include "Camera.h"
+#include "Camera.hpp"
 
 
 namespace CameraLib

@@ -7,12 +7,12 @@
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief åˆ›å»ºä¸€ä¸ªæ–°çš„Image
-/// \param [out] Image æ–°åˆ›å»ºçš„å›¾ç‰‡
-/// \param [in] pFrameBuffer å¸§æ•°æ®
-/// \param [in] pFrameHead å¸§å¤´
-/// \param [in] bCopy TRUE: å¤åˆ¶å‡ºä¸€ä»½æ–°çš„å¸§æ•°æ®   FALSE: ä¸å¤åˆ¶ï¼Œç›´æ¥ä½¿ç”¨pFrameBufferæŒ‡å‘çš„ç¼“å†²åŒº
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief ´´½¨Ò»¸öĞÂµÄImage
+/// \param [out] Image ĞÂ´´½¨µÄÍ¼Æ¬
+/// \param [in] pFrameBuffer Ö¡Êı¾İ
+/// \param [in] pFrameHead Ö¡Í·
+/// \param [in] bCopy TRUE: ¸´ÖÆ³öÒ»·İĞÂµÄÖ¡Êı¾İ   FALSE: ²»¸´ÖÆ£¬Ö±½ÓÊ¹ÓÃpFrameBufferÖ¸ÏòµÄ»º³åÇø
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Create a new Image
 /// \param [out] Image Newly Created Image
@@ -29,9 +29,9 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_Create(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief åˆ›å»ºä¸€ä¸ªç©ºçš„Image
-/// \param [out] Image æ–°åˆ›å»ºçš„å›¾ç‰‡
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief ´´½¨Ò»¸ö¿ÕµÄImage
+/// \param [out] Image ĞÂ´´½¨µÄÍ¼Æ¬
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Create an empty Image
 /// \param [out] Image Newly Created Image
@@ -42,9 +42,9 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_CreateEmpty(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief é”€æ¯Image
+/// \brief Ïú»ÙImage
 /// \param [in] Image
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Destroy Image
 /// \param [in] Image
@@ -55,11 +55,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_Destroy(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ä»Imageè·å–å¸§æ•°æ®å’Œå¸§å¤´
+/// \brief ´ÓImage»ñÈ¡Ö¡Êı¾İºÍÖ¡Í·
 /// \param [in] Image
-/// \param [out] DataBuffer å¸§æ•°æ®
-/// \param [out] Head å¸§å¤´
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [out] DataBuffer Ö¡Êı¾İ
+/// \param [out] Head Ö¡Í·
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Get frame data and frame header from Image
 /// \param [in] Image
@@ -74,10 +74,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_GetData(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief è·å–Imageçš„ç”¨æˆ·è‡ªå®šä¹‰æ•°æ®
+/// \brief »ñÈ¡ImageµÄÓÃ»§×Ô¶¨ÒåÊı¾İ
 /// \param [in] Image
-/// \param [out] UserData è¿”å›ç”¨æˆ·è‡ªå®šä¹‰æ•°æ®
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [out] UserData ·µ»ØÓÃ»§×Ô¶¨ÒåÊı¾İ
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Get User's Custom Data of Image
 /// \param [in] Image
@@ -90,10 +90,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_GetUserData(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief è®¾ç½®Imageçš„ç”¨æˆ·è‡ªå®šä¹‰æ•°æ®
+/// \brief ÉèÖÃImageµÄÓÃ»§×Ô¶¨ÒåÊı¾İ
 /// \param [in] Image
-/// \param [in] UserData ç”¨æˆ·è‡ªå®šä¹‰æ•°æ®
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] UserData ÓÃ»§×Ô¶¨ÒåÊı¾İ
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Set user-defined data for Image
 /// \param [in] Image
@@ -106,10 +106,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_SetUserData(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief åˆ¤æ–­ä¸€ä¸ªImageæ˜¯å¦ä¸ºç©º
+/// \brief ÅĞ¶ÏÒ»¸öImageÊÇ·ñÎª¿Õ
 /// \param [in] Image
-/// \param [out] IsEmpty ä¸ºç©ºè¿”å›:TRUE(1)  å¦åˆ™è¿”å›:FALSE(0)
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [out] IsEmpty Îª¿Õ·µ»Ø:TRUE(1)  ·ñÔò·µ»Ø:FALSE(0)
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Determine if an Image is empty
 /// \param [in] Image
@@ -122,11 +122,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_IsEmpty(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ç»˜åˆ¶Imageåˆ°æŒ‡å®šçª—å£
+/// \brief »æÖÆImageµ½Ö¸¶¨´°¿Ú
 /// \param [in] Image
-/// \param [in] hWnd ç›®çš„çª—å£
-/// \param [in] Algorithm ç¼©æ”¾ç®—æ³•  0ï¼šå¿«é€Ÿä½†è´¨é‡ç¨å·®  1ï¼šé€Ÿåº¦æ…¢ä½†è´¨é‡å¥½
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] hWnd Ä¿µÄ´°¿Ú
+/// \param [in] Algorithm Ëõ·ÅËã·¨  0£º¿ìËÙµ«ÖÊÁ¿ÉÔ²î  1£ºËÙ¶ÈÂıµ«ÖÊÁ¿ºÃ
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Draw Image to the specified window
 /// \param [in] Image
@@ -141,11 +141,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_Draw(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief æ‹‰å‡ç»˜åˆ¶Imageåˆ°æŒ‡å®šçª—å£
+/// \brief À­Éı»æÖÆImageµ½Ö¸¶¨´°¿Ú
 /// \param [in] Image
-/// \param [in] hWnd ç›®çš„çª—å£
-/// \param [in] Algorithm ç¼©æ”¾ç®—æ³•  0ï¼šå¿«é€Ÿä½†è´¨é‡ç¨å·®  1ï¼šé€Ÿåº¦æ…¢ä½†è´¨é‡å¥½
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] hWnd Ä¿µÄ´°¿Ú
+/// \param [in] Algorithm Ëõ·ÅËã·¨  0£º¿ìËÙµ«ÖÊÁ¿ÉÔ²î  1£ºËÙ¶ÈÂıµ«ÖÊÁ¿ºÃ
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Pull up drawing Image to the specified window
 /// \param [in] Image
@@ -160,15 +160,15 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_DrawFit(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ç»˜åˆ¶Imageåˆ°æŒ‡å®šDC
+/// \brief »æÖÆImageµ½Ö¸¶¨DC
 /// \param [in] Image
-/// \param [in] hDC ç›®çš„DC
-/// \param [in] Algorithm ç¼©æ”¾ç®—æ³•  0ï¼šå¿«é€Ÿä½†è´¨é‡ç¨å·®  1ï¼šé€Ÿåº¦æ…¢ä½†è´¨é‡å¥½
-/// \param [in] xDst ç›®æ ‡çŸ©å½¢çš„å·¦ä¸Šè§’Xåæ ‡
-/// \param [in] yDst ç›®æ ‡çŸ©å½¢çš„å·¦ä¸Šè§’Yåæ ‡
-/// \param [in] cxDst ç›®æ ‡çŸ©å½¢çš„å®½åº¦
-/// \param [in] cyDst ç›®æ ‡çŸ©å½¢çš„é«˜åº¦
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] hDC Ä¿µÄDC
+/// \param [in] Algorithm Ëõ·ÅËã·¨  0£º¿ìËÙµ«ÖÊÁ¿ÉÔ²î  1£ºËÙ¶ÈÂıµ«ÖÊÁ¿ºÃ
+/// \param [in] xDst Ä¿±ê¾ØĞÎµÄ×óÉÏ½ÇX×ø±ê
+/// \param [in] yDst Ä¿±ê¾ØĞÎµÄ×óÉÏ½ÇY×ø±ê
+/// \param [in] cxDst Ä¿±ê¾ØĞÎµÄ¿í¶È
+/// \param [in] cyDst Ä¿±ê¾ØĞÎµÄ¸ß¶È
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Draw Image to specified DC
 /// \param [in] Image
@@ -191,15 +191,15 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_DrawToDC(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief æ‹‰å‡ç»˜åˆ¶Imageåˆ°æŒ‡å®šDC
+/// \brief À­Éı»æÖÆImageµ½Ö¸¶¨DC
 /// \param [in] Image
-/// \param [in] hDC ç›®çš„DC
-/// \param [in] Algorithm ç¼©æ”¾ç®—æ³•  0ï¼šå¿«é€Ÿä½†è´¨é‡ç¨å·®  1ï¼šé€Ÿåº¦æ…¢ä½†è´¨é‡å¥½
-/// \param [in] xDst ç›®æ ‡çŸ©å½¢çš„å·¦ä¸Šè§’Xåæ ‡
-/// \param [in] yDst ç›®æ ‡çŸ©å½¢çš„å·¦ä¸Šè§’Yåæ ‡
-/// \param [in] cxDst ç›®æ ‡çŸ©å½¢çš„å®½åº¦
-/// \param [in] cyDst ç›®æ ‡çŸ©å½¢çš„é«˜åº¦
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] hDC Ä¿µÄDC
+/// \param [in] Algorithm Ëõ·ÅËã·¨  0£º¿ìËÙµ«ÖÊÁ¿ÉÔ²î  1£ºËÙ¶ÈÂıµ«ÖÊÁ¿ºÃ
+/// \param [in] xDst Ä¿±ê¾ØĞÎµÄ×óÉÏ½ÇX×ø±ê
+/// \param [in] yDst Ä¿±ê¾ØĞÎµÄ×óÉÏ½ÇY×ø±ê
+/// \param [in] cxDst Ä¿±ê¾ØĞÎµÄ¿í¶È
+/// \param [in] cyDst Ä¿±ê¾ØĞÎµÄ¸ß¶È
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Pull up drawing Image to specified DC
 /// \param [in] Image
@@ -222,16 +222,16 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_DrawToDCFit(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ç»˜åˆ¶Imageåˆ°æŒ‡å®šçª—å£ï¼ˆä¸ç¼©æ”¾ï¼‰
+/// \brief »æÖÆImageµ½Ö¸¶¨´°¿Ú£¨²»Ëõ·Å£©
 /// \param [in] Image
-/// \param [in] hWnd ç›®çš„çª—å£
-/// \param [in] xDst ç›®æ ‡çŸ©å½¢çš„å·¦ä¸Šè§’Xåæ ‡
-/// \param [in] yDst ç›®æ ‡çŸ©å½¢çš„å·¦ä¸Šè§’Yåæ ‡
-/// \param [in] cxDst ç›®æ ‡çŸ©å½¢çš„å®½åº¦
-/// \param [in] cyDst ç›®æ ‡çŸ©å½¢çš„é«˜åº¦
-/// \param [in] xSrc å›¾åƒçŸ©å½¢çš„å·¦ä¸Šè§’Xåæ ‡
-/// \param [in] ySrc å›¾åƒçŸ©å½¢çš„å·¦ä¸Šè§’Yåæ ‡
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] hWnd Ä¿µÄ´°¿Ú
+/// \param [in] xDst Ä¿±ê¾ØĞÎµÄ×óÉÏ½ÇX×ø±ê
+/// \param [in] yDst Ä¿±ê¾ØĞÎµÄ×óÉÏ½ÇY×ø±ê
+/// \param [in] cxDst Ä¿±ê¾ØĞÎµÄ¿í¶È
+/// \param [in] cyDst Ä¿±ê¾ØĞÎµÄ¸ß¶È
+/// \param [in] xSrc Í¼Ïñ¾ØĞÎµÄ×óÉÏ½ÇX×ø±ê
+/// \param [in] ySrc Í¼Ïñ¾ØĞÎµÄ×óÉÏ½ÇY×ø±ê
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Draw Image to specified window (without scaling)
 /// \param [in] Image
@@ -256,16 +256,16 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_BitBlt(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ç»˜åˆ¶Imageåˆ°æŒ‡å®šDCï¼ˆä¸ç¼©æ”¾ï¼‰
+/// \brief »æÖÆImageµ½Ö¸¶¨DC£¨²»Ëõ·Å£©
 /// \param [in] Image
-/// \param [in] hDC ç›®çš„DC
-/// \param [in] xDst ç›®æ ‡çŸ©å½¢çš„å·¦ä¸Šè§’Xåæ ‡
-/// \param [in] yDst ç›®æ ‡çŸ©å½¢çš„å·¦ä¸Šè§’Yåæ ‡
-/// \param [in] cxDst ç›®æ ‡çŸ©å½¢çš„å®½åº¦
-/// \param [in] cyDst ç›®æ ‡çŸ©å½¢çš„é«˜åº¦
-/// \param [in] xSrc å›¾åƒçŸ©å½¢çš„å·¦ä¸Šè§’Xåæ ‡
-/// \param [in] ySrc å›¾åƒçŸ©å½¢çš„å·¦ä¸Šè§’Yåæ ‡
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] hDC Ä¿µÄDC
+/// \param [in] xDst Ä¿±ê¾ØĞÎµÄ×óÉÏ½ÇX×ø±ê
+/// \param [in] yDst Ä¿±ê¾ØĞÎµÄ×óÉÏ½ÇY×ø±ê
+/// \param [in] cxDst Ä¿±ê¾ØĞÎµÄ¿í¶È
+/// \param [in] cyDst Ä¿±ê¾ØĞÎµÄ¸ß¶È
+/// \param [in] xSrc Í¼Ïñ¾ØĞÎµÄ×óÉÏ½ÇX×ø±ê
+/// \param [in] ySrc Í¼Ïñ¾ØĞÎµÄ×óÉÏ½ÇY×ø±ê
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Draw Image to specified DC (without scaling)
 /// \param [in] Image
@@ -290,10 +290,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_BitBltToDC(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ä»¥bmpæ ¼å¼ä¿å­˜Image
+/// \brief ÒÔbmp¸ñÊ½±£´æImage
 /// \param [in] Image
-/// \param [in] FileName æ–‡ä»¶å
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] FileName ÎÄ¼şÃû
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Save Image as bmp
 /// \param [in] Image
@@ -306,11 +306,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_SaveAsBmp(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ä»¥jpgæ ¼å¼ä¿å­˜Image
+/// \brief ÒÔjpg¸ñÊ½±£´æImage
 /// \param [in] Image
-/// \param [in] FileName æ–‡ä»¶å
-/// \param [in] Quality ä¿å­˜è´¨é‡(1-100)ï¼Œ100ä¸ºè´¨é‡æœ€ä½³ä½†æ–‡ä»¶ä¹Ÿæœ€å¤§
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] FileName ÎÄ¼şÃû
+/// \param [in] Quality ±£´æÖÊÁ¿(1-100)£¬100ÎªÖÊÁ¿×î¼Ñµ«ÎÄ¼şÒ²×î´ó
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Save Image as jpg
 /// \param [in] Image
@@ -325,10 +325,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_SaveAsJpeg(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ä»¥pngæ ¼å¼ä¿å­˜Image
+/// \brief ÒÔpng¸ñÊ½±£´æImage
 /// \param [in] Image
-/// \param [in] FileName æ–‡ä»¶å
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [in] FileName ÎÄ¼şÃû
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Save Image as png
 /// \param [in] Image
@@ -341,11 +341,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_SaveAsPng(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ä»¥rawæ ¼å¼ä¿å­˜Image
+/// \brief ÒÔraw¸ñÊ½±£´æImage
 /// \param [in] Image
-/// \param [in] FileName æ–‡ä»¶å
+/// \param [in] FileName ÎÄ¼şÃû
 /// \param [in] Format 0: 8Bit Raw     1: 16Bit Raw
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Save Image as raw
 /// \param [in] Image
@@ -360,10 +360,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraImage_SaveAsRaw(
 
 /// @ingroup MV_IMAGE
 /// \~chinese
-/// \brief ä»Imageåˆ›å»ºä¸€ä¸ªIPicture
+/// \brief ´ÓImage´´½¨Ò»¸öIPicture
 /// \param [in] Image
-/// \param [out] NewPic æ–°åˆ›å»ºçš„IPicture
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \param [out] NewPic ĞÂ´´½¨µÄIPicture
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Create an IPicture from an Image
 /// \param [in] Image

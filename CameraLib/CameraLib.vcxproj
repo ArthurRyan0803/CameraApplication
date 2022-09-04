@@ -74,6 +74,10 @@
     <IncludePath>../Include/MindVision;../Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\Programs\CalibrationApplication\Include\MindVision;D:\Programs\CalibrationApplication\Include\VSensor;D:\Programs\CalibrationApplication\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programs\CalibrationApplication\SDK\MindVision\Release_x64;D:\Programs\CalibrationApplication\SDK\VSensor\Release_x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -135,8 +139,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;CAMERALIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,21 +153,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AbstractCamerasFactory.h" />
-    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="FrameListener.h" />
     <ClInclude Include="Framework.h" />
-    <ClInclude Include="PDNCamera.h" />
-    <ClInclude Include="PDRBuffer.h" />
-    <ClInclude Include="PDRCamera.h" />
-    <ClInclude Include="VSensorCamerasFactory.hpp" />
+    <ClInclude Include="MVDef.h" />
+    <ClInclude Include="MVImageCamera.h" />
+    <ClInclude Include="PDNImageCamera.h" />
+    <ClInclude Include="PDRImageCamera.h" />
     <ClInclude Include="VSensorDef.h" />
+    <ClInclude Include="MVCamerasFactory.hpp" />
+    <ClInclude Include="VSensorPointCloudCamera.h" />
+    <ClInclude Include="VSensorPointCloudCamerasFactory.hpp" />
     <ClInclude Include="WebCamera.h" />
     <ClInclude Include="WebCamerasFactory.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="PDNCamera.cpp" />
-    <ClCompile Include="PDRBuffer.cpp" />
-    <ClCompile Include="PDRCamera.cpp" />
+    <ClCompile Include="MVCameraProjector.cpp" />
+    <ClCompile Include="MVCameraProjector.h" />
+    <ClCompile Include="MVImageCamera.cpp" />
+    <ClCompile Include="PDNImageCamera.cpp" />
+    <ClCompile Include="PDRImageCamera.cpp" />
+    <ClCompile Include="VSensorPointCloudCamera.cpp" />
     <ClCompile Include="WebCamera.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include "ParameterSettingDialog.h"
 #include "AbstractCalibrationWindow.h"
 #include "FunctionalDialog.h"
 #include "CalibrationMethods.h"
@@ -17,7 +18,6 @@
 
 using namespace CameraLib;
 static Logger& logger_ = GET_LOGGER();
-
 
 AbstractCalibrationWindow::AbstractCalibrationWindow(
 	const std::shared_ptr<Camera>& camera,
@@ -42,10 +42,9 @@ AbstractCalibrationWindow::AbstractCalibrationWindow(
 	for (auto& pair : UICommon::string_to_calib_pattern_map)
 		ui_.cmbCalibPattern->addItem(QString::fromStdString(pair.first));
 	
-	camera->setFrameReadyCallback([this](cv::InputArray data) { cameraFrameReadyCallback(data); });
+	camera->registerFrameReadyCallback([this](cv::InputArray data) { cameraFrameReadyCallback(data); });
 	camera->open();
 }
-
 
 void AbstractCalibrationWindow::closeEvent(QCloseEvent* e)
 {
@@ -53,35 +52,30 @@ void AbstractCalibrationWindow::closeEvent(QCloseEvent* e)
 	camera_->close();
 }
 
-
 void AbstractCalibrationWindow::oneShotButtonClicked()
 {
 	shotImage();
 	ui_.btnSaveImage->setEnabled(true);
 }
 
-
 void AbstractCalibrationWindow::captureButtonClicked()
 {
 	if(camera_->isCapturing())
 	{
-		camera_->stopCapture();
+		camera_->stopContinuesCapture();
 		ui_.btnCapture->setText("Start capturing");
 		ui_.btnOneShot->setEnabled(true);
 		ui_.ckbDetectCalibBoard->setChecked(false);	// This method will trigger slot [ detectBoardCheckboxStateChanged() ]
-		ui_.ckbDetectCalibBoard->setEnabled(false);
 	}
 	else
 	{
-		camera_->startCapture();
+		camera_->startContinuesCapture();
 		ui_.btnCapture->setText("Stop capturing");
 		ui_.btnOneShot->setEnabled(false);
 		ui_.ckbDetectCalibBoard->setEnabled(true);
 		ui_.btnSaveImage->setEnabled(true);
-		ui_.ckbDetectCalibBoard->setEnabled(true);
 	}
 }
-
 
 void AbstractCalibrationWindow::detectBoardCheckboxStateChanged()
 {
@@ -96,7 +90,6 @@ void AbstractCalibrationWindow::detectBoardCheckboxStateChanged()
 	}
 }
 
-
 void AbstractCalibrationWindow::calibPatternChanged()
 {
 	auto box = dynamic_cast<QComboBox*>(sender());
@@ -104,13 +97,11 @@ void AbstractCalibrationWindow::calibPatternChanged()
 	calib_pattern_ = UICommon::string_to_calib_pattern_map.find(text.toStdString())->second;
 }
 
-
 void AbstractCalibrationWindow::saveImageButtonClicked()
 {
 	auto filename = QFileDialog::getSaveFileName(this, "Save image", "", "*.png");
 	saveImage(filename.toStdString());
 }
-
 
 void AbstractCalibrationWindow::calibrationButtonClicked()
 {
@@ -131,7 +122,7 @@ void AbstractCalibrationWindow::calibrationButtonClicked()
 		ui_.btnGrabCalibImage->setEnabled(true);
 
 		// Enable real-time preview
-		camera_->startCapture();
+		camera_->startContinuesCapture();
 		startCalibBoardDetectThread();
 		
 	}
@@ -146,30 +137,27 @@ void AbstractCalibrationWindow::calibrationButtonClicked()
 		ui_.btnGrabCalibImage->setEnabled(false);
 
 		// Disable real-time preview
-		camera_->stopCapture();
+		camera_->stopContinuesCapture();
 		stopCalibBoardDetectThread();
 		abortCalibration();
 	}
 }
-
 
 void AbstractCalibrationWindow::grabCalibImageButtonClicked()
 {
 	shotCalibImage();
 }
 
-
 void AbstractCalibrationWindow::finishCalibrationImageGrabbing()
 {
 	calibrate(calib_files_folder_);
 }
 
-
 void AbstractCalibrationWindow::parameterButtonClicked() const
 {
-	camera_->showParameterDialog();
+	ParameterSettingDialog dialog(camera_);
+	dialog.exec();
 }
-
 
 void AbstractCalibrationWindow::calibBoardSettingsButtonClicked()
 {

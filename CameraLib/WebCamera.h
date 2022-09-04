@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Camera.h"
+#include "Camera.hpp"
 
 
 namespace CameraLib
 {
-	class CAMERALIB_DLL WebCamera: public Camera
+	class CAMERALIB_SDK WebCamera: public Camera
 	{
 	private:
 		const static std::vector<std::array<int, 2>> RESOLUTIONS_TABLE;
@@ -30,14 +30,21 @@ namespace CameraLib
 		void close() override;
 		bool isOpened() override;
 
-		void startCapture() override;
-		void stopCapture() override;
+		void startContinuesCapture() override;
+		void stopContinuesCapture() override;
 		bool isCapturing() override;
-		void oneShot(cv::OutputArray data) override;
-		size_t getViews() override;
-		void showParameterDialog() override;
+		void onceCapture(cv::OutputArray data) override;
 
 		// callbacks
-		void setFrameReadyCallback(std::function<void(cv::InputArray)> callback) override;
+
+		void setExposure(double us) override;
+		void getExposure(double& us) const override;
+		void getExposureRange(double& min, double& max, double& step) const override;
+
+		void setGain(int value) override;
+		void getGain(int& value) const override;
+		void getGainRange(int& min, int& max, int& step) const override;
+
+		void registerFrameListener(std::weak_ptr<FrameListener> listener) override;
 	};
 }

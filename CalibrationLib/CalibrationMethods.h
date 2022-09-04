@@ -10,13 +10,13 @@
 
 #include "Framework.h"
 
-CALIBRATIONLIB_DLL std::string planarCalibration(
+CALIBRATIONLIB_SDK std::string planarCalibration(
 	const std::vector<std::shared_ptr<cv::Mat>>& images,
 	const CalibrationBoardSettings& board_settings, Pattern pattern,
 	PlanarCalibrationParams& params, std::vector<std::vector<cv::Point2f>>& key_points, std::vector<bool>& key_points_found_flags
 );
 
-CALIBRATIONLIB_DLL std::string stereoCalibration(
+CALIBRATIONLIB_SDK std::string stereoCalibration(
 	const std::vector<std::shared_ptr<cv::Mat>>& left_images, 
 	const std::vector<std::shared_ptr<cv::Mat>>& right_images,
 	size_t basis_image_index,

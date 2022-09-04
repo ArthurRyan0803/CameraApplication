@@ -4,7 +4,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <vtk-9.0/QVTKOpenGLStereoWidget.h>
 
-#include "Camera.h"
+#include "Camera.hpp"
 #include "ui_AbstractCalibrationWindow.h"
 #include "CalibrationBoardSettings.hpp"
 #include "CalibrationMethods.h"
@@ -23,6 +23,7 @@ public:
 
 protected:
 	Ui::AbstractCalibrationWindowClass ui_{};
+	
 	volatile Pattern calib_pattern_;
 	CalibrationBoardSettings calib_board_settings_;
 	std::string calib_files_folder_;

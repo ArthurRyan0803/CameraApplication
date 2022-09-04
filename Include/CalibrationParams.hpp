@@ -10,40 +10,40 @@
 
 class SerializableParams
 {
-	virtual void fs_serialize(cv::FileStorage& fs) const { throw std::runtime_error("The fs_serialize method is not implemented!"); }; 
-	virtual void fs_deserialize(cv::FileStorage& fs) { throw std::runtime_error("The fs_deserialize method is not implemented!"); };
-	virtual void fs_node_deserialize(const cv::FileNode& node) { throw std::runtime_error("The fs_deserialize method is not implemented!"); };
+	virtual void fsSerialize(cv::FileStorage& fs) const { throw std::runtime_error("The fsSerialize method is not implemented!"); }; 
+	virtual void fsDeserialize(cv::FileStorage& fs) { throw std::runtime_error("The fsDeserialize method is not implemented!"); };
+	virtual void fsNodeDeserialize(const cv::FileNode& node) { throw std::runtime_error("The fsDeserialize method is not implemented!"); };
 
 public:
 
 	void read(const cv::FileNode& node)
 	{
-		fs_node_deserialize(node);
+		fsNodeDeserialize(node);
 	}
 
 	void write(cv::FileStorage& fs) const
 	{
-		fs_serialize(fs);
+		fsSerialize(fs);
 	}
 
 	void save(const std::string& path)
 	{
 		cv::FileStorage fs(path, cv::FileStorage::WRITE | cv::FileStorage::FORMAT_JSON, "utf-8");
-		fs_serialize(fs);
+		fsSerialize(fs);
 		fs.release();
 	}
 
 	void load(const std::string& path)
 	{
 		cv::FileStorage fs(path, cv::FileStorage::READ | cv::FileStorage::FORMAT_JSON, "utf-8");
-		fs_deserialize(fs);
+		fsDeserialize(fs);
 		fs.release();
 	}
 
 	friend std::ostream& operator << (std::ostream& os, const SerializableParams& params)
 	{
 		cv::FileStorage fs("", cv::FileStorage::WRITE | cv::FileStorage::MEMORY | cv::FileStorage::FORMAT_JSON, "utf-8");
-		params.fs_serialize(fs);
+		params.fsSerialize(fs);
 		os << fs.releaseAndGetString();
 		return os;
 	}
@@ -52,7 +52,7 @@ public:
 	{
 		std::string str(std::istreambuf_iterator<char>(is), {});
 		cv::FileStorage fs(str, cv::FileStorage::READ | cv::FileStorage::MEMORY | cv::FileStorage::FORMAT_JSON, "utf-8");
-		params.fs_deserialize(fs);
+		params.fsDeserialize(fs);
 		return is;
 	}
 };
@@ -77,7 +77,7 @@ static void write(cv::FileStorage& fs, const std::string& name, const Serializab
 
 class PlanarCalibrationParams: public SerializableParams
 {
-	void fs_serialize(cv::FileStorage& fs) const override
+	void fsSerialize(cv::FileStorage& fs) const override
 	{
 		fs << "camera_matrix" << camera_matrix;
 		fs << "rvec" << rvec;
@@ -87,7 +87,7 @@ class PlanarCalibrationParams: public SerializableParams
 		fs << "RMS" << RMS;
 	}
 
-	void fs_deserialize(cv::FileStorage& fs) override
+	void fsDeserialize(cv::FileStorage& fs) override
 	{
 		fs["camera_matrix"] >> camera_matrix;
 		fs["rvec"] >> rvec;
@@ -97,7 +97,7 @@ class PlanarCalibrationParams: public SerializableParams
 		fs["RMS"] >> RMS;
 	}
 
-	void fs_node_deserialize(const cv::FileNode& node) override
+	void fsNodeDeserialize(const cv::FileNode& node) override
 	{
 		node["camera_matrix"] >> camera_matrix;
 		node["rvec"] >> rvec;
@@ -122,7 +122,7 @@ public:
 
 class StereoCalibrationParams: public SerializableParams
 {
-	void fs_serialize(cv::FileStorage& fs) const override
+	void fsSerialize(cv::FileStorage& fs) const override
 	{
 		fs << "R" << R;
 		fs << "T" << T;
@@ -144,7 +144,7 @@ class StereoCalibrationParams: public SerializableParams
 		fs << "RMS" << RMS;
 	}
 
-	void fs_deserialize(cv::FileStorage& fs) override
+	void fsDeserialize(cv::FileStorage& fs) override
 	{
 		fs["R"] >> R;
 		fs["T"] >> T;
@@ -166,7 +166,7 @@ class StereoCalibrationParams: public SerializableParams
 		fs["RMS"] >> RMS;
 	}
 
-	void fs_node_deserialize(const cv::FileNode& node) override
+	void fsNodeDeserialize(const cv::FileNode& node) override
 	{
 		node["R"] >> R;
 		node["T"] >> T;
@@ -204,14 +204,14 @@ public:
 
 class DualViewCalibrationParams: public SerializableParams
 {
-	void fs_serialize(cv::FileStorage& fs) const override
+	void fsSerialize(cv::FileStorage& fs) const override
 	{
 		fs << "left" << left;
 		fs << "right" << right;
 		fs << "stereo" << stereo;
 	}
 
-	void fs_deserialize(cv::FileStorage& fs) override
+	void fsDeserialize(cv::FileStorage& fs) override
 	{
 		fs["left"] >> left;
 		fs["right"] >> right;

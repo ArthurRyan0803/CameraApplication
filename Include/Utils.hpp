@@ -5,6 +5,10 @@
 #include <boost/filesystem.hpp>
 #include <Eigen/Eigen>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 class Utils: boost::noncopyable
 {
 public:
@@ -49,7 +53,7 @@ public:
 	}
 
 	template<typename TSrc, typename TDst, int Size>
-	static Eigen::Matrix<TDst, Size, Size> MatrixCast(const cv::Mat& src)
+	static Eigen::Matrix<TDst, Size, Size> matrixCast(const cv::Mat& src)
 	{
 		assert(src.rows == Size);
 		assert(src.cols == Size);
@@ -68,7 +72,7 @@ public:
 	}
 
 	template<typename TSrc, typename TDst, int RowSize>
-	static Eigen::Matrix<TDst, RowSize, 1> VectorCast(const cv::Mat& src)
+	static Eigen::Matrix<TDst, RowSize, 1> vectorCast(const cv::Mat& src)
 	{
 		assert(src.rows == RowSize);
 		assert(src.cols == 1);
@@ -81,6 +85,38 @@ public:
 		}
 
 		return dst;
+	}
+
+	template<typename TSrc, typename TDst, int Size>
+	cv::Mat MatrixCast(const Eigen::Matrix<TSrc, Size, Size>& src)
+	{
+		assert(src.rows() == Size);
+		assert(src.cols() == Size);
+
+		int value_type = getCVType<TDst>();
+		cv::Mat dst(Size, Size, value_type);
+
+		for (int r=0; r<src.rows(); r++)
+			for (int c=0; c<src.cols(); c++)
+				dst.at<TDst>(r, c) = static_cast<TDst>(src.coeffRef(r, c));
+
+		return dst;
+	}
+
+	template<typename TValue>
+	int getCVType()
+	{
+		int value_type = -1;
+		if(std::is_same_v<TValue, float>)
+			value_type = CV_32FC1;
+		else if(std::is_same_v<TValue, double>)
+			value_type = CV_64FC1;
+		else if(std::is_same_v<TValue, uint8_t>)
+			value_type = CV_8UC1;
+		else
+			throw std::logic_error("Unrecognized value type!");
+
+		return value_type;
 	}
 
 
@@ -109,4 +145,45 @@ public:
 
 		return r;
 	}
+
+	// Get the path of the folder that contains the executable.
+	static const std::string& getCurrentDirPath()
+	{
+		namespace fs=boost::filesystem;
+		static std::string path;
+		static std::mutex mutex;
+
+		{
+			std::lock_guard lock(mutex);
+			if(!path.empty())
+				return path;
+
+	#ifdef _WIN32
+			DWORD buf_size = 1024;
+
+			while(true)
+			{
+				auto buf = std::make_unique<char[]>(buf_size);
+				
+				auto size = GetModuleFileNameA(nullptr, buf.get(), buf_size);
+				if(size == 0)
+					throw std::runtime_error("Failed to fetch module name! windows api error code: " + std::to_string(GetLastError()));
+
+				if(size <= buf_size)
+				{
+					fs::path exe_path(buf.get(), buf.get() + size);
+					path = exe_path.parent_path().string();
+					return path;
+				}
+
+				buf_size *= 2;
+			}
+	#else
+	#error "Unsupported platform!"
+	#endif
+
+		}
+
+	}
+
 };

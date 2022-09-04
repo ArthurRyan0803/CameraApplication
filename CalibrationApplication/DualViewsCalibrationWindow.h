@@ -119,7 +119,7 @@ private:
     void shotImage() override;
     void saveImage(const std::string& filename) override;
     void abortCalibration() override;
-    void copyFrame(const cv::Mat& frame, int buffer_index);
+    void copyFrame(const std::vector<cv::Mat>& images, int index);
     void shotCalibImage() override;
     void calibrate(const std::string& folder) override;
     void cameraFrameReadyCallback(cv::InputArray image_data) override;

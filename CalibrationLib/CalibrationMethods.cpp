@@ -109,16 +109,18 @@ std::string APIENTRY stereoCalibration(
 	find_key_points_mt(left_images, left_key_points, left_flags, pattern, board_settings);
 	find_key_points_mt(right_images, right_key_points, right_flags, pattern, board_settings);
 
-	bool found = std::all_of(
-		left_flags.cbegin(), left_flags.cend(), [](const bool x) {return x;}
-	)
-	&&
-	std::all_of(
-		right_flags.cbegin(), right_flags.cend(), [](const bool x) {return x;}
-	);
 
-	if(!found)
-		return "Failed to find pattern!";
+	std::string left_idx_str, right_idx_str;
+	for(size_t i=0; i<left_flags.size(); i++)
+	{
+		if(!left_flags[i])
+			left_idx_str += std::to_string(i) + ",";
+		if(!right_flags[i])
+			right_idx_str += std::to_string(i) + ",";
+	}
+
+	if(!left_idx_str.empty() || ! right_idx_str.empty())
+		return "Fails to find pattern in left: " + left_idx_str + " and right: " + right_idx_str;
 
 	// 2. Pattern key points physical locations.
 	std::vector<std::vector<cv::Point3f>> phyKeyPoints;

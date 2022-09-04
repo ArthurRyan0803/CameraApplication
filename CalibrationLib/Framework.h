@@ -5,11 +5,11 @@
 
 #if defined(WIN32)
     #ifdef CALIBRATIONLIB_EXPORTS
-        #define CALIBRATIONLIB_DLL __declspec(dllexport)
+        #define CALIBRATIONLIB_SDK __declspec(dllexport)
     #elif (defined N_CALIBRATIONLIB_EXPORTS)
-        #define CALIBRATIONLIB_DLL
+        #define CALIBRATIONLIB_SDK
     #else
-        #define CALIBRATIONLIB_DLL __declspec(dllimport)
+        #define CALIBRATIONLIB_SDK __declspec(dllimport)
     #endif
 
 #else

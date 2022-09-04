@@ -1,6 +1,4 @@
 #include <iostream>
-#include <VSensorCamerasFactory.hpp>
-#include <PDNCamera.h>
 #include <opencv2/opencv.hpp>
 #include <Utils.hpp>
 #include <vtk-9.0/vtkObject.h>
@@ -100,11 +98,11 @@ void visualizeCamera(
 	cv::Mat R_new = (R_ * camera_params.rmat).t();
 	cv::Mat t_new = -camera_params.rmat.t() * camera_params.tvec;
 	
-	auto r_eigen_mat = Utils::MatrixCast<double, float, 3>(camera_params.rmat.t());
-	auto t_eigen_vec = Utils::VectorCast<double, float, 3>(- camera_params.rmat.t() * camera_params.tvec);
+	auto r_eigen_mat = Utils::matrixCast<double, float, 3>(camera_params.rmat.t());
+	auto t_eigen_vec = Utils::vectorCast<double, float, 3>(- camera_params.rmat.t() * camera_params.tvec);
 
-	auto rectified_r_eigen_mat = Utils::MatrixCast<double, float, 3>(R_new);
-	auto rectified_t_eigen_mat = Utils::VectorCast<double, float, 3>(t_new);
+	auto rectified_r_eigen_mat = Utils::matrixCast<double, float, 3>(R_new);
+	auto rectified_t_eigen_mat = Utils::vectorCast<double, float, 3>(t_new);
 
 	pcl_visualizer.addCube(t_eigen_vec, Eigen::Quaternionf(r_eigen_mat), w, h, d, id + "_original");
 	pcl_visualizer.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id + "_original");

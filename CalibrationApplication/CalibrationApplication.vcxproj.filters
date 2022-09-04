@@ -44,6 +44,9 @@
     <QtUic Include="FunctionalDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="ParameterSettingDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -70,11 +73,11 @@
     <ClCompile Include="TripleViewsCalibrationWindow.cpp">
       <Filter>Source Files\CalibWindows</Filter>
     </ClCompile>
+    <ClCompile Include="ParameterSettingDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="CalibrationSettingDialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="FunctionalDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -86,6 +89,12 @@
     </QtMoc>
     <QtMoc Include="SingleViewCalibrationWindow.h">
       <Filter>Header Files\CalibWindows</Filter>
+    </QtMoc>
+    <QtMoc Include="CalibrationSettingDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ParameterSettingDialog.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

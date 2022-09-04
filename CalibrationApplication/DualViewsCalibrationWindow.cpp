@@ -21,7 +21,6 @@ DualViewsCalibrationWindow::DualViewsCalibrationWindow(const std::shared_ptr<Cam
 	custom_ui_.canvasRight->installEventFilter(this);
 }
 
-
 bool DualViewsCalibrationWindow::paintImage(int index)
 {
 	auto canvas = index == 0 ? custom_ui_.canvasLeft : custom_ui_.canvasRight;
@@ -83,8 +82,8 @@ bool DualViewsCalibrationWindow::eventFilter(QObject* obj, QEvent* e)
 	if (e->type() == QEvent::Paint)
 		if (obj == custom_ui_.canvasLeft)
 			return paintImage(0);
-	if (obj == custom_ui_.canvasRight)
-		return paintImage(1);
+		if (obj == custom_ui_.canvasRight)
+			return paintImage(1);
 
 	return AbstractCalibrationWindow::eventFilter(obj, e);
 }
@@ -137,7 +136,7 @@ void DualViewsCalibrationWindow::findingCalibBoardPattern(int index)
 			bool ready;
 			{
 				std::lock_guard lock(frame_mutex);
-				ready = frame_buffer != nullptr;
+				ready = frame_buffers_[index] != nullptr;
 			}
 			if (ready)
 				break;
@@ -198,15 +197,11 @@ void DualViewsCalibrationWindow::closeEvent(QCloseEvent* event)
 
 void DualViewsCalibrationWindow::shotImage()
 {
-	cv::Mat frame;
-	camera_->oneShot(frame);
+	std::vector<cv::Mat> images(2);
+	camera_->onceCapture(images);
 
-	{
-		std::lock_guard lock(frame_buffer_mutexes_[0]);
-	}
-
-	copyFrame(frame, 0);
-	copyFrame(frame, 1);
+	copyFrame(images, 0);
+	copyFrame(images, 1);
 
 	custom_ui_.canvasLeft->update();
 	custom_ui_.canvasRight->update();
@@ -240,19 +235,15 @@ void DualViewsCalibrationWindow::abortCalibration()
 }
 
 
-void DualViewsCalibrationWindow::copyFrame(const cv::Mat& frame, int buffer_index)
+void DualViewsCalibrationWindow::copyFrame(const std::vector<cv::Mat>& images, int index)
 {
-	assert(buffer_index >= 0 && buffer_index <= 1);
+	assert(index >= 0 && index <= 1);
 
-	size_t cols_half = frame.cols / 2;
-	size_t col_start = (1 - buffer_index) * cols_half;	// TODO
-	size_t col_end = col_start + cols_half;
+	auto& frame_mutex = frame_buffer_mutexes_[index];
+	auto& frame_buffer = frame_buffers_[index];
 
-	auto& frame_mutex = frame_buffer_mutexes_[buffer_index];
-	auto& frame_buffer = frame_buffers_[buffer_index];
-
-	auto& q_image_mutex = q_image_mutexes_[buffer_index];
-	auto& q_image = q_images_[buffer_index];
+	auto& q_image_mutex = q_image_mutexes_[index];
+	auto& q_image = q_images_[index];
 
 	// Copy frame data to cv::Mat for process
 	{
@@ -260,7 +251,7 @@ void DualViewsCalibrationWindow::copyFrame(const cv::Mat& frame, int buffer_inde
 		if (!frame_buffer)
 			frame_buffer = std::make_unique<cv::Mat>();
 
-		frame.rowRange(0, frame.rows).colRange(col_start, col_end).copyTo(*frame_buffer);
+		images[index].copyTo(*frame_buffer);
 	}
 
 	// Copy frame data to qimage for display
@@ -275,10 +266,12 @@ void DualViewsCalibrationWindow::copyFrame(const cv::Mat& frame, int buffer_inde
 void DualViewsCalibrationWindow::shotCalibImage()
 {
 	std::shared_ptr<cv::Mat> left_image = std::make_shared<cv::Mat>(), right_image = std::make_shared<cv::Mat>();
+
 	{
 		std::lock_guard lock(frame_buffer_mutexes_[0]);
 		frame_buffers_[0]->copyTo(*left_image);
 	}
+
 	{
 		std::lock_guard lock(frame_buffer_mutexes_[1]);
 		frame_buffers_[1]->copyTo(*right_image);
@@ -406,11 +399,11 @@ void DualViewsCalibrationWindow::calibrate(const std::string& folder)
 
 void DualViewsCalibrationWindow::cameraFrameReadyCallback(cv::InputArray image_data)
 {
-	if (image_data.empty())
-		return;
+	std::vector<cv::Mat> images(2);
+	image_data.getMatVector(images);
 
-	copyFrame(image_data.getMat(), 0);
-	copyFrame(image_data.getMat(), 1);
+	copyFrame(images, 0);
+	copyFrame(images, 1);
 
 	QMetaObject::invokeMethod(this, [this]() { custom_ui_.canvasLeft->update(); }, Qt::QueuedConnection);
 	QMetaObject::invokeMethod(this, [this]() { custom_ui_.canvasRight->update(); }, Qt::QueuedConnection);
@@ -459,9 +452,9 @@ void DualViewsCalibrationWindow::visualizeCamera(
 
 	cv::Mat rectified_r_mat = R * r_mat;
 
-	auto t_eigen_vec = Utils::VectorCast<double, float, 3>(t_mat);
-	auto r_eigen_mat = Utils::MatrixCast<double, float, 3>(r_mat);
-	auto rectified_r_eigen_mat = Utils::MatrixCast<double, float, 3>(rectified_r_mat);
+	auto t_eigen_vec = Utils::vectorCast<double, float, 3>(t_mat);
+	auto r_eigen_mat = Utils::matrixCast<double, float, 3>(r_mat);
+	auto rectified_r_eigen_mat = Utils::matrixCast<double, float, 3>(rectified_r_mat);
 
 	pcl_visualizer_->addCube(t_eigen_vec, Eigen::Quaternionf(r_eigen_mat), w, h, d, id + "_original");
 	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id + "_original");
@@ -470,5 +463,3 @@ void DualViewsCalibrationWindow::visualizeCamera(
 	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, r, g, b, id + "_rectified");
 	pcl_visualizer_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, id + "_rectified");
 }
-
-

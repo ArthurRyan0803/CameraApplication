@@ -5,7 +5,7 @@
 #include <vtkGenericOpenGLRenderWindow.h>
 
 #include "AbstractCalibrationWindow.h"
-#include "PDRCamera.h"
+#include "PDRImageCamera.h"
 
 class TripleViewsCalibrationWindow :
     public AbstractCalibrationWindow

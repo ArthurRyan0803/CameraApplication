@@ -19,287 +19,293 @@ namespace VSENSOR
 		VSensor();
 		~VSensor();
 		/*******************************************************************
-		*名称：              GetDeviceList
-		*功能：              获取参数列表
-		*入口参数：
-		*pCameraList         获取的相机列表信息
-		*PINums              找到相机的个数
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              GetDeviceList
+		*���ܣ�              ��ȡ�����б�
+		*��ڲ�����
+		pCameraList          ��ȡ������б���Ϣ
+		PINums               �ҵ�����ĸ���
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int GetDeviceList(VSensorCameraInfo* pCameraList, int* piNums);
 		/*******************************************************************
-		*名称：              DeviceConnect
-		*功能：              设备连接，读取标定文件
-		*入口参数：
-		iDeviceIndex         需要连接的相机索引
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              DeviceConnect
+		*���ܣ�              �豸���ӣ���ȡ�궨�ļ�
+		*��ڲ�����
+		iDeviceIndex         ��Ҫ���ӵ��������
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int DeviceConnect(const int& iDeviceIndex);
 		/*******************************************************************
-		*名称：              DeviceParameterInit
-		*功能：              设备参数初始化，仅上电时需要进行此操作，初始化时间40s
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              DeviceParameterInit
+		*���ܣ�              �豸������ʼ�������ϵ�ʱ��Ҫ���д˲�������ʼ��ʱ��40s
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int DeviceParameterInit();
 		/*******************************************************************
-		*名称：              GetCamInternelParameter
-		*功能：              获取相机内参
-		*入口参数：
-		*pCameraInternelPara 获取的相机内参
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              GetCamInternelParameter
+		*���ܣ�              ��ȡ����ڲ�
+		*��ڲ�����
+		pCameraInternelPara  ��ȡ������ڲ�
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
-		int GetCamInternelParameter(VSensorCameraInternelPara* pCameraInternelPara);
+		int GetCamInternelParameter(VSensorCameraInternelPara* pCameraInternelPara);	
 		/*******************************************************************
-		*名称：              SetZaxisRange
-		*功能：              设置当前Z轴范围
-		*入口参数：
-		Min					 最小值
-		Max					 最大值
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetZaxisRange
+		*���ܣ�              ���õ�ǰZ�᷶Χ
+		*��ڲ�����
+		Min					 ��Сֵ
+		Max					 ���ֵ
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetZaxisRange(const int& Min, const int& Max);
 		/*******************************************************************
-		*名称：              SetProjectLight
-		*功能：              设置投影亮度(此接口仅支持DLP2000系列3D相机)
-		*入口参数：
-		brightness           投影亮度，亮度范围1 - 100
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetProjectLight
+		*���ܣ�              ����ͶӰ����(�˽ӿڽ�֧��DLP2000ϵ��3D���)
+		*��ڲ�����
+		brightness           ͶӰ���ȣ����ȷ�Χ1 - 100
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetProjectLight(const int& light);
 		/*******************************************************************
-		*名称：              SetDownsampling
-		*功能：              设置降采样
-		*入口参数：
-		isOpen				 开关，未调用该函数默认关闭
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetDownsampling
+		*���ܣ�              ���ý�����
+		*��ڲ�����
+		isOpen				 ���أ�δ���øú���Ĭ�Ϲر�
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetDownsampling(const bool& isOpen);
 		/*******************************************************************
-		*名称：              GetExposureTime
-		*功能：              获取当前曝光时间,单位为ms
-		*入口参数：
-		ExposureTime         获取的曝光时间
-		flag                 0:设置灰度相机  1:设置彩色相机 2:设置所有相机，默认设置所有相机
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              GetExposureTime
+		*���ܣ�              ��ȡ��ǰ�ع�ʱ��,��λΪms
+		*��ڲ�����
+		ExposureTime         ��ȡ���ع�ʱ��
+		flag                 0:���ûҶ����  1:���ò�ɫ��� 2:�������������Ĭ�������������
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int GetExposureTime(double& ExposureTime, int flag = 2);
 		/*******************************************************************
-		*名称：              SetExposureTime
-		*功能：              设置曝光时间，单位为ms，曝光范围1 - 200ms,注：P100系列 曝光范围0.1 - 2ms
-		*入口参数：
-		ExposureTime         设置的曝光时间
-		flag                 0:设置灰度相机  1:设置彩色相机 2:设置所有相机，默认设置所有相机
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetExposureTime
+		*���ܣ�              �����ع�ʱ�䣬��λΪms���عⷶΧ1 - 200ms,ע��P100ϵ�� �عⷶΧ0.1 - 2ms
+		*��ڲ�����
+		ExposureTime         ���õ��ع�ʱ��
+		flag                 0:���ûҶ����  1:���ò�ɫ��� 2:�������������Ĭ�������������
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetExposureTime(const double& ExposureTime, int flag = 2);
 		/*******************************************************************
-		*名称：              SetAutoExposureTime
-		*功能：              设置自动曝光，曝光范围1 - 150ms
-		*入口参数：
-		isOpen               自动曝光开关，未调用该函数默认关闭
-		TargetLight          设置目标亮度，范围10 - 250
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetAutoExposureTime
+		*���ܣ�              �����Զ��ع⣬�عⷶΧ1 - 150ms
+		*��ڲ�����
+		isOpen               �Զ��ع⿪�أ�δ���øú���Ĭ�Ϲر�
+		TargetLight          ����Ŀ�����ȣ���Χ10 - 250
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetAutoExposureTime(const bool& isOpen, const int& TargetLight);
 		/*******************************************************************
-		*名称：              SetHDR
-		*功能：              设置高动态采集模式
-		*入口参数：
-		ExposureTime1		 设置曝光时间1，单位为ms，曝光范围1 - 100ms,注：P100系列 曝光范围0.1 - 2ms
-		ExposureTime2        设置曝光时间2，单位为ms，曝光范围1 - 100ms,注：P100系列 曝光范围0.1 - 2ms
-		isOpen			     ROI开关，未调用该函数默认关闭
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetHDR
+		*���ܣ�              ���ø߶�̬�ɼ�ģʽ
+		*��ڲ�����
+		ExposureTime1		 �����ع�ʱ��1����λΪms���عⷶΧ1 - 100ms,ע��P100ϵ�� �عⷶΧ0.1 - 2ms
+		ExposureTime2        �����ع�ʱ��2����λΪms���عⷶΧ1 - 100ms,ע��P100ϵ�� �عⷶΧ0.1 - 2ms
+		isOpen			     ROI���أ�δ���øú���Ĭ�Ϲر�
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetHDR(const double& ExposureTime1, const double& ExposureTime2, const bool& isOpen);
 		/*******************************************************************
-		*名称：              SetCameraOnceWB
-		*功能：              设置彩色相机一键白平衡
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetCameraOnceWB
+		*���ܣ�              ���ò�ɫ���һ����ƽ��
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetCameraOnceWB();
 		/*******************************************************************
-		*名称：              SetAnalogGain
-		*功能：              设置彩色相机的图像模拟增益值
-		*入口参数：
-		iAnalogGainR         红色通道增益值，范围0 - 255，默认100
-		iAnalogGainG         绿色通道增益值，范围0 - 255，默认100
-		iAnalogGainB         蓝色通道增益值，范围0 - 255，默认100
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetAnalogGain
+		*���ܣ�              ���ò�ɫ�����ͼ��ģ������ֵ
+		*��ڲ�����
+		iAnalogGainR         ��ɫͨ������ֵ����Χ0 - 255��Ĭ��100
+		iAnalogGainG         ��ɫͨ������ֵ����Χ0 - 255��Ĭ��100
+		iAnalogGainB         ��ɫͨ������ֵ����Χ0 - 255��Ĭ��100
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetAnalogGain(const int& iAnalogGainR, const int& iAnalogGainG, const int& iAnalogGainB);
 		/*******************************************************************
-		*名称：              GetAnalogGain
-		*功能：              获取彩色相机的图像模拟增益值
-		*入口参数：
-		iAnalogGainR         红色通道增益值
-		iAnalogGainG         绿色通道增益值
-		iAnalogGainB         蓝色通道增益值
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              GetAnalogGain
+		*���ܣ�              ��ȡ��ɫ�����ͼ��ģ������ֵ
+		*��ڲ�����
+		iAnalogGainR         ��ɫͨ������ֵ
+		iAnalogGainG         ��ɫͨ������ֵ
+		iAnalogGainB         ��ɫͨ������ֵ
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int GetAnalogGain(int& iAnalogGainR, int& iAnalogGainG, int& iAnalogGainB);
 		/*******************************************************************
-		*名称：              SetAnalogGain
-		*功能：              设置相机的图像模拟增益值
-		*入口参数：
-		iAnalogGain          增益值，范围3 - 10，默认6
-		flag                 0:设置灰度相机  1:设置彩色相机 2:设置所有相机，默认设置所有相机
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetAnalogGain
+		*���ܣ�              ���������ͼ��ģ������ֵ
+		*��ڲ�����
+		iAnalogGain          ����ֵ����Χ3 - 10��Ĭ��6
+		flag                 0:���ûҶ����  1:���ò�ɫ���  2:�������������Ĭ�������������
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetAnalogGain(const int& iAnalogGain, int flag = 2);
 		/*****************************************************************
-		*名称：              GetLuminance1
-		*功能：              获取环境亮度
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              GetLuminance1
+		*���ܣ�              ��ȡ��������(�رռ�����״̬��)
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int GetLuminance1(int& Luminance);
 		/*****************************************************************
-		*名称：              GetLuminance2
-		*功能：              获取环境亮度
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              GetLuminance2
+		*���ܣ�              ��ȡ��������(�򿪼�����״̬��)
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int GetLuminance2(int& Luminance);
 		/*******************************************************************
-		*名称：              SetOutlierDetect
-		*功能：              设置离散点
-		*入口参数：
-		window               离散窗口，范围1 - 5
-		para				 离散参数，范围1.0 - 5.0
-		isOpen               离散开关，未调用该函数默认关闭
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetOutlierDetect
+		*���ܣ�              ������ɢ��
+		*��ڲ�����
+		window               ��ɢ���ڣ���Χ1 - 5
+		para				 ��ɢ��������Χ1.0 - 5.0
+		isOpen               ��ɢ���أ�δ���øú���Ĭ�Ϲر�
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetOutlierDetect(const int& window, const float& para, const bool& isOpen);
 		/*******************************************************************
-		*名称：              SetFilter1
-		*功能：              设置双边滤波
-		*入口参数：
-		window               滤波窗口，范围1 - 15
-		para				 滤波参数，范围1.0 - 10.0
-		isOpen               滤波开关，未调用该函数默认关闭
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetFilter1
+		*���ܣ�              ����˫���˲�
+		*��ڲ�����
+		window               �˲����ڣ���Χ1 - 15
+		para				 �˲���������Χ1.0 - 10.0
+		isOpen               �˲����أ�δ���øú���Ĭ�Ϲر�
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetFilter1(const int& window, const float& para, const bool& isOpen);
 		/*******************************************************************
-		*名称：              SetFilter2
-		*功能：              设置迭代滤波
-		*入口参数：
-		para				 滤波参数，范围1.0 - 10.0
-		frequency			 滤波次数，范围1 - 5
-		isOpen               滤波开关，未调用该函数默认关闭
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetFilter2
+		*���ܣ�              ���õ����˲�
+		*��ڲ�����
+		para				 �˲���������Χ1.0 - 10.0
+		frequency			 �˲���������Χ1 - 5
+		isOpen               �˲����أ�δ���øú���Ĭ�Ϲر�
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetFilter2(const float& para, const int& frequency, const bool& isOpen);
 		/*******************************************************************
-		*名称：              SetFilter3
-		*功能：              设置高斯滤波
-		*入口参数：
-		para				 滤波参数，范围1.0 - 10.0
-		isOpen               滤波开关，未调用该函数默认关闭
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetFilter3
+		*���ܣ�              ���ø�˹�˲�
+		*��ڲ�����
+		para				 �˲���������Χ1.0 - 10.0
+		isOpen               �˲����أ�δ���øú���Ĭ�Ϲر�
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetFilter3(const float& para, const bool& isOpen);
 		/*******************************************************************
-		*名称：              SetROI
-		*功能：              设置ROI感兴趣区域
-		*入口参数：
-		offsetX		         起始坐标X，范围0 - 880 
-		offSetY              起始坐标Y，范围0 - 624
-		width			     区域宽，范围400 - 1280, 仅支持16倍数
-		height				 区域高，范围400 - 1024，仅支持4倍数
-		isOpen			     ROI开关，未调用该函数默认关闭
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetROI
+		*���ܣ�              ����ROI����Ȥ����
+		*��ڲ�����
+		offsetX		         ��ʼ����X����Χ0 - 880 
+		offSetY              ��ʼ����Y����Χ0 - 624
+		width			     ���������Χ400 - 1280, ��֧��16����
+		height				 ����ߣ���Χ400 - 1024����֧��4����
+		isOpen			     ROI���أ�δ���øú���Ĭ�Ϲر�
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetROI(const int& offsetX, const int& offSetY, const int& width, const int& height, const bool& isOpen);
 		/*******************************************************************
-		*名称：              SetCaptureMode
-		*功能：              设置相机采集模式
-		*入口参数：
-		flag                 0:预览模式  1:采集点云模式，默认为预览模式
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SetCaptureMode
+		*���ܣ�              ��������ɼ�ģʽ
+		*��ڲ�����
+		flag                 0:Ԥ��ģʽ  1:�ɼ�����ģʽ��Ĭ��ΪԤ��ģʽ
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SetCaptureMode(const int& flag);
 		/*******************************************************************
-		*名称：              SingleRestruction
-		*功能：              单次重建3D点云
-		*入口参数：
-		presult              获取的点云数据结果
-		Capflag              0:全量输出  1:输出点云  2:输出点云和深度图  3:输出点云和灰度图
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SingleRestruction
+		*���ܣ�              �����ؽ�3D����
+		*��ڲ�����
+		presult              ��ȡ�ĵ������ݽ��
+		Capflag              0:ȫ�����  1:�������  2:������ƺ����ͼ  3:������ƺͻҶ�ͼ
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SingleRestruction(VSensorResult* presult, const int& Capflag);
 		/*******************************************************************
-		*名称：              ContinuousRestructionStart
-		Capflag              0:全量输出  1:输出点云  2:输出点云和深度图  3:输出点云和灰度图
-		*功能：              开始3D重建连续模式
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              ContinuousRestructionStart
+		Capflag              0:ȫ�����  1:�������  2:������ƺ����ͼ  3:������ƺͻҶ�ͼ
+		*���ܣ�              ��ʼ3D�ؽ�����ģʽ
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int ContinuousRestructionStart(const int& Capflag);
 		/*******************************************************************
-		*名称：              ContinuousRestructionStop
-		*功能：              结束3D重建连续模式
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              ContinuousRestructionStop
+		*���ܣ�              ����3D�ؽ�����ģʽ
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int ContinuousRestructionStop();
 		/*******************************************************************
-		*名称：              CaptureFrame
-		*功能：              获取一帧点云数据
-		*入口参数：
-		presult              获取的点云数据结果
-		ctime                最大延时时间，单位ms
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              CaptureFrame
+		*���ܣ�              ��ȡһ֡��������
+		*��ڲ�����
+		presult              ��ȡ�ĵ������ݽ��
+		ctime                �����ʱʱ�䣬��λms
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int CaptureFrame(VSensorResult* presult, const int& ctime);
 		/*******************************************************************
-		*名称：              SaveGrayMap
-		*功能：              获取灰度图
-		*入口参数：
-		*presult             生成的点云结果
-		SaveName             保存灰度图文件路径，支持格式png、jpg、bmp
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SaveGrayMap
+		*���ܣ�              ��ȡ�Ҷ�ͼ
+		*��ڲ�����
+		filePath             ����Ҷ�ͼ�ļ�·����֧�ָ�ʽpng��jpg��bmp
+		presult              ���ɵĵ��ƽ��
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SaveGrayMap(const std::string& filePath, VSensorResult* presult);
 		/*******************************************************************
-		*名称：              SaveDepthMap
-		*功能：              获取深度图
-		*入口参数：
-		*presult             生成点云结果
-		SaveName             保存深度图文件路径，仅支持png
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SaveDepthMap
+		*���ܣ�              ��ȡ���ͼ
+		*��ڲ�����		
+		filePath             �������ͼ�ļ�·������֧��png
+		presult              ���ɵ��ƽ��
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SaveDepthMap(const std::string&  filePath, VSensorResult* presult);
 		/*******************************************************************
-		*名称：              Save3DCloud
-		*功能：              保存点云
-		*入口参数：
-		*presult             生成点云结果
-		SaveName             保存点云文件路径,支持格式pcd、ply、txt
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              Save3DCloud
+		*���ܣ�              �������
+		*��ڲ�����
+		filePath             ��������ļ�·��,֧�ָ�ʽpcd��ply��txt
+		presult              ���ɵ��ƽ��	
+		Capflag              0:�������  1:�������
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
-		int Save3DCloud(const std::string& filePath, VSensorResult* presult);
+		int Save3DCloud(const std::string& filePath, VSensorResult* presult, const int& flag);
 		/*******************************************************************
-		*名称：              SaveRGBMap
-		*功能：              获取彩色图(此接口仅支持RGB系列3D相机)
-		*入口参数：
-		*presult             生成点云结果
-		SaveName             保存彩色图文件路径，支持格式png、jpg、bmp
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              SaveRGBMap
+		*���ܣ�              ��ȡ��ɫͼ(�˽ӿڽ�֧��RGBϵ��3D���)
+		*��ڲ�����
+		presult              ���ɵ��ƽ��
+		SaveName             �����ɫͼ�ļ�·����֧�ָ�ʽpng��jpg��bmp
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int SaveRGBMap(const std::string& filePath, VSensorResult* presult);
 		/*******************************************************************
-		*名称：              CameraOut
-		*功能：              获取相机采集
-		*入口参数：
-		*imgBufferGray		 存储采集灰度相机采集到的数据，分辨率1280*1024，ROI下为设置的分辨率
-		*imgBufferRGB        存储采集彩色相机采集到的数据，分辨率1280*1024
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              CameraOut
+		*���ܣ�              ��ȡ����ɼ�
+		*��ڲ�����
+		imgBufferGray		 �洢�ɼ��Ҷ�����ɼ��������ݣ��ֱ���1280*1024��ROI��Ϊ���õķֱ���
+		imgBufferRGB         �洢�ɼ���ɫ����ɼ��������ݣ��ֱ���1280*1024
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int CameraOut(BYTE* imgBufferGray, BYTE* imgBufferRGB);
 		/*******************************************************************
-		*名称：              DeviceUnInit
-		*功能：              设备反初始化
-		*出口参数：          成功返回0.否则返回非0错误码，参考VSensorDefine.h中错误码的定义
+		*���ƣ�              DeviceUnInit
+		*���ܣ�              �豸����ʼ��
+		*���ڲ�����          �ɹ�����0.���򷵻ط�0�����룬�ο�VSensorDefine.h�д�����Ķ���
 		*******************************************************************/
 		int DeviceUnInit();
-	public:
+
+		int SingleCapture(BYTE* imgBuffer1[], BYTE* imgBuffer2[], BYTE* imgBufferRGB);
+        int SingleRestruction(const int& Capflag, VSensorResult* presult, BYTE* imgBuffer1[], BYTE* imgBuffer2[], BYTE* imgBufferRGB);
+
+		int SetLight(int isOpen);
+	private:
 		class VSensorSDK;
 		std::unique_ptr<VSensorSDK> pVSensorSDK;
 	};

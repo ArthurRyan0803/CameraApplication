@@ -16,18 +16,12 @@ bool APIENTRY findKeyPoints(
 	const cv::Mat& image, std::vector<cv::Point2f>& points, Pattern pattern, const cv::Size& points_count, bool roughly
 )
 {
-	cv::Mat image_detect;
-	if(image.channels() == 3)
-		cvtColor(image, image_detect, cv::COLOR_RGB2GRAY);
-	else
-		image.copyTo(image_detect);
-
 	switch (pattern)
 	{
 		case Chessboard:
 		{
 			bool found = findChessboardCorners(
-				image_detect, points_count, points, 
+				image, points_count, points, 
 				cv::CALIB_CB_FAST_CHECK | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_ADAPTIVE_THRESH
 			);
 
@@ -35,7 +29,7 @@ bool APIENTRY findKeyPoints(
 			
 			if(!roughly)
 				cornerSubPix(
-					image_detect, points, cv::Size(SUB_PIXEL_SEARCH_WINDOW, SUB_PIXEL_SEARCH_WINDOW), 
+					image, points, cv::Size(SUB_PIXEL_SEARCH_WINDOW, SUB_PIXEL_SEARCH_WINDOW), 
 					cv::Size(-1, -1), SUB_PIXEL_SEARCH_CRITERIA
 				);
 
@@ -44,7 +38,7 @@ bool APIENTRY findKeyPoints(
 		
 		case CirclesArray:
 		{
-			return cv::findCirclesGrid(255 - image_detect, points_count, points);
+			return cv::findCirclesGrid(255 - image, points_count, points);
 		}
 
 		default:

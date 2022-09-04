@@ -7,14 +7,14 @@
 enum Pattern { Invalid = 0, Chessboard = 1, CirclesArray = 2 };
 
 
-CALIBRATIONLIB_DLL bool findKeyPoints(
+CALIBRATIONLIB_SDK bool findKeyPoints(
 	const cv::Mat& image, std::vector<cv::Point2f>& points, Pattern pattern, const cv::Size& points_count, bool roughly=false
 );
 
-CALIBRATIONLIB_DLL void calKeyPointsPhyCoordinates(
+CALIBRATIONLIB_SDK void calKeyPointsPhyCoordinates(
 	const CalibrationBoardSettings& settings, Pattern pattern, std::vector<cv::Point3f>& points_coordinates
 );
 
-CALIBRATIONLIB_DLL void calImagesKeyPointsPhyCoordinates(
+CALIBRATIONLIB_SDK void calImagesKeyPointsPhyCoordinates(
 	const CalibrationBoardSettings& settings, Pattern pattern, size_t images, std::vector<std::vector<cv::Point3f>>& phyKeyPoints
 );

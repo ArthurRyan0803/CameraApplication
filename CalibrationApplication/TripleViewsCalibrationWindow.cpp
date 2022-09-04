@@ -80,7 +80,9 @@ bool TripleViewsCalibrationWindow::paintImage(int index)
 void TripleViewsCalibrationWindow::shotImage()
 {
 	std::vector<cv::Mat> images(3);
-	camera_->oneShot(images);
+	camera_->onceCapture(images);
+	if(images.empty())
+		return;
 	
 	for(size_t i=0; i<images.size(); i++)
 	{

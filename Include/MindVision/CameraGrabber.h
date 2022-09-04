@@ -7,10 +7,10 @@
 
 /// @ingroup GRABBER_CREATE
 /// \~chinese
-/// \brief å¼¹å‡ºç›¸æœºåˆ—è¡¨è®©ç”¨æˆ·é€‰æ‹©è¦æ‰“å¼€çš„ç›¸æœº
-/// \param [out] Grabber è¿”å›æ–°åˆ›å»ºçš„é‡‡é›†å™¨
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
-/// \note æœ¬å‡½æ•°å†…éƒ¨ä½¿ç”¨äº† @link CameraInit @endlink æ‰“å¼€ç›¸æœºï¼Œå› æ­¤å¯ä»¥ä½¿ç”¨ @link CameraGrabber_GetCameraHandle @endlink è·å–ç›¸æœºå¥æŸ„ï¼Œè¿›è€Œä½¿ç”¨å…¶ä»–SDK APIæ¥æ“ä½œç›¸æœºã€‚
+/// \brief µ¯³öÏà»úÁĞ±íÈÃÓÃ»§Ñ¡ÔñÒª´ò¿ªµÄÏà»ú
+/// \param [out] Grabber ·µ»ØĞÂ´´½¨µÄ²É¼¯Æ÷
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
+/// \note ±¾º¯ÊıÄÚ²¿Ê¹ÓÃÁË @link CameraInit @endlink ´ò¿ªÏà»ú£¬Òò´Ë¿ÉÒÔÊ¹ÓÃ @link CameraGrabber_GetCameraHandle @endlink »ñÈ¡Ïà»ú¾ä±ú£¬½ø¶øÊ¹ÓÃÆäËûSDK APIÀ´²Ù×÷Ïà»ú¡£
 /// \~english
 /// \brief Pop-up camera list allows the user to select the camera to open
 /// \param [out] Grabber returns newly created grabber
@@ -22,11 +22,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_CreateFromDevicePage(
 
 /// @ingroup GRABBER_CREATE
 /// \~chinese
-/// \brief ä½¿ç”¨ç›¸æœºåˆ—è¡¨ç´¢å¼•åˆ›å»ºGrabber
-/// \param [out] Grabber è¿”å›æ–°åˆ›å»ºçš„é‡‡é›†å™¨
-/// \param [in] Index ç›¸æœºç´¢å¼•
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
-/// \note æœ¬å‡½æ•°å†…éƒ¨ä½¿ç”¨äº† @link CameraInit @endlink æ‰“å¼€ç›¸æœºï¼Œå› æ­¤å¯ä»¥ä½¿ç”¨ @link CameraGrabber_GetCameraHandle @endlink è·å–ç›¸æœºå¥æŸ„ï¼Œè¿›è€Œä½¿ç”¨å…¶ä»–SDK APIæ¥æ“ä½œç›¸æœºã€‚
+/// \brief Ê¹ÓÃÏà»úÁĞ±íË÷Òı´´½¨Grabber
+/// \param [out] Grabber ·µ»ØĞÂ´´½¨µÄ²É¼¯Æ÷
+/// \param [in] Index Ïà»úË÷Òı
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
+/// \note ±¾º¯ÊıÄÚ²¿Ê¹ÓÃÁË @link CameraInit @endlink ´ò¿ªÏà»ú£¬Òò´Ë¿ÉÒÔÊ¹ÓÃ @link CameraGrabber_GetCameraHandle @endlink »ñÈ¡Ïà»ú¾ä±ú£¬½ø¶øÊ¹ÓÃÆäËûSDK APIÀ´²Ù×÷Ïà»ú¡£
 /// \~english
 /// \brief Creating a Grabber Using a Camera List Index
 /// \param [out] Grabber returns newly created grabber
@@ -40,11 +40,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_CreateByIndex(
 
 /// @ingroup GRABBER_CREATE
 /// \~chinese
-/// \brief ä½¿ç”¨ç›¸æœºåç§°åˆ›å»ºGrabber
-/// \param [out] Grabber è¿”å›æ–°åˆ›å»ºçš„é‡‡é›†å™¨
-/// \param [in] Name ç›¸æœºåç§°ã€‚@link #tSdkCameraDevInfo.acFriendlyName @endlink
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
-/// \note æœ¬å‡½æ•°å†…éƒ¨ä½¿ç”¨äº† @link CameraInit @endlink æ‰“å¼€ç›¸æœºï¼Œå› æ­¤å¯ä»¥ä½¿ç”¨ @link CameraGrabber_GetCameraHandle @endlink è·å–ç›¸æœºå¥æŸ„ï¼Œè¿›è€Œä½¿ç”¨å…¶ä»–SDK APIæ¥æ“ä½œç›¸æœºã€‚
+/// \brief Ê¹ÓÃÏà»úÃû³Æ´´½¨Grabber
+/// \param [out] Grabber ·µ»ØĞÂ´´½¨µÄ²É¼¯Æ÷
+/// \param [in] Name Ïà»úÃû³Æ¡£@link #tSdkCameraDevInfo.acFriendlyName @endlink
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
+/// \note ±¾º¯ÊıÄÚ²¿Ê¹ÓÃÁË @link CameraInit @endlink ´ò¿ªÏà»ú£¬Òò´Ë¿ÉÒÔÊ¹ÓÃ @link CameraGrabber_GetCameraHandle @endlink »ñÈ¡Ïà»ú¾ä±ú£¬½ø¶øÊ¹ÓÃÆäËûSDK APIÀ´²Ù×÷Ïà»ú¡£
 /// \~english
 /// \brief Create a Grabber with a Camera Name
 /// \param [out] Grabber returns newly created grabber
@@ -58,11 +58,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_CreateByName(
 
 /// @ingroup GRABBER_CREATE
 /// \~chinese
-/// \brief ä»è®¾å¤‡ä¿¡æ¯åˆ›å»ºGrabber
-/// \param [out] Grabber è¿”å›æ–°åˆ›å»ºçš„é‡‡é›†å™¨
-/// \param [in] pDevInfo è®¾å¤‡ä¿¡æ¯ã€‚@link #CameraEnumerateDevice @endlink
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
-/// \note æœ¬å‡½æ•°å†…éƒ¨ä½¿ç”¨äº† @link CameraInit @endlink æ‰“å¼€ç›¸æœºï¼Œå› æ­¤å¯ä»¥ä½¿ç”¨ @link CameraGrabber_GetCameraHandle @endlink è·å–ç›¸æœºå¥æŸ„ï¼Œè¿›è€Œä½¿ç”¨å…¶ä»–SDK APIæ¥æ“ä½œç›¸æœºã€‚
+/// \brief ´ÓÉè±¸ĞÅÏ¢´´½¨Grabber
+/// \param [out] Grabber ·µ»ØĞÂ´´½¨µÄ²É¼¯Æ÷
+/// \param [in] pDevInfo Éè±¸ĞÅÏ¢¡£@link #CameraEnumerateDevice @endlink
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
+/// \note ±¾º¯ÊıÄÚ²¿Ê¹ÓÃÁË @link CameraInit @endlink ´ò¿ªÏà»ú£¬Òò´Ë¿ÉÒÔÊ¹ÓÃ @link CameraGrabber_GetCameraHandle @endlink »ñÈ¡Ïà»ú¾ä±ú£¬½ø¶øÊ¹ÓÃÆäËûSDK APIÀ´²Ù×÷Ïà»ú¡£
 /// \~english
 /// \brief Create Grabber from device info
 /// \param [out] Grabber returns newly created grabber
@@ -76,9 +76,9 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_Create(
 
 /// @ingroup GRABBER_DESTROY
 /// \~chinese
-/// \brief é”€æ¯Grabber
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief Ïú»ÙGrabber
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Destroy Grabber
 /// \param [in] Grabber
@@ -89,10 +89,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_Destroy(
 
 /// @ingroup GRABBER_CTRL
 /// \~chinese
-/// \brief è®¾ç½®é¢„è§ˆè§†é¢‘çš„æ˜¾ç¤ºçª—å£
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [in] hWnd æ˜¾ç¤ºçª—å£çš„çª—å£å¥æŸ„
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief ÉèÖÃÔ¤ÀÀÊÓÆµµÄÏÔÊ¾´°¿Ú
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [in] hWnd ÏÔÊ¾´°¿ÚµÄ´°¿Ú¾ä±ú
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Set the preview video display window
 /// \param [in] Grabber
@@ -105,10 +105,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SetHWnd(
 
 /// @ingroup GRABBER_CTRL
 /// \~chinese
-/// \brief è®¾ç½®Grabberå–å›¾æ—¶ä½¿ç”¨çš„ä¼˜å…ˆçº§
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [in] Priority å–å›¾ä¼˜å…ˆçº§ è¯¦è§ï¼š@link #emCameraGetImagePriority @endlink
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief ÉèÖÃGrabberÈ¡Í¼Ê±Ê¹ÓÃµÄÓÅÏÈ¼¶
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [in] Priority È¡Í¼ÓÅÏÈ¼¶ Ïê¼û£º@link #emCameraGetImagePriority @endlink
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Sets the priority used by Grabber when fetching graphs
 /// \param [in] Grabber
@@ -121,10 +121,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SetPriority(
 
 /// @ingroup GRABBER_CTRL
 /// \~chinese
-/// \brief å¼€å§‹é‡‡é›†
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
-/// \note Grabberå¿…é¡»è¿›å…¥é‡‡é›†çŠ¶æ€ï¼Œé‡‡é›†å›è°ƒã€æŠ“å›¾ç­‰åŠŸèƒ½æ‰èƒ½æ­£å¸¸è¿ä½œ
+/// \brief ¿ªÊ¼²É¼¯
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
+/// \note Grabber±ØĞë½øÈë²É¼¯×´Ì¬£¬²É¼¯»Øµ÷¡¢×¥Í¼µÈ¹¦ÄÜ²ÅÄÜÕı³£ÔË×÷
 /// \~english
 /// \brief Start Grabber
 /// \param [in] Grabber
@@ -136,10 +136,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_StartLive(
 
 /// @ingroup GRABBER_CTRL
 /// \~chinese
-/// \brief åœæ­¢é‡‡é›†
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
-/// \warning æœ¬å‡½æ•°å†…éƒ¨ä¼šç­‰å¾…æ‰€æœ‰å›è°ƒå‡½æ•°ç»“æŸåæ‰è¿”å›è°ƒç”¨è€…,å¹¶ä¸”åœ¨ç­‰å¾…æ—¶ä¼šæ´¾å‘windowsæ¶ˆæ¯ã€‚
+/// \brief Í£Ö¹²É¼¯
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
+/// \warning ±¾º¯ÊıÄÚ²¿»áµÈ´ıËùÓĞ»Øµ÷º¯Êı½áÊøºó²Å·µ»Øµ÷ÓÃÕß,²¢ÇÒÔÚµÈ´ıÊ±»áÅÉ·¢windowsÏûÏ¢¡£
 /// \~english
 /// \brief Stop Grabber
 /// \param [in] Grabber
@@ -151,11 +151,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_StopLive(
 
 /// @ingroup GRABBER_SNAPSHOT
 /// \~chinese
-/// \brief åŒæ­¥æŠ“å›¾
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [out] Image è¿”å›æŠ“å–åˆ°çš„å›¾åƒ \note éœ€è¦è°ƒç”¨@link #CameraImage_Destroy @endlinké‡Šæ”¾
-/// \param [in] TimeOut è¶…æ—¶æ—¶é—´ï¼ˆæ¯«ç§’ï¼‰
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief Í¬²½×¥Í¼
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [out] Image ·µ»Ø×¥È¡µ½µÄÍ¼Ïñ \note ĞèÒªµ÷ÓÃ@link #CameraImage_Destroy @endlinkÊÍ·Å
+/// \param [in] TimeOut ³¬Ê±Ê±¼ä£¨ºÁÃë£©
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Synchronized snapshot
 /// \param [in] Grabber
@@ -170,9 +170,9 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SaveImage(
 
 /// @ingroup GRABBER_SNAPSHOT
 /// \~chinese
-/// \brief æäº¤ä¸€ä¸ªå¼‚æ­¥çš„æŠ“å›¾è¯·æ±‚ï¼Œæäº¤æˆåŠŸåå¾…æŠ“å›¾å®Œæˆä¼šå›è°ƒç”¨æˆ·è®¾ç½®çš„å®Œæˆå‡½æ•°
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief Ìá½»Ò»¸öÒì²½µÄ×¥Í¼ÇëÇó£¬Ìá½»³É¹¦ºó´ı×¥Í¼Íê³É»á»Øµ÷ÓÃ»§ÉèÖÃµÄÍê³Éº¯Êı
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \see CameraGrabber_SetSaveImageCompleteCallback
 /// \~english
 /// \brief Submit an asynchronous snapshot request, complete the user's completion function after the completion of the submission.
@@ -185,10 +185,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SaveImageAsync(
 
 /// @ingroup GRABBER_SNAPSHOT
 /// \~chinese
-/// \brief æäº¤ä¸€ä¸ªå¼‚æ­¥çš„æŠ“å›¾è¯·æ±‚ï¼Œæäº¤æˆåŠŸåå¾…æŠ“å›¾å®Œæˆä¼šå›è°ƒç”¨æˆ·è®¾ç½®çš„å®Œæˆå‡½æ•°
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [in] UserData ç”¨æˆ·æ•°æ®ï¼Œå¯ä½¿ç”¨ @link CameraImage_GetUserData @endlink ä»Imageè·å–æ­¤å€¼
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief Ìá½»Ò»¸öÒì²½µÄ×¥Í¼ÇëÇó£¬Ìá½»³É¹¦ºó´ı×¥Í¼Íê³É»á»Øµ÷ÓÃ»§ÉèÖÃµÄÍê³Éº¯Êı
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [in] UserData ÓÃ»§Êı¾İ£¬¿ÉÊ¹ÓÃ @link CameraImage_GetUserData @endlink ´ÓImage»ñÈ¡´ËÖµ
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \see CameraGrabber_SetSaveImageCompleteCallback
 /// \~english
 /// \brief Submit an asynchronous snapshot request, complete the user's completion function after the completion of the submission.
@@ -203,11 +203,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SaveImageAsyncEx(
 
 /// @ingroup GRABBER_SNAPSHOT
 /// \~chinese
-/// \brief è®¾ç½®å¼‚æ­¥æ–¹å¼æŠ“å›¾çš„å®Œæˆå‡½æ•°
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [in] Callback å½“å¼‚æ­¥æŠ“å›¾ä»»åŠ¡å®Œæˆæ—¶è¢«è°ƒç”¨
-/// \param [in] Context å½“Callbackè¢«è°ƒç”¨æ—¶ï¼Œä½œä¸ºå‚æ•°ä¼ å…¥Callback
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief ÉèÖÃÒì²½·½Ê½×¥Í¼µÄÍê³Éº¯Êı
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [in] Callback µ±Òì²½×¥Í¼ÈÎÎñÍê³ÉÊ±±»µ÷ÓÃ
+/// \param [in] Context µ±Callback±»µ÷ÓÃÊ±£¬×÷Îª²ÎÊı´«ÈëCallback
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \see CameraGrabber_SaveImageAsync CameraGrabber_SaveImageAsyncEx
 /// \~english
 /// \brief Set the completion function of asynchronous mode snapshot
@@ -224,11 +224,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SetSaveImageCompleteCallback(
 
 /// @ingroup GRABBER_CB
 /// \~chinese
-/// \brief è®¾ç½®å¸§ç›‘å¬å‡½æ•°
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [in] Listener ç›‘å¬å‡½æ•°
-/// \param [in] Context å½“Listenerè¢«è°ƒç”¨æ—¶ï¼Œä½œä¸ºå‚æ•°ä¼ å…¥Listener
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief ÉèÖÃÖ¡¼àÌıº¯Êı
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [in] Listener ¼àÌıº¯Êı
+/// \param [in] Context µ±Listener±»µ÷ÓÃÊ±£¬×÷Îª²ÎÊı´«ÈëListener
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Set frame listening function
 /// \param [in] Grabber
@@ -243,11 +243,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SetFrameListener(
 
 /// @ingroup GRABBER_CB
 /// \~chinese
-/// \brief è®¾ç½®RAWæ•°æ®å›è°ƒå‡½æ•°
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [in] Callback Rawå›è°ƒå‡½æ•°
-/// \param [in] Context å½“Callbackè¢«è°ƒç”¨æ—¶ï¼Œä½œä¸ºå‚æ•°ä¼ å…¥Callback
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief ÉèÖÃRAWÊı¾İ»Øµ÷º¯Êı
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [in] Callback Raw»Øµ÷º¯Êı
+/// \param [in] Context µ±Callback±»µ÷ÓÃÊ±£¬×÷Îª²ÎÊı´«ÈëCallback
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Set RAW data callback function
 /// \param [in] Grabber
@@ -262,11 +262,11 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SetRawCallback(
 
 /// @ingroup GRABBER_CB
 /// \~chinese
-/// \brief è®¾ç½®RGBå›è°ƒå‡½æ•°
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [in] Callback RGBå›è°ƒå‡½æ•°
-/// \param [in] Context å½“Callbackè¢«è°ƒç”¨æ—¶ï¼Œä½œä¸ºå‚æ•°ä¼ å…¥Callback
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief ÉèÖÃRGB»Øµ÷º¯Êı
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [in] Callback RGB»Øµ÷º¯Êı
+/// \param [in] Context µ±Callback±»µ÷ÓÃÊ±£¬×÷Îª²ÎÊı´«ÈëCallback
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Set RGB callback function
 /// \param [in] Grabber
@@ -281,10 +281,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_SetRGBCallback(
 
 /// @ingroup GRABBER_CTRL
 /// \~chinese
-/// \brief è·å–ç›¸æœºå¥æŸ„
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [out] hCamera è¿”å›çš„ç›¸æœºå¥æŸ„
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief »ñÈ¡Ïà»ú¾ä±ú
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [out] hCamera ·µ»ØµÄÏà»ú¾ä±ú
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Get camera handle
 /// \param [in] Grabber
@@ -297,10 +297,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_GetCameraHandle(
 
 /// @ingroup GRABBER_CTRL
 /// \~chinese
-/// \brief è·å–å¸§ç»Ÿè®¡ä¿¡æ¯
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [out] stat è¿”å›çš„ç»Ÿè®¡ä¿¡æ¯
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief »ñÈ¡Ö¡Í³¼ÆĞÅÏ¢
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [out] stat ·µ»ØµÄÍ³¼ÆĞÅÏ¢
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Get frame statistics
 /// \param [in] Grabber
@@ -313,10 +313,10 @@ MVSDK_API CameraSdkStatus __stdcall CameraGrabber_GetStat(
 
 /// @ingroup GRABBER_CTRL
 /// \~chinese
-/// \brief è·å–ç›¸æœºDevInfo
-/// \param [in] Grabber é‡‡é›†å™¨
-/// \param [out] DevInfo è¿”å›çš„ç›¸æœºDevInfo
-/// \return æˆåŠŸè¿”å› CAMERA_STATUS_SUCCESS(0)ã€‚å¦åˆ™è¿”å›é0å€¼çš„é”™è¯¯ç , è¯·å‚è€ƒ CameraStatus.h ä¸­é”™è¯¯ç çš„å®šä¹‰ã€‚
+/// \brief »ñÈ¡Ïà»úDevInfo
+/// \param [in] Grabber ²É¼¯Æ÷
+/// \param [out] DevInfo ·µ»ØµÄÏà»úDevInfo
+/// \return ³É¹¦·µ»Ø CAMERA_STATUS_SUCCESS(0)¡£·ñÔò·µ»Ø·Ç0ÖµµÄ´íÎóÂë, Çë²Î¿¼ CameraStatus.h ÖĞ´íÎóÂëµÄ¶¨Òå¡£
 /// \~english
 /// \brief Get Camera DevInfo
 /// \param [in] Grabber

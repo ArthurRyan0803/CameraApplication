@@ -9,7 +9,7 @@
 
 #include "AbstractCamerasFactory.h"
 #include "CalibrationMethods.h"
-#include "Camera.h"
+#include "Camera.hpp"
 #include "Logger.hpp"
 #include "MainNavigationWindow.h"
 #include "ui_SingleViewCalibrationWindow.h"
@@ -72,7 +72,6 @@ private:
 
 	void calibrationButtonClicked();
 	void grabCalibImageButtonClicked();
-	void parameterButtonClicked();
 	void calibBoardSettingsButtonClicked();
 	/* ------ Slot methods ------ */
 };

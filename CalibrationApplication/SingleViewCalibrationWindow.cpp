@@ -21,10 +21,9 @@ SingleViewCalibrationWindow::SingleViewCalibrationWindow(
 	connect(ui_.btnSaveImage, &QPushButton::clicked, this, &SingleViewCalibrationWindow::saveImageButtonClicked);
 	connect(ui_.btnCalibration, &QPushButton::clicked, this, &SingleViewCalibrationWindow::calibrationButtonClicked);
 	connect(ui_.btnGrabCalibImage, &QPushButton::clicked, this, &SingleViewCalibrationWindow::grabCalibImageButtonClicked);
-	connect(ui_.btnParameter, &QPushButton::clicked, this, &SingleViewCalibrationWindow::parameterButtonClicked);
 	connect(ui_.btnCalibBoardSetting, &QPushButton::clicked, this, &SingleViewCalibrationWindow::calibBoardSettingsButtonClicked);
 
-	camera_->setFrameReadyCallback([this](cv::InputArray data) { cameraFrameReadyCallback(data); });
+	camera_->registerFrameReadyCallback([this](cv::InputArray data) { cameraFrameReadyCallback(data); });
 	
 	ui_.canvas->installEventFilter(this);
 
@@ -245,7 +244,7 @@ void SingleViewCalibrationWindow::oneShotButtonClicked()
 		if(!frame_buffer_)
 			frame_buffer_ = std::make_unique<cv::Mat>();
 		
-		camera_->oneShot(*frame_buffer_);
+		camera_->onceCapture(*frame_buffer_);
 
 		{
 			std::lock_guard q_image_lock(q_image_mutex_);
@@ -263,7 +262,7 @@ void SingleViewCalibrationWindow::captureButtonClicked()
 {
 	if(camera_->isCapturing())
 	{
-		camera_->stopCapture();
+		camera_->stopContinuesCapture();
 		ui_.btnCapture->setText("Start capturing");
 		ui_.btnOneShot->setEnabled(true);
 		ui_.ckbDetectCalibBoard->setChecked(false);	// This method will trigger slot [ detectBoardCheckboxStateChanged() ]
@@ -271,7 +270,7 @@ void SingleViewCalibrationWindow::captureButtonClicked()
 	}
 	else
 	{
-		camera_->startCapture();
+		camera_->startContinuesCapture();
 		ui_.btnCapture->setText("Stop capturing");
 		ui_.btnOneShot->setEnabled(false);
 		ui_.ckbDetectCalibBoard->setEnabled(true);
@@ -318,7 +317,7 @@ void SingleViewCalibrationWindow::calibrationButtonClicked()
 		ui_.btnGrabCalibImage->setEnabled(true);
 
 		// Enable real-time preview
-		camera_->startCapture();
+		camera_->startContinuesCapture();
 		startCalibBoardDetectThread();
 		
 	}
@@ -333,7 +332,7 @@ void SingleViewCalibrationWindow::calibrationButtonClicked()
 		ui_.btnGrabCalibImage->setEnabled(false);
 
 		// Disable real-time preview
-		camera_->stopCapture();
+		camera_->stopContinuesCapture();
 		stopCalibBoardDetectThread();
 
 		calib_images_.clear();
@@ -437,14 +436,6 @@ void SingleViewCalibrationWindow::grabCalibImageButtonClicked()
 	//	logger_.error(e.what());
 	//	throw e;
 	//}
-}
-
-void SingleViewCalibrationWindow::parameterButtonClicked()
-{
-	auto button = dynamic_cast<QPushButton*>(sender());
-	if(button != ui_.btnParameter)
-		return;
-	camera_->showParameterDialog();
 }
 
 void SingleViewCalibrationWindow::calibBoardSettingsButtonClicked()

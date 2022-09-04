@@ -30,5 +30,3 @@ void FunctionalDialog::showEvent(QShowEvent* event)
 
 	thread.detach();
 }
-
-

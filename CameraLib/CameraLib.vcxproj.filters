@@ -22,22 +22,31 @@
     <Filter Include="Header Files\Cameras">
       <UniqueIdentifier>{2ffb9e9c-d03b-442e-be59-ce9444a52a70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Cameras\PointCloudCamera">
+      <UniqueIdentifier>{f808f575-3a39-469e-af08-186a572df696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Cameras\PointCloudCamera">
+      <UniqueIdentifier>{686fbcb9-f8d3-41de-b71c-337c7abaa458}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Cameras\ImageCamera">
+      <UniqueIdentifier>{2a0d49cf-97d2-4575-b9c3-56c1f0c5251b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Cameras\ImageCamera">
+      <UniqueIdentifier>{1c22c8f3-b485-4a79-a483-77d8db84757a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Projectors">
+      <UniqueIdentifier>{ff2fc23f-b92b-4b06-b7d5-009bc43b14d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Projectors">
+      <UniqueIdentifier>{dd89e268-8b53-4e7f-956a-f18ab4fad99b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VSensorCamerasFactory.hpp">
+    <ClInclude Include="MVCamerasFactory.hpp">
       <Filter>Header Files\CameraFactory</Filter>
     </ClInclude>
     <ClInclude Include="WebCamerasFactory.hpp">
       <Filter>Header Files\CameraFactory</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="PDNCamera.h">
-      <Filter>Header Files\Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="WebCamera.h">
-      <Filter>Header Files\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="AbstractCamerasFactory.h">
       <Filter>Header Files\CameraFactory</Filter>
@@ -45,31 +54,58 @@
     <ClInclude Include="Framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PDRCamera.h">
+    <ClInclude Include="Camera.hpp">
       <Filter>Header Files\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="PDNImageCamera.h">
+      <Filter>Header Files\Cameras\ImageCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="PDRImageCamera.h">
+      <Filter>Header Files\Cameras\ImageCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="WebCamera.h">
+      <Filter>Header Files\Cameras\ImageCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="VSensorPointCloudCamerasFactory.hpp">
+      <Filter>Header Files\CameraFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="VSensorPointCloudCamera.h">
+      <Filter>Header Files\Cameras\PointCloudCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="MVImageCamera.h">
+      <Filter>Header Files\Cameras\ImageCamera</Filter>
     </ClInclude>
     <ClInclude Include="VSensorDef.h">
-      <Filter>Header Files\Cameras</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PDRBuffer.h">
+    <ClInclude Include="MVDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameListener.h">
       <Filter>Header Files\Cameras</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Cameras</Filter>
+    <ClCompile Include="PDNImageCamera.cpp">
+      <Filter>Source Files\Cameras\ImageCamera</Filter>
     </ClCompile>
-    <ClCompile Include="PDNCamera.cpp">
-      <Filter>Source Files\Cameras</Filter>
+    <ClCompile Include="PDRImageCamera.cpp">
+      <Filter>Source Files\Cameras\ImageCamera</Filter>
     </ClCompile>
     <ClCompile Include="WebCamera.cpp">
-      <Filter>Source Files\Cameras</Filter>
+      <Filter>Source Files\Cameras\ImageCamera</Filter>
     </ClCompile>
-    <ClCompile Include="PDRCamera.cpp">
-      <Filter>Source Files\Cameras</Filter>
+    <ClCompile Include="VSensorPointCloudCamera.cpp">
+      <Filter>Source Files\Cameras\PointCloudCamera</Filter>
     </ClCompile>
-    <ClCompile Include="PDRBuffer.cpp">
-      <Filter>Source Files\Cameras</Filter>
+    <ClCompile Include="MVImageCamera.cpp">
+      <Filter>Source Files\Cameras\ImageCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="MVCameraProjector.h">
+      <Filter>Header Files\Projectors</Filter>
+    </ClCompile>
+    <ClCompile Include="MVCameraProjector.cpp">
+      <Filter>Source Files\Projectors</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

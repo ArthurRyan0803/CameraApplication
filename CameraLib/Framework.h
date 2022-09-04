@@ -34,15 +34,28 @@
 
 #if defined(WIN32)
     #ifdef CAMERALIB_EXPORTS
-        #define CAMERALIB_DLL __declspec(dllexport)
+        #define CAMERALIB_SDK __declspec(dllexport)
     #elif (defined N_CAMERA_LIB_DLLEXPORT)
-        #define CAMERALIB_EXPORTS
+        #define CAMERALIB_SDK
     #else
-        #define CAMERALIB_DLL __declspec(dllimport)
+        #define CAMERALIB_SDK __declspec(dllimport)
     #endif
 
 #else
     #error Unsupported platform
+#endif
+
+
+#ifdef _MSC_VER
+	#ifdef _WIN64
+		#pragma comment(lib, "../SDK/MindVision/Release_x64/MVCAMSDK_X64.lib")
+		#pragma comment(lib, "../SDK/VSensor/Release_x64/VSensorSDK.lib")
+	#else
+		#pragma comment(lib, "../SDK/MindVision/Release_x86/MVCAMSDK.lib")
+		#pragma comment(lib, "../SDK/VSensor/Release_x86/VSensorSDK.lib")
+	#endif
+#else
+	#error "Unrecognized compiler!"
 #endif
 
 
